@@ -23,6 +23,8 @@ int main(void)
 
 	UB_VGA_FillScreen(VGA_COL_BLUE);
 
+	UB_VGA_SetPixel(30, 30, 0xE0);
+
   while(1)
   {
 
