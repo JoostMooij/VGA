@@ -1,5 +1,7 @@
-../Core/Src/main.c:14:17:get_pclk1	24	static
-../Core/Src/main.c:32:6:UART2_Init	24	static
-../Core/Src/main.c:73:6:UART2_SendChar	16	static
-../Core/Src/main.c:80:6:UART2_WriteString	16	static
-../Core/Src/main.c:88:5:main	16	static
+../Core/Inc/UART.h:16:17:UART_GetPCLK1	24	static
+../Core/Inc/UART.h:33:6:UART2_Init	24	static
+../Core/Inc/UART.h:69:6:UART2_SendChar	16	static
+../Core/Inc/UART.h:76:6:UART2_WriteString	16	static
+../Core/Inc/UART.h:84:6:UART2_ReadChar	4	static
+../Core/Inc/UART.h:90:6:UART2_ReadString	24	static
+../Core/Src/main.c:11:5:main	72	static
