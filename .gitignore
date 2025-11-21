@@ -1,2 +1,35 @@
+# IDE bestanden
 .settings/
-.Debug/
+.metadata/
+.cproject
+.project
+
+# Build output
+Debug/
+Release/
+*.o
+*.d
+*.elf
+*.bin
+*.hex
+
+# Launch configs
+*.launch
+
+# Prerequisites
+*.d
+
+# Libraries & linker output
+*.lib
+*.a
+*.so
+*.dll
+*.map
+*.ilk
+*.exp
+
+# Debug files
+*.pdb
+*.su
+*.idb
+*.dSYM/
