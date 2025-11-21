@@ -11,18 +11,15 @@
 //--------------------------------------------------------------
 
 #include "main.h"
-#include "stm32_ub_vga_screen.h"
 #include <math.h>
-
+#include "APIio.h"
 
 int main(void)
 {
 	SystemInit(); // System speed to 168MHz
-
-	UB_VGA_Screen_Init(); // Init VGA-Screen
-
-	UB_VGA_FillScreen(VGA_COL_BLUE);
-
+    API_init_io(0,0);          // init VGA
+    API_clearscreen(0);        // zwart scherm
+    API_io_draw_pixel(100, 50, ROOD); // rode pixel op (100,50)
   while(1)
   {
 
