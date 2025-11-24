@@ -1,30 +1,46 @@
 //--------------------------------------------------------------
 // File     : main.c
-// Datum    : 30.03.2016
-// Version  : 1.0
-// Autor    : UB
-// mods by	: J.F. van der Bent
-// CPU      : STM32F4
-// IDE      : CooCox CoIDE 1.7.x
-// Module   : CMSIS_BOOT, M4_CMSIS_CORE
-// Function : VGA_core DMA LIB 320x240, 8bit color
+// Doel     : Eenvoudige UART2 communicatie (Hello naar Termite)
+// MCU      : STM32F4xx
 //--------------------------------------------------------------
 
-#include "main.h"
-#include "stm32_ub_vga_screen.h"
-#include <math.h>
+#include "UART.h"
 
+#define RX_BUF_SIZE 64
 
 int main(void)
 {
-	SystemInit(); // System speed to 168MHz
+    SystemInit();
+    SystemCoreClockUpdate();
 
-	UB_VGA_Screen_Init(); // Init VGA-Screen
+    UART2_Init(115200);
 
-	UB_VGA_FillScreen(VGA_COL_BLUE);
+    char rx_buf[RX_BUF_SIZE]; // declareer buffer
 
-  while(1)
-  {
+    UART2_WriteString("Stuur een bericht en druk Enter:\r\n");
 
-  }
+    while (1)
+    {
+        UART2_ReadString(rx_buf, RX_BUF_SIZE); // wacht en ontvang string
+        UART2_WriteString("Ontvangen: ");
+        UART2_WriteString(rx_buf);
+        UART2_WriteString("\r\n");
+    }
 }
+
+
+
+
+//int main(void)
+//{
+////	SystemInit(); // System speed to 168MHz
+////
+////	UB_VGA_Screen_Init(); // Init VGA-Screen
+////
+////	UB_VGA_FillScreen(VGA_COL_BLUE);
+////
+////  while(1)
+////  {
+////
+////  }
+//}
