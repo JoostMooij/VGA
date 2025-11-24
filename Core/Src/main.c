@@ -5,8 +5,9 @@
 //--------------------------------------------------------------
 
 #include "UART.h"
+#include "Front_layer.h"
 
-#define RX_BUF_SIZE 64
+char buffer[128];
 
 int main(void)
 {
@@ -15,32 +16,37 @@ int main(void)
 
     UART2_Init(115200);
 
-    char rx_buf[RX_BUF_SIZE]; // declareer buffer
+    Gebruiker_instructies();
 
-    UART2_WriteString("Stuur een bericht en druk Enter:\r\n");
+    UserInput_t input;   // Struct voor de gebruikersgegevens
 
     while (1)
     {
-        UART2_ReadString(rx_buf, RX_BUF_SIZE); // wacht en ontvang string
-        UART2_WriteString("Ontvangen: ");
-        UART2_WriteString(rx_buf);
-        UART2_WriteString("\r\n");
+        // Vul 'input' met gegevens via de front layer
+        Handel_UART_Input(&input);
+
+        sprintf(buffer, "Cmd: %s, X: %d, Y: %d, Color: 0x%02X\r\n",
+                input.command, input.x, input.y, input.color);
+
+        UART2_WriteString(buffer);
+
+        // Nu kun je 'input' doorgeven aan je middle layer of verwerkingslaag
+        // Bijvoorbeeld: MiddleLayer_ProcessCommand(&input);
+        // Die zorgt voor verdere verwerking (pixel tekenen etc.)
     }
 }
 
 
-
-
 //int main(void)
 //{
-////	SystemInit(); // System speed to 168MHz
-////
-////	UB_VGA_Screen_Init(); // Init VGA-Screen
-////
-////	UB_VGA_FillScreen(VGA_COL_BLUE);
-////
-////  while(1)
-////  {
-////
-////  }
+//	SystemInit(); // System speed to 168MHz
+//
+//	UB_VGA_Screen_Init(); // Init VGA-Screen
+//
+//	UB_VGA_FillScreen(VGA_COL_BLUE);
+//
+//  while(1)
+//  {
+//
+//  }
 //}
