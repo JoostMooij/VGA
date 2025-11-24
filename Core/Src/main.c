@@ -12,6 +12,7 @@
 
 #include "main.h"
 #include "stm32_ub_vga_screen.h"
+#include "logicLayer.h"
 #include <math.h>
 
 
@@ -21,7 +22,9 @@ int main(void)
 
 	UB_VGA_Screen_Init(); // Init VGA-Screen
 
-	UB_VGA_FillScreen(VGA_COL_BLUE);
+	char testInput[MAX_INPUT] = "lijn,1,1,100,100,rood,4";
+	string_ophalen(testInput);
+	string_naar_vga(testInput);     // Print de string als blokken
 
   while(1)
   {
