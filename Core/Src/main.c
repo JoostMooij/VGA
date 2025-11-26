@@ -22,9 +22,7 @@ int main(void)
 
 	UB_VGA_Screen_Init(); // Init VGA-Screen
 
-	char testInput[MAX_INPUT] = "lijn,1,1,100,100,rood,4";
-	string_ophalen(testInput);
-	string_naar_vga(testInput);     // Print de string als blokken
+	test_logicLayer();
 
   while(1)
   {
