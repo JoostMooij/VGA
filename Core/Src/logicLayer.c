@@ -59,7 +59,10 @@ void haal_commando(const char *input, char *woord)
     woord[i] = '\0';
 }
 
-
+void verstuur_error(int foutcode)
+{
+	// Foutcode omzetten naar error en versturen
+}
 /* -------------------------------------------------------------------------
  * Functie: bepaal_commando
  * Doel   : Zet een commando-woord om naar enum waarde
@@ -81,30 +84,6 @@ COMMANDO_TYPE bepaal_commando(const char *woord)
     return CMD_ONBEKEND;
 }
 
-
-int kleur_omzetter(const char *input)
-{
-    if (strcmp(input, "zwart") == 0)        return ZWART;
-    if (strcmp(input, "blauw") == 0)        return BLAUW;
-    if (strcmp(input, "lichtblauw") == 0)   return LICHTBLAUW;
-    if (strcmp(input, "groen") == 0)        return GROEN;
-    if (strcmp(input, "lichtgroen") == 0)   return LICHTGROEN;
-    if (strcmp(input, "cyaan") == 0)        return CYAAN;
-    if (strcmp(input, "lichtcyaan") == 0)   return LICHTCYAAN;
-    if (strcmp(input, "rood") == 0)         return ROOD;
-    if (strcmp(input, "lichtrood") == 0)    return LICHTROOD;
-    if (strcmp(input, "magenta") == 0)      return MAGENTA;
-    if (strcmp(input, "lichtmagenta") == 0) return LICHTMAGENTA;
-    if (strcmp(input, "bruin") == 0)        return BRUIN;
-    if (strcmp(input, "geel") == 0)         return GEEL;
-    if (strcmp(input, "grijs") == 0)        return GRIJS;
-    if (strcmp(input, "wit") == 0)          return WIT;
-    if (strcmp(input, "roze") == 0)         return ROZE;
-    if (strcmp(input, "paars") == 0)        return PAARS;
-
-    return -1;
-}
-
 /* -------------------------------------------------------------------------
  * Functie: verwerk_commando
  * Doel   : Verstuurd data naar juiste functie uit ioLayer
@@ -114,6 +93,7 @@ void verwerk_commando(const char *input)
     char buff[MAX_INPUT];
     char *delen[20];
     int aantal = 0;
+    int foutcode = 0;
 
     strncpy(buff, input, MAX_INPUT);
     buff[MAX_INPUT - 1] = '\0';
@@ -138,48 +118,48 @@ void verwerk_commando(const char *input)
     switch (type)
     {
         case CMD_LIJN:
-            lijn(atoi(delen[1]), atoi(delen[2]), atoi(delen[3]), atoi(delen[4]), kleur_omzetter(delen[5]), atoi(delen[6]));
+        	foutcode = lijn(atoi(delen[1]), atoi(delen[2]), atoi(delen[3]), atoi(delen[4]), delen[5], atoi(delen[6]));
 
             break;
 
         case CMD_RECHTHOEK:
-            rechthoek(atoi(delen[1]), atoi(delen[2]), atoi(delen[3]), atoi(delen[4]), kleur_omzetter(delen[5]), atoi(delen[6]));
+        	foutcode = rechthoek(atoi(delen[1]), atoi(delen[2]), atoi(delen[3]), atoi(delen[4]), delen[5], atoi(delen[6]));
             break;
 
         case CMD_TEKST:
-            tekst(atoi(delen[1]), atoi(delen[2]), kleur_omzetter(delen[3]), delen[4], delen[5], atoi(delen[6]), delen[7]);
+        	foutcode = tekst(atoi(delen[1]), atoi(delen[2]), delen[3], delen[4], delen[5], atoi(delen[6]), delen[7]);
             break;
 
         case CMD_BITMAP:
-            bitmap(atoi(delen[1]), atoi(delen[2]), atoi(delen[3]));
+        	foutcode = bitmap(atoi(delen[1]), atoi(delen[2]), atoi(delen[3]));
             break;
 
         case CMD_CLEAR:
-            clearscherm(kleur_omzetter(delen[1]));
+        	foutcode = clearscherm(delen[1]);
             break;
 
         case CMD_WACHT:
-            wacht(atoi(delen[1]));
+        	foutcode = wacht(atoi(delen[1]));
             break;
 
         case CMD_HERHAAL:
-            herhaal(atoi(delen[1]), atoi(delen[2]));
+        	foutcode = herhaal(atoi(delen[1]), atoi(delen[2]));
             break;
 
         case CMD_CIRKEL:
-            cirkel(atoi(delen[1]), atoi(delen[2]), atoi(delen[3]), kleur_omzetter(delen[4]));
+        	foutcode = cirkel(atoi(delen[1]), atoi(delen[2]), atoi(delen[3]), delen[4]);
             break;
-git
+
         case CMD_FIGUUR:
-            figuur(atoi(delen[1]), atoi(delen[2]), atoi(delen[3]), atoi(delen[4]), atoi(delen[5]), atoi(delen[6]), atoi(delen[7]), atoi(delen[8]), atoi(delen[9]), atoi(delen[10]), kleur_omzetter(delen[11]));
+        	foutcode = figuur(atoi(delen[1]), atoi(delen[2]), atoi(delen[3]), atoi(delen[4]), atoi(delen[5]), atoi(delen[6]), atoi(delen[7]), atoi(delen[8]), atoi(delen[9]), atoi(delen[10]), delen[11]);
             break;
 
         case CMD_TOREN:
-            toren(atoi(delen[1]), atoi(delen[2]), atoi(delen[3]), kleur_omzetter(delen[4]), kleur_omzetter(delen[5]));
+        	foutcode = toren(atoi(delen[1]), atoi(delen[2]), atoi(delen[3]), delen[4], delen[5]);
             break;
 
         case CMD_SETPIXEL:
-			setPixel(atoi(delen[1]), atoi(delen[2]), kleur_omzetter(delen[3]));
+        	foutcode = setPixel(atoi(delen[1]), atoi(delen[2]), delen[3]);
 			break;
 
 
@@ -188,4 +168,6 @@ git
             /* onbekend commando, doe niets */
             break;
     }
+
+    verstuur_error(foutcode);
 }

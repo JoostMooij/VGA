@@ -25,6 +25,7 @@ void haal_commando(const char *input, char *woord);
 COMMANDO_TYPE bepaal_commando(const char *woord);
 void verwerk_commando(const char *input);
 const char* commando_naar_string(COMMANDO_TYPE cmd);
+void verstuur_error(int foutcode);
 
 /* Wordt extern geïmplementeerd in test_logicLayer.c */
 void string_naar_vga(const char *str);

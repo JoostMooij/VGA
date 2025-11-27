@@ -151,83 +151,93 @@ void string_naar_vga(const char *str)
 
 static char vga_buffer[256];
 
-void lijn(int x1, int y1, int x2, int y2, int kleur, int dikte)
+int lijn(int x1, int y1, int x2, int y2, int kleur, int dikte)
 {
     snprintf(vga_buffer, sizeof(vga_buffer),
              "LIJN %d,%d,%d,%d,%d,%d",
              x1, y1, x2, y2, kleur, dikte);
     string_naar_vga(vga_buffer);
+    return 0;
 }
 
-void rechthoek(int x, int y, int w, int h, int kleur, int dikte)
+int rechthoek(int x, int y, int w, int h, int kleur, int dikte)
 {
     snprintf(vga_buffer, sizeof(vga_buffer),
              "RECHT %d,%d,%d,%d,%d,%d",
              x, y, w, h, kleur, dikte);
     string_naar_vga(vga_buffer);
+    return 0;
 }
 
-void tekst(int x, int y, int grootte, const char *txt, const char *kleur,
+int tekst(int x, int y, int grootte, const char *txt, const char *kleur,
            int dikte, const char *font)
 {
     snprintf(vga_buffer, sizeof(vga_buffer),
              "TEKST %d,%d,%d,%s,%s,%d,%s",
              x, y, grootte, txt, kleur, dikte, font);
     string_naar_vga(vga_buffer);
+    return 0;
 }
 
-void bitmap(int x, int y, int id)
+int bitmap(int x, int y, int id)
 {
     snprintf(vga_buffer, sizeof(vga_buffer),
              "BITMAP %d,%d,%d", x, y, id);
     string_naar_vga(vga_buffer);
+    return 0;
 }
 
-void clearscherm(int kleur)
+int clearscherm(int kleur)
 {
     snprintf(vga_buffer, sizeof(vga_buffer),
              "CLEAR %d", kleur);
     string_naar_vga(vga_buffer);
+    return 0;
 }
 
-void wacht(int ms)
+int wacht(int ms)
 {
     snprintf(vga_buffer, sizeof(vga_buffer),
              "WACHT %d", ms);
     string_naar_vga(vga_buffer);
+    return 0;
 }
 
-void herhaal(int aantal, int ms)
+int herhaal(int aantal, int ms)
 {
     snprintf(vga_buffer, sizeof(vga_buffer),
              "HERHAAL %d,%d", aantal, ms);
     string_naar_vga(vga_buffer);
+    return 0;
 }
 
-void cirkel(int x, int y, int r, int kleur)
+int cirkel(int x, int y, int r, int kleur)
 {
     snprintf(vga_buffer, sizeof(vga_buffer),
              "CIRKEL %d,%d,%d,%d", x, y, r, kleur);
     string_naar_vga(vga_buffer);
+    return 0;
 }
 
-void figuur(int a1,int a2,int a3,int a4,int a5,int a6,int a7,int a8,int a9,int a10,int a11)
+int figuur(int a1,int a2,int a3,int a4,int a5,int a6,int a7,int a8,int a9,int a10,int a11)
 {
     snprintf(vga_buffer, sizeof(vga_buffer),
              "FIGUUR %d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d",
              a1,a2,a3,a4,a5,a6,a7,a8,a9,a10,a11);
     string_naar_vga(vga_buffer);
+    return 0;
 }
 
-void toren(int x, int y, int hoogte, int kleur, int breedte)
+int toren(int x, int y, int hoogte, int kleur, int breedte)
 {
     snprintf(vga_buffer, sizeof(vga_buffer),
              "TOREN %d,%d,%d,%d,%d",
              x, y, hoogte, kleur, breedte);
     string_naar_vga(vga_buffer);
+    return 0;
 }
 
-void setPixel(int x, int y, int kleur)
+int setPixel(int x, int y, int kleur)
 {
 
 }
@@ -249,7 +259,7 @@ void setPixel(int x, int y, int kleur)
  * @note    Dit is uitsluitend een testfunctie; in de uiteindelijke applicatie
  *          zal de input afkomstig zijn van UART of een andere interface.
  */
-void test_logicLayer(void)
+int test_logicLayer(void)
 {
     char testInput[MAX_INPUT] = "lijn,1,1,100,100,rood,4";
 

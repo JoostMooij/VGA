@@ -43,56 +43,56 @@ typedef enum {
  * @brief Wis het volledige scherm
  * @param kleur Achtergrondkleur
  */
-void clearscherm(int kleur);
+int clearscherm(int kleur);
 
 /**
  * @brief Teken een lijn tussen twee punten
  */
-void lijn(int x0, int y0, int x1, int y1, int kleur, int dikte);
+int lijn(int x0, int y0, int x1, int y1, int kleur, int dikte);
 
 /**
  * @brief Teken een rechthoek
  */
-void rechthoek(int x_lup, int y_lup, int breedte, int hoogte, int kleur, int gevuld);
+int rechthoek(int x_lup, int y_lup, int breedte, int hoogte, int kleur, int gevuld);
 
 /**
  * @brief Teken een cirkel
  */
-void cirkel(int xc, int yc, int radius, int kleur);
+int cirkel(int xc, int yc, int radius, int kleur);
 
 /**
  * @brief Teken een vijfhoekig figuur
  */
-void figuur(int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4, int x5, int y5, int kleur);
+int figuur(int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4, int x5, int y5, int kleur);
 
 /**
  * @brief Teken een toren (rechthoek met cirkel)
  */
-void toren(int x, int y, int grootte, int kleur1, int kleur2);
+int toren(int x, int y, int grootte, int kleur1, int kleur2);
 
 /**
  * @brief Wacht een aantal milliseconden
  */
-void wacht(int msecs);
+int wacht(int msecs);
 
 /**
  * @brief Herhaal een functie meerdere keren
  */
-void herhaal(int aantal, int hoevaak);
+int herhaal(int aantal, int hoevaak);
 
 /**
  * @brief Plaats tekst op het scherm
  */
-void tekst(int x, int y, int kleur, const char* tekst, const char* fontnaam, int fontgrootte, const char* fontstijl);
+int tekst(int x, int y, int kleur, const char* tekst, const char* fontnaam, int fontgrootte, const char* fontstijl);
 
 /**
  * @brief Teken een bitmap op het scherm
  */
-void bitmap(int nr, int x_lup, int y_lup);
+int bitmap(int nr, int x_lup, int y_lup);
 
 /**
  * @brief Teken een bitmap op het scherm
  */
-void setPixel(int x, int y, int kleur);
+int setPixel(int x, int y, int kleur);
 
 #endif
