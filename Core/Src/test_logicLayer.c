@@ -1,9 +1,9 @@
 /******************************************************************************
  * @file    test_logicLayer.c
  * @brief   Testbestand voor het controleren van de functionaliteit van de
- *          logicLayer. Dit bestand biedt hulpfuncties om tekst op een VGA-
- *          scherm weer te geven met een eenvoudig bitmap-font.
- * @author  Joost
+ *          logicLayer. Dit bestand bevat hulpfuncties om ASCII-tekst op
+ *          het VGA-scherm te tonen via een 6x8 bitmap-font.
+ * @author  Joost & ChatGPT
  * @version 1.0
  ******************************************************************************/
 
@@ -11,18 +11,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include "stm32_ub_vga_screen.h"
-
-
-/* -------------------------------------------------------------------------
- * Prototypes
- * ------------------------------------------------------------------------- */
-
-/**
- * @brief   Schrijft een ASCII-string pixel-voor-pixel naar het VGA-scherm.
- * @param   str Pointer naar de null-terminated string die wordt weergegeven.
- */
-void string_naar_vga(const char *str);
-
+#include "logicLayer.h"
 
 /* -------------------------------------------------------------------------
  * Defines
@@ -31,13 +20,12 @@ void string_naar_vga(const char *str);
 #define CHAR_HEIGHT    8       /**< Hoogte van één karakter in pixels  */
 #define START_X        0       /**< Startpositie X op het scherm       */
 #define START_Y        0       /**< Startpositie Y op het scherm       */
-#define MAX_INPUT      256     /**< Maximale invoerlengte              */
 
 
 /* -------------------------------------------------------------------------
  * Font data
+ * Auteur: 	ChatGPT, tijdelijk alternatief voor UART output
  * 6x8 bitmap-font; subset bevat spatie, komma, cijfers en hoofdletters.
- * DOOR: ChatGPT — Tijdelijk alternatief voor UART-output.
  * ------------------------------------------------------------------------- */
 const uint8_t font6x8[][8] =
 {
@@ -84,21 +72,25 @@ const uint8_t font6x8[][8] =
 
 /* -------------------------------------------------------------------------
  * string_naar_vga()
- * DOOR: ChatGPT — Tijdelijk alternatief voor UART-output.
  * ------------------------------------------------------------------------- */
 
 #define START_X_OFFSET 10      /**< Horizontale offset in pixels */
 #define START_Y_OFFSET 10      /**< Verticale offset in pixels    */
 
+
 /**
- * @brief   Render een string op het VGA-scherm met behulp van font6x8.
- *
- * De functie doorloopt de string karakter per karakter, bepaalt de index
- * in de font-tabel en tekent vervolgens de pixels. Wanneer het einde van
- * de regel is bereikt wordt naar de volgende regel gegaan.
+ * @brief   Render een ASCII-string op het VGA-scherm met behulp van font6x8.
+ * Auteur: 	ChatGPT, tijdelijk alternatief voor UART output
+ * @details De functie leest de opgegeven string karakter voor karakter, zoekt
+ *          het corresponderende 6x8 bitmap-patroon op in font6x8 en tekent dit
+ *          pixel voor pixel op het VGA-scherm. Wanneer de rechterrand van het
+ *          scherm wordt bereikt, gaat de functie automatisch naar de volgende
+ *          regel. Onbekende karakters worden genegeerd.
  *
  * @param   str Pointer naar een null-terminated ASCII-string.
- * @note    Onbekende karakters worden overgeslagen.
+ *
+ * @note    Alleen spatie, komma, cijfers en A-Z worden ondersteund door dit
+ *          tijdelijke font. Kleine letters worden omgezet naar hoofdletters.
  */
 void string_naar_vga(const char *str)
 {
@@ -152,15 +144,60 @@ void string_naar_vga(const char *str)
 
 
 /**
+ * @brief   Converteer een COMMANDO_TYPE-enum naar een bijbehorende tekststring.
+ * Auteur: 	ChatGPT, testen van omzetten naar ENUM
+ * @details De functie biedt een eenvoudige mapping van elk commando in de
+ *          enumeratie COMMANDO_TYPE naar een constant ASCII-label dat kan
+ *          worden weergegeven op het VGA-scherm of gebruikt in debugging.
+ *
+ * @param   cmd Het COMMANDO_TYPE-commando dat moet worden omgezet.
+ *
+ * @return  Constante pointer naar de corresponderende ASCII-string.
+ */
+const char* commando_naar_string(COMMANDO_TYPE cmd)
+{
+    switch(cmd) {
+        case CMD_LIJN:       return "CMD_LIJN";
+        case CMD_RECHTHOEK:  return "CMD_RECHTHOEK";
+        case CMD_TEKST:      return "CMD_TEKST";
+        case CMD_BITMAP:     return "CMD_BITMAP";
+        case CMD_CLEAR:      return "CMD_CLEAR";
+        case CMD_WACHT:      return "CMD_WACHT";
+        case CMD_HERHAAL:    return "CMD_HERHAAL";
+        case CMD_CIRKEL:     return "CMD_CIRKEL";
+        case CMD_FIGUUR:     return "CMD_FIGUUR";
+        case CMD_TOREN:      return "CMD_TOREN";
+        default:             return "CMD_ONBEKEND";
+    }
+}
+
+
+/**
  * @brief   Testfunctie voor de logicLayer.
  *
- * Initialiseert een teststring, stuurt deze naar de logic-parser en toont
- * dezelfde string daarna op het VGA-scherm.
+ * @details Deze functie vormt een eenvoudige demonstratie van de werking van
+ *          de logicLayer. Een vooraf ingestelde teststring wordt:
+ *          1) opgeschoond via string_ophalen(),
+ *          2) geanalyseerd met verwerk_commando(),
+ *          3) omgezet naar tekst via commando_naar_string(),
+ *          4) weergegeven op het VGA-scherm via string_naar_vga().
+ *
+ * @note    Dit is uitsluitend een testfunctie; in de uiteindelijke applicatie
+ *          zal de input afkomstig zijn van UART of een andere interface.
  */
 void test_logicLayer(void)
 {
     char testInput[MAX_INPUT] = "lijn,1,1,100,100,rood,4";
 
+    // Stap 1: input opschonen
     string_ophalen(testInput);
-    string_naar_vga(testInput);
+
+    // Stap 2: commando eruit halen
+    COMMANDO_TYPE cmd = verwerk_commando(testInput);
+
+    // Stap 3: enum → string
+    const char *cmdStr = commando_naar_string(cmd);
+
+    // Stap 4: toon op VGA
+    string_naar_vga(cmdStr);
 }
