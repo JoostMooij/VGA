@@ -1,7 +1,7 @@
 #ifndef LOGIC_LAYER_H
 #define LOGIC_LAYER_H
 
-#define MAX_INPUT 256
+#define MAX_INPUT 128
 #define MAX_WOORD 64
 
 typedef enum
@@ -16,13 +16,14 @@ typedef enum
     CMD_HERHAAL,
     CMD_CIRKEL,
     CMD_FIGUUR,
-    CMD_TOREN
+    CMD_TOREN,
+	CMD_SETPIXEL
 } COMMANDO_TYPE;
 
 int string_ophalen(char input[]);
 void haal_commando(const char *input, char *woord);
 COMMANDO_TYPE bepaal_commando(const char *woord);
-COMMANDO_TYPE verwerk_commando(const char *input);
+void verwerk_commando(const char *input);
 const char* commando_naar_string(COMMANDO_TYPE cmd);
 
 /* Wordt extern geïmplementeerd in test_logicLayer.c */

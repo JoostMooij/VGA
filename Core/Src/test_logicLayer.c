@@ -12,6 +12,7 @@
 #include <stdlib.h>
 #include "stm32_ub_vga_screen.h"
 #include "logicLayer.h"
+#include "test_ioLayer.h"
 
 /* -------------------------------------------------------------------------
  * Defines
@@ -143,33 +144,96 @@ void string_naar_vga(const char *str)
 }
 
 
-/**
- * @brief   Converteer een COMMANDO_TYPE-enum naar een bijbehorende tekststring.
- * Auteur: 	ChatGPT, testen van omzetten naar ENUM
- * @details De functie biedt een eenvoudige mapping van elk commando in de
- *          enumeratie COMMANDO_TYPE naar een constant ASCII-label dat kan
- *          worden weergegeven op het VGA-scherm of gebruikt in debugging.
- *
- * @param   cmd Het COMMANDO_TYPE-commando dat moet worden omgezet.
- *
- * @return  Constante pointer naar de corresponderende ASCII-string.
- */
-const char* commando_naar_string(COMMANDO_TYPE cmd)
+/* -------------------------------------------------------------------------
+ * IO-LAAG STUB FUNCTIES VOOR TESTEN
+ * Elke functie laat de ontvangen parameters zien op het VGA scherm.
+ * ------------------------------------------------------------------------- */
+
+static char vga_buffer[256];
+
+void lijn(int x1, int y1, int x2, int y2, int kleur, int dikte)
 {
-    switch(cmd) {
-        case CMD_LIJN:       return "CMD_LIJN";
-        case CMD_RECHTHOEK:  return "CMD_RECHTHOEK";
-        case CMD_TEKST:      return "CMD_TEKST";
-        case CMD_BITMAP:     return "CMD_BITMAP";
-        case CMD_CLEAR:      return "CMD_CLEAR";
-        case CMD_WACHT:      return "CMD_WACHT";
-        case CMD_HERHAAL:    return "CMD_HERHAAL";
-        case CMD_CIRKEL:     return "CMD_CIRKEL";
-        case CMD_FIGUUR:     return "CMD_FIGUUR";
-        case CMD_TOREN:      return "CMD_TOREN";
-        default:             return "CMD_ONBEKEND";
-    }
+    snprintf(vga_buffer, sizeof(vga_buffer),
+             "LIJN %d,%d,%d,%d,%d,%d",
+             x1, y1, x2, y2, kleur, dikte);
+    string_naar_vga(vga_buffer);
 }
+
+void rechthoek(int x, int y, int w, int h, int kleur, int dikte)
+{
+    snprintf(vga_buffer, sizeof(vga_buffer),
+             "RECHT %d,%d,%d,%d,%d,%d",
+             x, y, w, h, kleur, dikte);
+    string_naar_vga(vga_buffer);
+}
+
+void tekst(int x, int y, int grootte, const char *txt, const char *kleur,
+           int dikte, const char *font)
+{
+    snprintf(vga_buffer, sizeof(vga_buffer),
+             "TEKST %d,%d,%d,%s,%s,%d,%s",
+             x, y, grootte, txt, kleur, dikte, font);
+    string_naar_vga(vga_buffer);
+}
+
+void bitmap(int x, int y, int id)
+{
+    snprintf(vga_buffer, sizeof(vga_buffer),
+             "BITMAP %d,%d,%d", x, y, id);
+    string_naar_vga(vga_buffer);
+}
+
+void clearscherm(int kleur)
+{
+    snprintf(vga_buffer, sizeof(vga_buffer),
+             "CLEAR %d", kleur);
+    string_naar_vga(vga_buffer);
+}
+
+void wacht(int ms)
+{
+    snprintf(vga_buffer, sizeof(vga_buffer),
+             "WACHT %d", ms);
+    string_naar_vga(vga_buffer);
+}
+
+void herhaal(int aantal, int ms)
+{
+    snprintf(vga_buffer, sizeof(vga_buffer),
+             "HERHAAL %d,%d", aantal, ms);
+    string_naar_vga(vga_buffer);
+}
+
+void cirkel(int x, int y, int r, int kleur)
+{
+    snprintf(vga_buffer, sizeof(vga_buffer),
+             "CIRKEL %d,%d,%d,%d", x, y, r, kleur);
+    string_naar_vga(vga_buffer);
+}
+
+void figuur(int a1,int a2,int a3,int a4,int a5,int a6,int a7,int a8,int a9,int a10,int a11)
+{
+    snprintf(vga_buffer, sizeof(vga_buffer),
+             "FIGUUR %d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d",
+             a1,a2,a3,a4,a5,a6,a7,a8,a9,a10,a11);
+    string_naar_vga(vga_buffer);
+}
+
+void toren(int x, int y, int hoogte, int kleur, int breedte)
+{
+    snprintf(vga_buffer, sizeof(vga_buffer),
+             "TOREN %d,%d,%d,%d,%d",
+             x, y, hoogte, kleur, breedte);
+    string_naar_vga(vga_buffer);
+}
+
+void setPixel(int x, int y, int kleur)
+{
+
+}
+
+
+
 
 
 /**
@@ -189,15 +253,7 @@ void test_logicLayer(void)
 {
     char testInput[MAX_INPUT] = "lijn,1,1,100,100,rood,4";
 
-    // Stap 1: input opschonen
+    // Stap 1 + 2: input verwerken
     string_ophalen(testInput);
-
-    // Stap 2: commando eruit halen
-    COMMANDO_TYPE cmd = verwerk_commando(testInput);
-
-    // Stap 3: enum → string
-    const char *cmdStr = commando_naar_string(cmd);
-
-    // Stap 4: toon op VGA
-    string_naar_vga(cmdStr);
 }
+

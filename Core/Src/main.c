@@ -13,7 +13,6 @@
 #include "main.h"
 #include "stm32_ub_vga_screen.h"
 #include "logicLayer.h"
-#include <math.h>
 
 
 int main(void)
