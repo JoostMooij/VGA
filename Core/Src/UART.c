@@ -1,14 +1,36 @@
-/*
- * UART.c
+/**
+ ******************************************************************************
+ * @file           : uart.c
+ * @brief          : Low-level UART2 driver (register-level)
+ * @author         : Luc van den Engel
+ * @date           : 2025
  *
- *  Created on: Nov 21, 2025
- *      Author: Luc
+ * @details
+ * Deze module bevat alle functies voor:
+ *  - Initialiseren van UART2
+ *  - Configure van GPIOA (PA2 = TX, PA3 = RX)
+ *  - Berekenen en instellen van Baudrate (BRR)
+ *  - Versturen van characters en strings
+ *
+ * De module gebruikt geen HAL of SPL. Alle registers worden direct
+ * aangesproken via stm32f4xx.h.
+ *
+ ******************************************************************************
  */
 
 #include "UART.h"
 
 // Debug variable (optioneel voor debugging)
 volatile uint32_t uart_pclk1_debug = 0;
+
+/**
+ * @brief  Geeft de huidige APB1-klok (PCLK1) terug.
+ *
+ * @details Leest SystemCoreClock en het APB1-prescaler veld (PPRE1)
+ * om de effectieve PCLK1-frequentie te berekenen.
+ *
+ * @return PCLK1-frequentie in Hz.
+ */
 
 static uint32_t UART_GetPCLK1(void)
 {
@@ -25,6 +47,15 @@ static uint32_t UART_GetPCLK1(void)
     }
     return hclk / div;
 }
+
+/**
+ * @brief Initialiseert UART2 op de STM32F4.
+ *
+ * Zet alle benodigde clocks aan, configureert PA2/PA3 als AF7,
+ * en activeert de USART2 transmitter.
+ *
+ * De baudrate wordt niet hier ingesteld, maar in uart2_set_baud().
+ */
 
 void UART2_Init(uint32_t baudrate)
 {
@@ -56,11 +87,25 @@ void UART2_Init(uint32_t baudrate)
     USART2->CR1 |= USART_CR1_UE;   // USART enable
 }
 
+/**
+ * @brief  Verstuurt één karakter via UART2.
+ *
+ * @param  c  Het te verzenden karakter.
+ *
+ * @note   Wacht totdat de TX-buffer leeg is voordat het karakter wordt geschreven.
+ */
+
 void UART2_SendChar(char c)
 {
     while (!(USART2->SR & USART_SR_TXE));
     USART2->DR = (uint8_t)c;
 }
+
+/**
+ * @brief Verstuurd een null-terminated string via UART2.
+ *
+ * @param str Pointer naar string in RAM/Flash.
+ */
 
 void UART2_WriteString(const char *str)
 {
@@ -70,11 +115,22 @@ void UART2_WriteString(const char *str)
     }
 }
 
+/**
+ * @brief Leest één karakter van UART2.
+ * @return Het gelezen karakter.
+ */
+
 char UART2_ReadChar(void)
 {
     while (!(USART2->SR & USART_SR_RXNE));
     return USART2->DR & 0xFF;
 }
+
+/**
+ * @brief Leest een string van UART2 tot '\n', '\r' of buffer vol.
+ * @param[out] buf Buffer voor de gelezen string.
+ * @param[in] maxlen Maximale lengte van de buffer inclusief '\0'.
+ */
 
 void UART2_ReadString(char *buf, uint32_t maxlen)
 {

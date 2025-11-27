@@ -4,10 +4,22 @@
 // MCU      : STM32F4xx
 //--------------------------------------------------------------
 
-#include "UART.h"
-#include "Front_layer.h"
+/**
 
-char buffer[128];
+@file main.c
+
+@brief Hoofdprogramma voor UART communicatie.
+
+@author JouwNaam
+*/
+
+#include "Front_layer.h" // Zorg ervoor dat deze is inbegrepen
+#include "UART.h"        // Zorg ervoor dat deze is inbegrepen
+#include <string.h>
+#include <stdio.h>
+
+#define BUFFER_SIZE 128
+char buffer[BUFFER_SIZE]; // De buffer moet buiten main gedefinieerd zijn als je deze overal wilt gebruiken
 
 int main(void)
 {
@@ -16,23 +28,35 @@ int main(void)
 
     UART2_Init(115200);
 
-    Gebruiker_instructies();
+    // Initialisatie/Welkomstbericht:
+    // Geef de gebruiker direct de prompt om te beginnen.
+    // De 'Handel_UART_Input' zal bij lege invoer automatisch de HELP tonen.
+    UART2_WriteString("> ");
 
     UserInput_t input;   // Struct voor de gebruikersgegevens
 
     while (1)
     {
-        // Vul 'input' met gegevens via de front layer
+
         Handel_UART_Input(&input);
 
-        sprintf(buffer, "Cmd: %s, X: %d, Y: %d, Color: 0x%02X\r\n",
-                input.command, input.x, input.y, input.color);
+        if (strcmp(input.command, "setPixel") == 0)
+        {
+            // Formatteer de output (let op de [0] voor array-elementen!)
+        	int len = snprintf(buffer, sizeof(buffer),
+        	    "Verwerkt: Cmd: %s, X: %d, Y: %d, Color: %s\r\n",
+        	    input.command, input.x[0], input.y[0], input.color_name); // <-- CORRECTIE HIER
 
-        UART2_WriteString(buffer);
+            // Verwerkingsoutput printen
+            UART2_WriteString(buffer);
 
-        // Nu kun je 'input' doorgeven aan je middle layer of verwerkingslaag
-        // Bijvoorbeeld: MiddleLayer_ProcessCommand(&input);
-        // Die zorgt voor verdere verwerking (pixel tekenen etc.)
+            // Nu kun je 'input' doorgeven aan je middle layer
+            // Bijvoorbeeld: MiddleLayer_ProcessCommand(&input);
+
+            // Geef een nieuwe prompt na de verwerking
+            UART2_WriteString("> ");
+
+        }
     }
 }
 

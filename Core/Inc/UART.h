@@ -1,8 +1,15 @@
-/*
- * UART.h
+/**
+ ******************************************************************************
+ * @file           : uart.h
+ * @brief          : Header voor de UART2 driver (register-level)
+ * @author         : <jouw naam>
+ * @date           : 2025
  *
- *  Created on: Nov 21, 2025
- *      Author: Luc
+ * @details
+ * Dit headerbestand bevat de prototypes van de UART2-drivers.
+ * De implementatie staat in uart.c.
+ *
+ ******************************************************************************
  */
 
 #ifndef INC_UART_H_
