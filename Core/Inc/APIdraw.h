@@ -8,3 +8,9 @@
  * - Bitmap tekenen
  * - Tekst tekenen
  */
+
+#ifndef APIDRAW_H
+#define APIDRAW_H
+
+int API_draw_line(int x1, int y1, int x2, int y2, int color, int dikte);
+#endif

@@ -12,7 +12,9 @@
  */
 
 #include "APIio.h"
+#include "APIerror.h"
 #include "stm32_ub_vga_screen.h"   // nodig voor UB_VGA_SetPixel en defines
+#include <stdint.h>
 
 /**
  * @brief Initialiseert de I/O hardware.
@@ -42,21 +44,24 @@ int API_clearscreen(int color)
 }
 
 /**
- * @brief Zet één pixel op het VGA-scherm via UB_VGA driver.
+ * @brief Zet één pixel op het VGA-scherm met foutafhandeling.
  *
- * Controleert eerst of de coördinaten binnen het scherm vallen.
- *
- * @param x X-coördinaat (0 .. VGA_DISPLAY_X-1)
- * @param y Y-coördinaat (0 .. VGA_DISPLAY_Y-1)
- * @param color 8-bit kleurwaarde
- * @return NO_ERROR bij succes, ERR_VGA bij fout
+ * @param x X-coördinaat
+ * @param y Y-coördinaat
+ * @param color Kleur
+ * @return ErrorList met alle fouten tegelijk (0 = geen fout, 1 = fout)
  */
-int API_io_draw_pixel(int x, int y, int color)
+ErrorList API_io_draw_pixel(int x, int y, int color)
 {
-    if(x < 0 || y < 0 || x >= VGA_DISPLAY_X || y >= VGA_DISPLAY_Y)
+    ErrorList errors = Error_handling(FUNC_SET_PIXEL, x, y, color,
+                                      0,0,0,0,0,0,0,0);
+
+    if(errors.error_var1 || errors.error_var2 || errors.error_var3)
     {
-        return ERR_VGA;   // fout als pixel buiten scherm valt
+        return errors;
     }
+
     UB_VGA_SetPixel(x, y, (uint8_t)color);
-    return NO_ERROR;
+    return errors;
 }
+

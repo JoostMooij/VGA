@@ -17,33 +17,47 @@
 
 #include <stdint.h>  // voor uint8_t etc.
 
-/** @name Errorcodes */
-//@{
-#define NO_ERROR   0   /**< Geen fout */
-#define ERR_VGA   -1   /**< Fout bij VGA operatie */
-//@}
+/* Forward declaratie van ErrorList */
+typedef struct ErrorList ErrorList1;
 
-/** @name Kleurdefinities */
-typedef enum
-{
-    ZWART       = 0x00,
-    BLAUW       = 0x03,
-    LICHTBLAUW  = 0x1F,
-    GROEN       = 0x1C,
-    LICHTGROEN  = 0x3E,
-    CYAAN       = 0x1F,
-    LICHTCYAAN  = 0x3F,
-    ROOD        = 0xE0,
-    LICHTROOD   = 0xF8,
-    MAGENTA     = 0xE3,
-    LICHTMAGENTA= 0xF3,
-    BRUIN       = 0xB8,
-    GEEL        = 0xFC,
-    GRIJS       = 0x92,
-    WIT         = 0xFF,
-    ROZE        = 0xF9,
-    PAARS       = 0x93
+// Macro om R,G,B los in te voeren (R=0..7, G=0..7, B=0..3)
+#define VGA_RGB(R,G,B)  ( ((R & 0x07) << 5) | ((G & 0x07) << 2) | (B & 0x03) )
+
+// Voorbeeld van hoe je het kunt gebruiken
+typedef enum {
+    ZWART        = VGA_RGB(0,0,0),
+    BLAUW        = VGA_RGB(0,0,3),
+    LICHTBLAUW   = VGA_RGB(0,1,3),
+    GROEN        = VGA_RGB(0,7,0),
+    LICHTGROEN   = VGA_RGB(0,7,2),
+    CYAAN        = VGA_RGB(0,7,3),
+    LICHTCYAAN   = VGA_RGB(0,7,3),
+    ROOD         = VGA_RGB(7,0,0),
+    LICHTROOD    = VGA_RGB(7,0,1),
+    MAGENTA      = VGA_RGB(7,0,3),
+    LICHTMAGENTA = VGA_RGB(7,0,2),
+    BRUIN        = VGA_RGB(5,3,0),
+    GEEL         = VGA_RGB(7,7,0),
+    GRIJS        = VGA_RGB(4,4,2),
+    WIT          = VGA_RGB(7,7,3),
+    ROZE         = VGA_RGB(7,3,3),
+    PAARS        = VGA_RGB(5,0,3)
 } Kleur;
+
+//// Struct om meerdere fouten tegelijk terug te geven
+//typedef struct {
+//    int error1_var1;
+//    int error1_var2;
+//    int error1_var3;
+//    int error1_var4;
+//    int error1_var5;
+//    int error1_var6;
+//    int error1_var7;
+//    int error1_var8;
+//    int error1_var9;
+//    int error1_var10;
+//    int error1_var11;
+//} ErrorList1;
 
 /** @brief Initialiseert de I/O hardware
  *
@@ -71,6 +85,6 @@ int API_clearscreen(int color);
  * @param color Kleur (enum Kleur)
  * @return NO_ERROR bij succes, ERR_VGA bij fout
  */
-int API_io_draw_pixel(int x, int y, int color);
+ErrorList1 API_io_draw_pixel_checked(int x, int y, int color);
 
 #endif // APIIO_H

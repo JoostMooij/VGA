@@ -5,3 +5,46 @@
  * Bevat defines voor alle errorcodes en prototypes voor
  * foutafhandelingsfuncties.
  */
+
+#ifndef APIERROR_H
+#define APIERROR_H
+
+#include "APIio.h"   // voor Kleur
+
+// Functies die gecontroleerd worden
+typedef enum {
+    FUNC_SET_PIXEL = 1,
+    FUNC_DRAW_LINE = 2,
+    // later uitbreiden met andere functies
+} FunctionID;
+
+// Enum voor individuele fouten
+typedef enum {
+    NO_ERROR    = 0,
+    ERROR_X1    = 1,
+    ERROR_Y1    = 2,
+    ERROR_COLOR = 3
+} ErrorCode;
+
+// Struct om meerdere fouten tegelijk terug te geven
+typedef struct {
+    int error_var1;
+    int error_var2;
+    int error_var3;
+    int error_var4;
+    int error_var5;
+    int error_var6;
+    int error_var7;
+    int error_var8;
+    int error_var9;
+    int error_var10;
+    int error_var11;
+} ErrorList;
+
+// Prototypes
+ErrorList Error_handling(FunctionID func, int waarde1, int waarde2, int waarde3, int waarde4, int waarde5, int waarde6, int waarde7, int waarde8, int waarde9, int waarde10, int waarde11);
+ErrorCode check_x1(int x);
+ErrorCode check_y1(int y);
+ErrorCode check_color(int color);
+
+#endif // APIERROR_H
