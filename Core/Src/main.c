@@ -14,6 +14,7 @@
 */
 #include "main.h"
 
+
 #define BUFFER_SIZE 128
 char buffer[BUFFER_SIZE]; // De buffer moet buiten main gedefinieerd zijn als je deze overal wilt gebruiken
 
