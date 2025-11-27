@@ -11,7 +11,10 @@
 // Includes
 //--------------------------------------------------------------
 #include "stm32f4xx.h"
-
+#include "Front_layer.h" // Zorg ervoor dat deze is inbegrepen
+#include "UART.h"        // Zorg ervoor dat deze is inbegrepen
+#include <string.h>
+#include <stdio.h>
 
 
 //--------------------------------------------------------------

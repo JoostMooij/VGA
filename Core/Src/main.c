@@ -12,11 +12,7 @@
 
 @author JouwNaam
 */
-
-#include "Front_layer.h" // Zorg ervoor dat deze is inbegrepen
-#include "UART.h"        // Zorg ervoor dat deze is inbegrepen
-#include <string.h>
-#include <stdio.h>
+#include "main.h"
 
 #define BUFFER_SIZE 128
 char buffer[BUFFER_SIZE]; // De buffer moet buiten main gedefinieerd zijn als je deze overal wilt gebruiken
