@@ -9,12 +9,11 @@
 #ifndef APIERROR_H
 #define APIERROR_H
 
-#include "APIio.h"   // voor Kleur
-
 // Functies die gecontroleerd worden
 typedef enum {
-    FUNC_SET_PIXEL = 1,
-    FUNC_DRAW_LINE = 2,
+	FUNC_clearscherm = 1,
+	FUNC_drawPixel = 2,
+    FUNC_lijn = 3,
     // later uitbreiden met andere functies
 } FunctionID;
 
@@ -23,7 +22,8 @@ typedef enum {
     NO_ERROR    = 0,
     ERROR_X1    = 1,
     ERROR_Y1    = 2,
-    ERROR_COLOR = 3
+    ERROR_COLOR = 3,
+	ERROR_DIJKTE_TOO_SMALL = 4
 } ErrorCode;
 
 // Struct om meerdere fouten tegelijk terug te geven
@@ -43,8 +43,8 @@ typedef struct {
 
 // Prototypes
 ErrorList Error_handling(FunctionID func, int waarde1, int waarde2, int waarde3, int waarde4, int waarde5, int waarde6, int waarde7, int waarde8, int waarde9, int waarde10, int waarde11);
-ErrorCode check_x1(int x);
-ErrorCode check_y1(int y);
+ErrorCode check_x(int x);
+ErrorCode check_y(int y);
 ErrorCode check_color(int color);
-
-#endif // APIERROR_H
+ErrorCode check_lijn_op_scherm(int x1, int y1, int x2, int y2, int dikte);
+#endif

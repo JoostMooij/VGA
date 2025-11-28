@@ -15,17 +15,24 @@ ErrorList Error_handling(FunctionID func, int waarde1, int waarde2, int waarde3,
     ErrorList errors = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}; // begin met geen fouten
 
     switch(func) {
-        case FUNC_SET_PIXEL:
-            if(check_x1(waarde1) != NO_ERROR) errors.error_var1 = 1;
-            if(check_y1(waarde2) != NO_ERROR) errors.error_var2 = 1;
+		case FUNC_clearscherm:
+			if(check_color(waarde1) != NO_ERROR) errors.error_var1 = 1;
+			break;
+
+        case FUNC_drawPixel:
+            if(check_x(waarde1) != NO_ERROR) errors.error_var1 = 1;
+            if(check_y(waarde2) != NO_ERROR) errors.error_var2 = 1;
             if(check_color(waarde3) != NO_ERROR) errors.error_var3 = 1;
             break;
 
-//        case FUNC_DRAW_LINE:
-//            if(check_x1(waarde1) != NO_ERROR || check_x1(x2) != NO_ERROR) errors.error_var1 = 1;
-//            if(check_y1(waarde2) != NO_ERROR || check_y1(y2) != NO_ERROR) errors.error_var2 = 1;
-//            if(check_color(waarde3) != NO_ERROR) errors.error_var3 = 1;
-//            break;
+        case FUNC_lijn:
+            if(check_x(waarde1) != NO_ERROR) errors.error_var1 = 1;
+            if(check_y(waarde2) != NO_ERROR) errors.error_var2 = 1;
+            if(check_x(waarde3) != NO_ERROR) errors.error_var3 = 1;
+            if(check_y(waarde4) != NO_ERROR) errors.error_var4 = 1;
+            if(check_color(waarde5) != NO_ERROR) errors.error_var5 = 1;
+            if(check_lijn_op_scherm(waarde1, waarde2, waarde3, waarde4, waarde6) != NO_ERROR) errors.error_var6 = 1;
+            break;
 
         default:
             // andere functies later
@@ -35,14 +42,13 @@ ErrorList Error_handling(FunctionID func, int waarde1, int waarde2, int waarde3,
     return errors; // alles in één keer terug
 }
 
-// Functies om individuele waarden te checken
-ErrorCode check_x1(int x)
+ErrorCode check_x(int x)
 {
     if(x < 0 || x >= VGA_DISPLAY_X) return ERROR_X1;
     return NO_ERROR;
 }
 
-ErrorCode check_y1(int y)
+ErrorCode check_y(int y)
 {
     if(y < 0 || y >= VGA_DISPLAY_Y) return ERROR_Y1;
     return NO_ERROR;
@@ -50,6 +56,30 @@ ErrorCode check_y1(int y)
 
 ErrorCode check_color(int color)
 {
-    if(color < ZWART || color > PAARS) return ERROR_COLOR;
+    if(color < 0 || color > 255) return ERROR_COLOR;
+    return NO_ERROR;
+}
+
+ErrorCode check_lijn_op_scherm(int x1, int y1, int x2, int y2, int dikte)
+{
+    if(dikte < 1) return ERROR_DIJKTE_TOO_SMALL;
+
+    int half = dikte / 2;
+
+    // Bereken de min/max x en y van de lijn inclusief dikte
+    int minX = x1 < x2 ? x1 : x2;
+    int maxX = x1 > x2 ? x1 : x2;
+    int minY = y1 < y2 ? y1 : y2;
+    int maxY = y1 > y2 ? y1 : y2;
+
+    minX -= half;
+    maxX += half;
+    minY -= half;
+    maxY += half;
+
+    // Check of alles binnen het scherm valt
+    if(minX < 0 || maxX >= VGA_DISPLAY_X) return ERROR_X1;
+    if(minY < 0 || maxY >= VGA_DISPLAY_Y) return ERROR_Y1;
+
     return NO_ERROR;
 }

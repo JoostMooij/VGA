@@ -13,55 +13,59 @@
 
 #include "APIio.h"
 #include "APIerror.h"
-#include "stm32_ub_vga_screen.h"   // nodig voor UB_VGA_SetPixel en defines
+#include "stm32_ub_vga_screen.h"
 #include <stdint.h>
+#include <string.h>
 
-/**
- * @brief Initialiseert de I/O hardware.
- *
- * Roept de driver init-functie aan voor VGA en eventuele andere devices.
- *
- * @param dev1 ID van device 1 (optioneel)
- * @param dev2 ID van device 2 (optioneel)
- * @return NO_ERROR bij succes
- */
-int API_init_io(int dev1, int dev2)
+void API_init_io(void)
 {
     UB_VGA_Screen_Init();
-    return NO_ERROR;
 }
 
-/**
- * @brief Leegt het scherm met een bepaalde kleur.
- *
- * @param color 8-bit kleurwaarde om het scherm mee te vullen
- * @return NO_ERROR bij succes
- */
-int API_clearscreen(int color)
+ErrorList clearscherm(const char *kleur)
 {
+	uint8_t color =  kleur_omzetter(kleur);
+	ErrorList errors = Error_handling(FUNC_clearscherm, color,
+									  0,0,0,0,0,0,0,0,0,0);
+    if(errors.error_var1)
+    {
+        return errors;
+    }
     UB_VGA_FillScreen((uint8_t)color);
-    return NO_ERROR;
+    return errors;
 }
 
-/**
- * @brief Zet één pixel op het VGA-scherm met foutafhandeling.
- *
- * @param x X-coördinaat
- * @param y Y-coördinaat
- * @param color Kleur
- * @return ErrorList met alle fouten tegelijk (0 = geen fout, 1 = fout)
- */
-ErrorList API_io_draw_pixel(int x, int y, int color)
+ErrorList drawPixel(int x, int y, const char *kleur)
 {
-    ErrorList errors = Error_handling(FUNC_SET_PIXEL, x, y, color,
+	uint8_t color =  kleur_omzetter(kleur);
+    ErrorList errors = Error_handling(FUNC_drawPixel, x, y, color,
                                       0,0,0,0,0,0,0,0);
-
     if(errors.error_var1 || errors.error_var2 || errors.error_var3)
     {
         return errors;
     }
-
     UB_VGA_SetPixel(x, y, (uint8_t)color);
     return errors;
 }
 
+uint8_t kleur_omzetter(const char *input)
+{
+    if (strcmp(input, "zwart") == 0)        return ZWART;
+    if (strcmp(input, "blauw") == 0)        return BLAUW;
+    if (strcmp(input, "lichtblauw") == 0)   return LICHTBLAUW;
+    if (strcmp(input, "groen") == 0)        return GROEN;
+    if (strcmp(input, "lichtgroen") == 0)   return LICHTGROEN;
+    if (strcmp(input, "cyaan") == 0)        return CYAAN;
+    if (strcmp(input, "lichtcyaan") == 0)   return LICHTCYAAN;
+    if (strcmp(input, "rood") == 0)         return ROOD;
+    if (strcmp(input, "lichtrood") == 0)    return LICHTROOD;
+    if (strcmp(input, "magenta") == 0)      return MAGENTA;
+    if (strcmp(input, "lichtmagenta") == 0) return LICHTMAGENTA;
+    if (strcmp(input, "bruin") == 0)        return BRUIN;
+    if (strcmp(input, "geel") == 0)         return GEEL;
+    if (strcmp(input, "grijs") == 0)        return GRIJS;
+    if (strcmp(input, "wit") == 0)          return WIT;
+    if (strcmp(input, "roze") == 0)         return ROZE;
+    if (strcmp(input, "paars") == 0)        return PAARS;
+    return 0; // ongeldig
+}

@@ -12,5 +12,7 @@
 #ifndef APIDRAW_H
 #define APIDRAW_H
 
-int API_draw_line(int x1, int y1, int x2, int y2, int color, int dikte);
+#include "APIerror.h"
+
+ErrorList lijn(int x1, int y1, int x2, int y2, const char *kleur, int dikte);
 #endif
