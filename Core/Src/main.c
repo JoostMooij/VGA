@@ -16,6 +16,7 @@
 */
 #include "main.h"
 
+
 #define BUFFER_SIZE 128
 char buffer[BUFFER_SIZE]; // De buffer moet buiten main gedefinieerd zijn als je deze overal wilt gebruiken
 
@@ -31,32 +32,27 @@ int main(void)
     // Geef de gebruiker direct de prompt om te beginnen.
     // De 'Handel_UART_Input' zal bij lege invoer automatisch de HELP tonen.
     UART2_WriteString("> ");
+    Handle_HELP();
 
     UserInput_t input;   // Struct voor de gebruikersgegevens
 
-    while (1)
-    {
+    while(1)
+	{
+		// 1. Wacht op input en verwerk deze tot een complete string
+		Handel_UART_Input(&input);
 
-        Handel_UART_Input(&input);
+		// 2. Check wat er in de struct staat (Debugging)
+		// Nu bevat input.full_command zoiets als "setPixel 100 50 BLUE"
+		if(strlen(input.full_command) > 0)
+		{
+			char msg[100];
+			sprintf(msg, "Main ontving string: '%s'\r\n> ", input.full_command);
+			UART2_WriteString(msg);
 
-        if (strcmp(input.command, "setPixel") == 0)
-        {
-            // Formatteer de output (let op de [0] voor array-elementen!)
-        	int len = snprintf(buffer, sizeof(buffer),
-        	    "Verwerkt: Cmd: %s, X: %d, Y: %d, Color: %s\r\n",
-        	    input.command, input.x[0], input.y[0], input.color_name); // <-- CORRECTIE HIER
-
-            // Verwerkingsoutput printen
-            UART2_WriteString(buffer);
-
-            // Nu kun je 'input' doorgeven aan je middle layer
-            // Bijvoorbeeld: MiddleLayer_ProcessCommand(&input);
-
-            // Geef een nieuwe prompt na de verwerking
-            UART2_WriteString("> ");
-
-        }
-    }
+			// Hier zou je deze string doorsturen naar je Logic Layer:
+			// API_ParseAndExecute(input.full_command);
+		}
+	}
 }
 
 
