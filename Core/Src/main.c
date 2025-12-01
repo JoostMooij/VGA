@@ -4,11 +4,7 @@
 // MCU      : STM32F4xx
 //--------------------------------------------------------------
 
-<<<<<<< HEAD
 #include "main.h"
-#include "stm32_ub_vga_screen.h"
-#include "logicLayer.h"
-=======
 /**
 >>>>>>> origin/main
 
@@ -30,14 +26,11 @@ int main(void)
 
     UART2_Init(115200);
 
-<<<<<<< HEAD
 	test_logicLayer();
-=======
     // Initialisatie/Welkomstbericht:
     // Geef de gebruiker direct de prompt om te beginnen.
     // De 'Handel_UART_Input' zal bij lege invoer automatisch de HELP tonen.
     UART2_WriteString("> ");
->>>>>>> origin/main
 
     UserInput_t input;   // Struct voor de gebruikersgegevens
 
