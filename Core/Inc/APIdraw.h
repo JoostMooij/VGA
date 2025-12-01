@@ -15,4 +15,5 @@
 #include "APIerror.h"
 
 ErrorList lijn(int x1, int y1, int x2, int y2, const char *kleur, int dikte);
+ErrorList rechthoek(int x, int y, int w, int h, const char *kleur, int gevuld);
 #endif

@@ -11,6 +11,7 @@
 #include "APIdraw.h"
 #include "APIio.h"
 #include "APIerror.h"
+#include <stdlib.h>
 
 ErrorList lijn(int x1, int y1, int x2, int y2, const char *kleur, int dikte)
 {
@@ -41,5 +42,33 @@ ErrorList lijn(int x1, int y1, int x2, int y2, const char *kleur, int dikte)
 		if(e2 >= dy) { err += dy; x1 += sx; }
 		if(e2 <= dx) { err += dx; y1 += sy; }
 	}
+    return errors;
+}
+
+ErrorList rechthoek(int x, int y, int w, int h, const char *kleur, int gevuld)
+{
+    uint8_t color = kleur_omzetter(kleur);
+
+    ErrorList errors = Error_handling(FUNC_rechthoek, x, y, w, h, color, gevuld, 0,0,0,0,0);
+    if (errors.error_var1 || errors.error_var2 || errors.error_var3 || errors.error_var4 || errors.error_var5 || errors.error_var6)
+        return errors;
+
+    int x2 = x + w - 1;
+    int y2 = y + h - 1;
+
+    if (gevuld)
+    {
+        for (int j = y; j <= y2; j++)
+            for (int i = x; i <= x2; i++)
+                drawPixel(i, j, kleur);
+    }
+    else
+    {
+        for (int i = x; i <= x2; i++) drawPixel(i, y,  kleur);
+        for (int i = x; i <= x2; i++) drawPixel(i, y2, kleur);
+        for (int j = y; j <= y2; j++) drawPixel(x,  j, kleur);
+        for (int j = y; j <= y2; j++) drawPixel(x2, j, kleur);
+    }
+
     return errors;
 }

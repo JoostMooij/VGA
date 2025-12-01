@@ -14,7 +14,6 @@
 #include <math.h>
 #include "APIio.h"
 #include "APIerror.h"
-
 #include "APIdraw.h"
 
 int main(void)
@@ -24,6 +23,7 @@ int main(void)
 	(void)clearscherm("wit");
 	(void)drawPixel(100, 100, "rood");
 	(void)lijn(10, 10, 10, 150, "rood", 10);
+	(void)rechthoek(80, 80, 60, 40, "geel", 0);
 
   while(1)
   {

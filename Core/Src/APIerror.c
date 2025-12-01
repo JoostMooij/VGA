@@ -34,6 +34,14 @@ ErrorList Error_handling(FunctionID func, int waarde1, int waarde2, int waarde3,
             if(check_lijn_op_scherm(waarde1, waarde2, waarde3, waarde4, waarde6) != NO_ERROR) errors.error_var6 = 1;
             break;
 
+        case FUNC_rechthoek:
+            if(check_x(waarde1) != NO_ERROR) errors.error_var1 = 1;          // x
+            if(check_y(waarde2) != NO_ERROR) errors.error_var2 = 1;          // y
+            if(check_breedte(waarde1, waarde3) != NO_ERROR) errors.error_var3 = 1; // breedte
+            if(check_hoogte(waarde2, waarde4) != NO_ERROR) errors.error_var4 = 1;  // hoogte
+            if(check_color(waarde5) != NO_ERROR) errors.error_var5 = 1;      // kleur
+            if(check_gevuld(waarde6) != NO_ERROR) errors.error_var6 = 1;     // gevuld
+            break;
         default:
             // andere functies later
             break;
@@ -83,3 +91,22 @@ ErrorCode check_lijn_op_scherm(int x1, int y1, int x2, int y2, int dikte)
 
     return NO_ERROR;
 }
+
+ErrorCode check_breedte(int x, int breedte)
+{
+    if(x + breedte - 1 >= VGA_DISPLAY_X) return ERROR_BREEDTE;
+    return NO_ERROR;
+}
+
+ErrorCode check_hoogte(int y, int hoogte)
+{
+    if(y + hoogte - 1 >= VGA_DISPLAY_Y) return ERROR_HOOGTE;
+    return NO_ERROR;
+}
+
+ErrorCode check_gevuld(int gevuld)
+{
+    if(gevuld != 0 && gevuld != 1) return ERROR_GEVULD;
+    return NO_ERROR;
+}
+

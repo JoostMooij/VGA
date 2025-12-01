@@ -14,6 +14,7 @@ typedef enum {
 	FUNC_clearscherm = 1,
 	FUNC_drawPixel = 2,
     FUNC_lijn = 3,
+	FUNC_rechthoek = 4,
     // later uitbreiden met andere functies
 } FunctionID;
 
@@ -23,7 +24,10 @@ typedef enum {
     ERROR_X1    = 1,
     ERROR_Y1    = 2,
     ERROR_COLOR = 3,
-	ERROR_DIJKTE_TOO_SMALL = 4
+	ERROR_DIJKTE_TOO_SMALL = 4,
+	ERROR_BREEDTE = 5,
+	ERROR_HOOGTE = 6,
+	ERROR_GEVULD = 7,
 } ErrorCode;
 
 // Struct om meerdere fouten tegelijk terug te geven
@@ -47,4 +51,8 @@ ErrorCode check_x(int x);
 ErrorCode check_y(int y);
 ErrorCode check_color(int color);
 ErrorCode check_lijn_op_scherm(int x1, int y1, int x2, int y2, int dikte);
+ErrorCode check_breedte(int x, int breedte);
+ErrorCode check_hoogte(int y, int hoogte);
+ErrorCode check_gevuld(int gevuld);
+
 #endif
