@@ -1,6 +1,5 @@
 /*
  * front_layer.c
- * Schaalbaar commando-systeem
  */
 
 #include "UART.h"
@@ -13,7 +12,7 @@
 static char buffer[MAX_INPUT];
 
 
-// ---------------- Buffer Based Utilities ----------------
+// ---------------- Buffer Utilities ----------------
 static void ReadLine(char *dst)
 {
     memset(dst, 0, MAX_INPUT);
@@ -21,37 +20,40 @@ static void ReadLine(char *dst)
 }
 
 // ---------------- Pixel Handler -------------------------
+// Binnen frontlayer.c
+
+// ---------------- Pixel Handler -------------------------
 static void Handle_setPixel(UserInput_t *in)
 {
-    char kleur_temp[16];
-    int x_temp, y_temp;
+    // De globale 'buffer' bevat de bewerkte input (met spaties i.p.v. komma's)
 
-    // Probeer alles op dezelfde regel
-    if(sscanf(buffer, "%*s %d %d %15s", &x_temp, &y_temp, kleur_temp) == 3)
+    // Check of de gebruiker alles in één keer heeft getypt (d.w.z. 'buffer' is langer dan alleen "setPixel")
+    if(strlen(buffer) > 8)
     {
-        in->x[0] = x_temp;
-        in->y[0] = y_temp;
-        strcpy(in->color_name, kleur_temp);
+        // Input was compleet. Doe niets.
+        // Handel_UART_Input zal de ruwe string (met komma's) overnemen,
+        // wat prima is als de gebruiker zelf de komma na setPixel heeft getypt.
         return;
     }
 
-    // Anders nieuw verzoek
+    // Input was NIET compleet (de gebruiker typte enkel 'setPixel'), start interactieve modus.
     UART2_WriteString("Voer 'X, Y, KLEUR' (bijv: 120, 40, BLUE): ");
-    ReadLine(buffer);
+
+    char param_buffer[MAX_INPUT];
+    ReadLine(param_buffer); // Leest de parameters INCLUSIEF komma's
     UART2_WriteString("\r\n");
 
-    for(int i = 0; i < strlen(buffer); i++)
-        if(buffer[i] == ',') buffer[i] = ' ';
-
-    sscanf(buffer, "%d %d %15s",
-           &in->x[0], &in->y[0], in->color_name);
+    // BELANGRIJK: Construeer de volledige string:
+    // "setPixel" + ", " + "200, 50, RED"  -> "setPixel, 200, 50, RED"
+    snprintf(in->full_command, MAX_CMD_LENGTH, "setPixel, %s", param_buffer);
 }
 
 
 // ---------------- HELP Handler --------------------------
 void Handle_HELP(UserInput_t *in)
 {
-    (void)in; // unused
+    // Bij HELP zetten we gewoon het commando "HELP" in de struct
+    strcpy(in->full_command, "HELP");
 
     UART2_WriteString("--- Instructies ---\r\n");
     UART2_WriteString("Commando opties:\r\n");
@@ -61,9 +63,7 @@ void Handle_HELP(UserInput_t *in)
 }
 
 
-// --------------------------------------------------------
-// TABLE: lijst van commands + bijbehorende handler functie
-// --------------------------------------------------------
+// ---------------- Dispatcher Tabel ----------------------
 typedef void (*CommandHandler)(UserInput_t *);
 
 typedef struct {
@@ -74,60 +74,67 @@ typedef struct {
 static const CommandEntry command_table[] =
 {
     { "setPixel", Handle_setPixel },
-    { "HELP",  Handle_HELP  },
+    { "HELP",     Handle_HELP  },
 };
 
 static const int command_count = sizeof(command_table) / sizeof(CommandEntry);
 
 
-// ---------------- Dispatcher -----------------------------
-static int DispatchCommand(const char *cmd, UserInput_t *in)
-{
-    for(int i = 0; i < command_count; i++)
-    {
-        if(strcmp(cmd, command_table[i].name) == 0)
-        {
-            command_table[i].handler(in);
-            return 1; // success
-        }
-    }
-    return 0; // not found
-}
-
-
+// ---------------- Main Input Function ---------------------
 // ---------------- Main Input Function ---------------------
 void Handel_UART_Input(UserInput_t *in)
 {
-    // Reset UserInput_t
-    memset(in->command, 0, sizeof(in->command));
-    memset(in->color_name, 0, sizeof(in->color_name));
-
-    for(int i = 0; i < 16; i++)
-    {
-        in->x[i] = 0;
-        in->y[i] = 0;
-    }
+    // Reset de struct
+    memset(in->full_command, 0, sizeof(in->full_command));
 
     // Lees nieuwe regel
-    ReadLine(buffer);
+    char raw_input_buffer[MAX_INPUT]; // <-- NIEUW: Buffer om de ruwe input op te slaan
+    ReadLine(raw_input_buffer);       // Lees in de ruwe buffer
     UART2_WriteString("\r\n");
 
-    if(strlen(buffer) == 0)
+    if(strlen(raw_input_buffer) == 0)
     {
         Handle_HELP(in);
         return;
     }
 
-    // Komma-fix
-    for(int i = 0; i < strlen(buffer); i++)
-        if(buffer[i] == ',') buffer[i] = ' ';
+    // Kopieer de ruwe input naar de buffer die we gaan bewerken voor dispatching
+    strncpy(buffer, raw_input_buffer, MAX_INPUT);
+    buffer[MAX_INPUT - 1] = '\0';
 
-    // Command uitlezen
-    sscanf(buffer, "%11s", in->command);
+    // Oude Komma-fix (Blijft om commando-parsing te garanderen)
+    // De 'buffer' wordt nu gebruikt voor de dispatching,
+    // terwijl 'raw_input_buffer' de onbewerkte string behoudt.
+    for(int i = 0; i < strlen(buffer); i++)
+        if(buffer[i] == ',') buffer[i] = ' '; // Verander komma's in spaties in de bewerkte buffer
+
+    // Command uitlezen uit de BEWERKTE buffer
+    char cmd_temp[12];
+    sscanf(buffer, "%11s", cmd_temp);
 
     // Dispatcher proberen
-    if(!DispatchCommand(in->command, in))
+    int found = 0;
+    for(int i = 0; i < command_count; i++)
+    {
+        if(strcmp(cmd_temp, command_table[i].name) == 0)
+        {
+            // De handler (Handle_setPixel, etc.) krijgt nu de taak om de string te vullen.
+            command_table[i].handler(in);
+
+            // Als de handler niet interactief was (d.w.z. de input was compleet)
+            // Kopiëren we de onbewerkte string direct naar de output struct.
+            if(strcmp(in->full_command, "") == 0) { // Check als de handler de string nog niet vulde
+                strncpy(in->full_command, raw_input_buffer, MAX_CMD_LENGTH - 1);
+            }
+
+            found = 1;
+            break;
+        }
+    }
+
+    if(!found)
     {
         UART2_WriteString("Onbekend commando.\r\n> ");
+        strcpy(in->full_command, "UNKNOWN");
     }
 }
