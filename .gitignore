@@ -1,2 +1,5 @@
-.settings/
-.Debug/
+*
+!Core/
+!Core/**
+!.gitignore
+*.dSYM/
