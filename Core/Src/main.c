@@ -13,7 +13,10 @@
 @author JouwNaam
 */
 #include "main.h"
-
+#include <math.h>
+#include "APIio.h"
+#include "APIerror.h"
+#include "APIdraw.h"
 #define BUFFER_SIZE 128
 char buffer[BUFFER_SIZE]; // De buffer moet buiten main gedefinieerd zijn als je deze overal wilt gebruiken
 
@@ -53,20 +56,5 @@ int main(void)
             UART2_WriteString("> ");
 
         }
-    }
-}
-
-
-//int main(void)
-//{
-//	SystemInit(); // System speed to 168MHz
-//
-//	UB_VGA_Screen_Init(); // Init VGA-Screen
-//
-//	UB_VGA_FillScreen(VGA_COL_BLUE);
-//
-//  while(1)
-//  {
-//
-//  }
-//}
+      }
+  }
