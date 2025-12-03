@@ -24,10 +24,9 @@ int main(void)
 {
     SystemInit();
     SystemCoreClockUpdate();
-
+    UB_VGA_Screen_Init();
     UART2_Init(115200);
 
-	test_logicLayer();
     // Initialisatie/Welkomstbericht:
     // Geef de gebruiker direct de prompt om te beginnen.
     // De 'Handel_UART_Input' zal bij lege invoer automatisch de HELP tonen.
@@ -48,6 +47,8 @@ int main(void)
 			char msg[100];
 			sprintf(msg, "Main ontving string: '%s'\r\n> ", input.full_command);
 			UART2_WriteString(msg);
+			string_ophalen(input.full_command);
+
 
 			// Hier zou je deze string doorsturen naar je Logic Layer:
 			// API_ParseAndExecute(input.full_command);
