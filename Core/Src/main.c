@@ -1,30 +1,60 @@
 //--------------------------------------------------------------
 // File     : main.c
-// Datum    : 30.03.2016
-// Version  : 1.0
-// Autor    : UB
-// mods by	: J.F. van der Bent
-// CPU      : STM32F4
-// IDE      : CooCox CoIDE 1.7.x
-// Module   : CMSIS_BOOT, M4_CMSIS_CORE
-// Function : VGA_core DMA LIB 320x240, 8bit color
+// Doel     : Eenvoudige UART2 communicatie (Hello naar Termite)
+// MCU      : STM32F4xx
 //--------------------------------------------------------------
 
+/**
+
+@file main.c
+
+@brief Hoofdprogramma voor UART communicatie.
+
+@author JouwNaam
+*/
 #include "main.h"
 #include <math.h>
 #include "APIio.h"
 #include "APIerror.h"
 #include "APIdraw.h"
+#define BUFFER_SIZE 128
+char buffer[BUFFER_SIZE]; // De buffer moet buiten main gedefinieerd zijn als je deze overal wilt gebruiken
 
 int main(void)
 {
-	SystemInit();
-	API_init_io();
-	(void)clearscherm("rood");
-	(void)drawPixel(100, 100, "blauw");
-	(void)lijn(10, 10, 10, 150, "groen", 10);
-	(void)rechthoek(80, 80, 60, 40, "paars", 0);
-  while(1)
-  {
+    SystemInit();
+    SystemCoreClockUpdate();
+
+    UART2_Init(115200);
+
+    // Initialisatie/Welkomstbericht:
+    // Geef de gebruiker direct de prompt om te beginnen.
+    // De 'Handel_UART_Input' zal bij lege invoer automatisch de HELP tonen.
+    UART2_WriteString("> ");
+
+    UserInput_t input;   // Struct voor de gebruikersgegevens
+
+    while (1)
+    {
+
+        Handel_UART_Input(&input);
+
+        if (strcmp(input.command, "setPixel") == 0)
+        {
+            // Formatteer de output (let op de [0] voor array-elementen!)
+        	int len = snprintf(buffer, sizeof(buffer),
+        	    "Verwerkt: Cmd: %s, X: %d, Y: %d, Color: %s\r\n",
+        	    input.command, input.x[0], input.y[0], input.color_name); // <-- CORRECTIE HIER
+
+            // Verwerkingsoutput printen
+            UART2_WriteString(buffer);
+
+            // Nu kun je 'input' doorgeven aan je middle layer
+            // Bijvoorbeeld: MiddleLayer_ProcessCommand(&input);
+
+            // Geef een nieuwe prompt na de verwerking
+            UART2_WriteString("> ");
+
+        }
+      }
   }
-}
