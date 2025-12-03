@@ -18,15 +18,13 @@
 
 int main(void)
 {
-	SystemInit(); // System speed to 168MHz
-	API_init_io();          // init VGA
-	(void)clearscherm("wit");
-	(void)drawPixel(100, 100, "rood");
-	(void)lijn(10, 10, 10, 150, "rood", 10);
-	(void)rechthoek(80, 80, 60, 40, "geel", 0);
-
+	SystemInit();
+	API_init_io();
+	(void)clearscherm("rood");
+	(void)drawPixel(100, 100, "blauw");
+	(void)lijn(10, 10, 10, 150, "groen", 10);
+	(void)rechthoek(80, 80, 60, 40, "paars", 0);
   while(1)
   {
-
   }
 }
