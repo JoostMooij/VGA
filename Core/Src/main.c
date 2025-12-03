@@ -5,18 +5,10 @@
 //--------------------------------------------------------------
 
 #include "main.h"
-/**
->>>>>>> origin/main
-
-@file main.c
-
-@brief Hoofdprogramma voor UART communicatie.
-
-@author JouwNaam
-*/
-#include "main.h"
-
-
+#include <math.h>
+#include "APIio.h"
+#include "APIerror.h"
+#include "APIdraw.h"
 #define BUFFER_SIZE 128
 char buffer[BUFFER_SIZE]; // De buffer moet buiten main gedefinieerd zijn als je deze overal wilt gebruiken
 
