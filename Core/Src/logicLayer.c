@@ -11,8 +11,10 @@
 #include <string.h>
 #include <stdlib.h>
 #include "logicLayer.h"
-#include "test_ioLayer.h"
 #include "stm32_ub_vga_screen.h"
+#include "APIio.h"
+#include "APIdraw.h"
+#include "APIerror.h"
 /**
  * @brief   Verwerkt een binnenkomende opdrachtstring.
  *
@@ -93,7 +95,7 @@ void verwerk_commando(const char *input)
     char buff[MAX_INPUT];
     char *delen[20];
     int aantal = 0;
-    int foutcode = 0;
+    ErrorList errors;
 
     strncpy(buff, input, MAX_INPUT);
     buff[MAX_INPUT - 1] = '\0';
@@ -118,48 +120,48 @@ void verwerk_commando(const char *input)
     switch (type)
     {
         case CMD_LIJN:
-        	foutcode = lijn(atoi(delen[1]), atoi(delen[2]), atoi(delen[3]), atoi(delen[4]), delen[5], atoi(delen[6]));
+        	errors = lijn(atoi(delen[1]), atoi(delen[2]), atoi(delen[3]), atoi(delen[4]), delen[5], atoi(delen[6]));
 
             break;
 
         case CMD_RECHTHOEK:
-        	foutcode = rechthoek(atoi(delen[1]), atoi(delen[2]), atoi(delen[3]), atoi(delen[4]), delen[5], atoi(delen[6]));
+        	errors = rechthoek(atoi(delen[1]), atoi(delen[2]), atoi(delen[3]), atoi(delen[4]), delen[5], atoi(delen[6]));
             break;
 
         case CMD_TEKST:
-        	foutcode = tekst(atoi(delen[1]), atoi(delen[2]), delen[3], delen[4], delen[5], atoi(delen[6]), delen[7]);
+//        	errors = tekst(atoi(delen[1]), atoi(delen[2]), delen[3], delen[4], delen[5], atoi(delen[6]), delen[7]);
             break;
 
         case CMD_BITMAP:
-        	foutcode = bitmap(atoi(delen[1]), atoi(delen[2]), atoi(delen[3]));
+//        	errors = bitmap(atoi(delen[1]), atoi(delen[2]), atoi(delen[3]));
             break;
 
         case CMD_CLEAR:
-        	foutcode = clearscherm(delen[1]);
+        	errors = clearscherm(delen[1]);
             break;
 
         case CMD_WACHT:
-        	foutcode = wacht(atoi(delen[1]));
+//        	errors = wacht(atoi(delen[1]));
             break;
 
         case CMD_HERHAAL:
-        	foutcode = herhaal(atoi(delen[1]), atoi(delen[2]));
+//        	errors = herhaal(atoi(delen[1]), atoi(delen[2]));
             break;
 
         case CMD_CIRKEL:
-        	foutcode = cirkel(atoi(delen[1]), atoi(delen[2]), atoi(delen[3]), delen[4]);
+//        	errors = cirkel(atoi(delen[1]), atoi(delen[2]), atoi(delen[3]), delen[4]);
             break;
 
         case CMD_FIGUUR:
-        	foutcode = figuur(atoi(delen[1]), atoi(delen[2]), atoi(delen[3]), atoi(delen[4]), atoi(delen[5]), atoi(delen[6]), atoi(delen[7]), atoi(delen[8]), atoi(delen[9]), atoi(delen[10]), delen[11]);
+//        	errors = figuur(atoi(delen[1]), atoi(delen[2]), atoi(delen[3]), atoi(delen[4]), atoi(delen[5]), atoi(delen[6]), atoi(delen[7]), atoi(delen[8]), atoi(delen[9]), atoi(delen[10]), delen[11]);
             break;
 
         case CMD_TOREN:
-        	foutcode = toren(atoi(delen[1]), atoi(delen[2]), atoi(delen[3]), delen[4], delen[5]);
+//        	errors = toren(atoi(delen[1]), atoi(delen[2]), atoi(delen[3]), delen[4], delen[5]);
             break;
 
         case CMD_SETPIXEL:
-        	foutcode = setPixel(atoi(delen[1]), atoi(delen[2]), delen[3]);
+        	errors = drawPixel(atoi(delen[1]), atoi(delen[2]), delen[3]);
 			break;
 
 
@@ -168,6 +170,8 @@ void verwerk_commando(const char *input)
             /* onbekend commando, doe niets */
             break;
     }
-
-    verstuur_error(foutcode);
+//    if(errors != 0)
+//    {
+//    	//errorterugsendfunctie(errors);
+//    }
 }
