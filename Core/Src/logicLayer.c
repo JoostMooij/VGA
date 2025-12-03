@@ -12,7 +12,7 @@
 #include <stdlib.h>
 #include "logicLayer.h"
 #include "test_ioLayer.h"
-
+#include "stm32_ub_vga_screen.h"
 /**
  * @brief   Verwerkt een binnenkomende opdrachtstring.
  *
