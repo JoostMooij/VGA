@@ -5,7 +5,7 @@
 //--------------------------------------------------------------
 
 #include "main.h"
-#include "Front_layer.h" // Zorg dat deze included is!
+#include "Front_layer.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -28,27 +28,22 @@ int main(void)
 	char msg[256];     // Een buffer die groot genoeg is voor de debug tekst
 
 	while(1)
-	{
-		// 2. Wacht op input van de gebruiker (blokkerende functie)
-		Handel_UART_Input(&input);
+	    {
+	        // 2. Wacht op input en laat front_layer de string bouwen
+	        Handel_UART_Input(&input);
 
-		// 3. Check of er een geldig commando is gevonden
-		if(strlen(input.command) > 0)
-		{
-			// We bouwen een string die alle belangrijke velden laat zien.
-			// Ik print hier x[0] t/m x[2] en y[0] t/m y[2] zodat je ook lijnen en figuren kunt checken.
+	        // 3. Check of er iets in de string staat
+	        if(strlen(input.full_command) > 0)
+	        {
+	            // Omdat front_layer de string al netjes heeft gemaakt (bijv: "lijn 10 10 200 200 5 ROOD"),
+	            // kunnen we die direct printen of doorsturen.
 
-			sprintf(msg, "Check: Cmd='%s' | X=[%d, %d, %d] | Y=[%d, %d, %d] | Kleur='%s' | Extra='%s'\r\n",
-					input.command,
-					input.x[0], input.x[1], input.x[2],  // Eerste 3 X waardes (ook dikte/radius etc)
-					input.y[0], input.y[1], input.y[2],  // Eerste 3 Y waardes
-					input.color_name,                    // De kleur
-					input.text_arg);                     // Tekst of 2e kleur
+	            UART2_WriteString("Main stuurt naar Logic: ");
+	            UART2_WriteString(input.full_command);
+	            UART2_WriteString("\r\n");
 
-			// Stuur de geformatteerde tekst naar Termite
-			UART2_WriteString(msg);
-
-			// Hier zou je Logic_Execute(&input) aanroepen.
-		}
-	}
+	            // Hier roep je straks je Logic Layer aan met de string:
+	            // Logic_ParseAndExecute(input.full_command);
+	        }
+	    }
 }
