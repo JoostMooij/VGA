@@ -46,4 +46,6 @@ ErrorList rechthoek(int x, int y, int w, int h, const char *kleur, int gevuld);
 
 ErrorList figuur(int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4, int x5, int y5, const char *kleur);
 
+ErrorList cirkel(int x0, int y0, int radius, const char* kleur);
+
 #endif

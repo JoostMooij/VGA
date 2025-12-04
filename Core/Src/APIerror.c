@@ -100,6 +100,20 @@ ErrorList Error_handling(FunctionID func, int waarde1, int waarde2, int waarde3,
             break;
         }
 
+        case FUNC_cirkel:
+        {
+            ErrorCode x_error      = check_x(waarde1);
+            ErrorCode y_error      = check_y(waarde2);
+            ErrorCode radius_error = check_radius_op_scherm(waarde1, waarde2, waarde3);
+            ErrorCode color_error  = check_color(waarde4);
+
+            if(x_error      != NO_ERROR) errors.error_var1 = x_error;
+            if(y_error      != NO_ERROR) errors.error_var2 = y_error;
+            if(radius_error != NO_ERROR) errors.error_var3 = radius_error;
+            if(color_error  != NO_ERROR) errors.error_var4 = color_error;
+            break;
+        }
+
         default:
             // andere functies later
             break;
@@ -205,5 +219,13 @@ ErrorCode check_gevuld(int gevuld)
 	{
     	return ERROR_GEVULD;
 	}
+    return NO_ERROR;
+}
+
+ErrorCode check_radius_op_scherm(int x, int y, int radius)
+{
+    if(radius < 1) return ERROR_RADIUS_TOO_SMALL;
+    if(x - radius < 0 || x + radius >= VGA_DISPLAY_X) return ERROR_X1;
+    if(y - radius < 0 || y + radius >= VGA_DISPLAY_Y) return ERROR_Y1;
     return NO_ERROR;
 }

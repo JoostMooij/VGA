@@ -133,3 +133,37 @@ ErrorList figuur(int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4,
     return errors;
 }
 
+ErrorList cirkel(int x0, int y0, int radius, const char* kleur)
+{
+    uint8_t color = kleur_omzetter(kleur);
+    ErrorList errors = Error_handling(FUNC_cirkel, x0, y0, radius, color, 0,0,0,0,0,0,0);
+    if(errors.error_var1 || errors.error_var2 || errors.error_var3 || errors.error_var4)
+    {
+        return errors;
+    }
+    int x = radius;
+    int y = 0;
+    int err = 0;
+    while (x >= y)
+    {
+        drawPixel(x0 + x, y0 + y, kleur);
+        drawPixel(x0 + y, y0 + x, kleur);
+        drawPixel(x0 - y, y0 + x, kleur);
+        drawPixel(x0 - x, y0 + y, kleur);
+        drawPixel(x0 - x, y0 - y, kleur);
+        drawPixel(x0 - y, y0 - x, kleur);
+        drawPixel(x0 + y, y0 - x, kleur);
+        drawPixel(x0 + x, y0 - y, kleur);
+        y += 1;
+        if(err <= 0)
+        {
+            err += 2*y + 1;
+        }
+        if(err > 0)
+        {
+            x -= 1;
+            err -= 2*x + 1;
+        }
+    }
+    return errors;
+}
