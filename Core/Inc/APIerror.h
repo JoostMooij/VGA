@@ -21,6 +21,7 @@ typedef enum {
     FUNC_drawPixel   = 2,
     FUNC_lijn        = 3,
     FUNC_rechthoek   = 4,
+    FUNC_figuur		 = 5,     // ← toevoegen
     // later uitbreiden met andere functies
 } FunctionID;
 

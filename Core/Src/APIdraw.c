@@ -115,3 +115,21 @@ ErrorList rechthoek(int x, int y, int w, int h, const char *kleur, int gevuld)
     }
     return errors;
 }
+
+ErrorList figuur(int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4, int x5, int y5, const char *kleur)
+{
+    uint8_t color = kleur_omzetter(kleur);
+    ErrorList errors = Error_handling(FUNC_figuur, x1, y1, x2, y2, x3, y3, x4, y4, x5, y5, color);
+    if(errors.error_var1 || errors.error_var2 || errors.error_var3 || errors.error_var4 || errors.error_var5 || errors.error_var6 || errors.error_var7 || errors.error_var8 || errors.error_var9 || errors.error_var10 || errors.error_var11)
+    {
+        return errors;
+    }
+    // 5 punten → 5 lijnen vormen een gesloten vorm
+    lijn(x1, y1, x2, y2, kleur, 1);
+    lijn(x2, y2, x3, y3, kleur, 1);
+    lijn(x3, y3, x4, y4, kleur, 1);
+    lijn(x4, y4, x5, y5, kleur, 1);
+    lijn(x5, y5, x1, y1, kleur, 1);
+    return errors;
+}
+
