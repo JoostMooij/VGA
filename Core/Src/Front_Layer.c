@@ -4,15 +4,9 @@
  * Stuurt commando's altijd door, ook als parameters ontbreken.
  */
 
-#include "UART.h"
 #include "Front_layer.h"
-#include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
 
-#define MAX_INPUT 128
 static char buffer[MAX_INPUT];
-
 
 // ---------------- Buffer Based Utilities ----------------
 static void ReadLine(char *dst)
@@ -337,6 +331,77 @@ static int DispatchCommand(const char *cmd, UserInput_t *in)
         }
     }
     return 0; // not found
+}
+
+// ---------------- Foutcode Afhandeling Functie ---------------------
+
+/**
+ * @brief Verwerkt en toont de geretourneerde foutcode van de Logic Layer.
+ *
+ * @param[in] foutcode De integer foutcode (0 = OK, >0 = Fout).
+ */
+void Return_error_code(int foutcode)
+{
+    char err_msg[150];
+    const char *error_description = "";
+
+    if (foutcode == NO_ERROR)
+    {
+        UART2_WriteString("OK\r\n> ");
+        return;
+    }
+
+    // 1. Bepaal de beschrijving op basis van de foutcode
+    switch (foutcode)
+    {
+        case ERROR_X1:
+            error_description = "Ongeldige X-coördinaat (buiten scherm of te groot/klein).";
+            break;
+        case ERROR_Y1:
+            error_description = "Ongeldige Y-coördinaat (buiten scherm of te groot/klein).";
+            break;
+        case ERROR_COLOR:
+            error_description = "Ongeldige of onbekende kleur opgegeven (moet 0..255 zijn, of een bekende string).";
+            break;
+        case ERROR_DIJKTE_TOO_SMALL:
+            error_description = "Lijndikte is te klein (<1) of valt buiten het scherm.";
+            break;
+        case ERROR_BREEDTE:
+            error_description = "Rechthoek breedte is te groot (loopt buiten het scherm).";
+            break;
+        case ERROR_HOOGTE:
+            error_description = "Rechthoek hoogte is te groot (loopt buiten het scherm).";
+            break;
+        case ERROR_GEVULD:
+            error_description = "'Gevuld' parameter is ongeldig (moet 0 of 1 zijn).";
+            break;
+        case ERROR_RADIUS_TOO_SMALL:
+            error_description = "Cirkel radius is te klein (<1) of valt buiten het scherm.";
+            break;
+        case ERROR_TEKST_TE_LANG:
+            error_description = "Tekst is te lang voor de buffer of het scherm.";
+            break;
+        case ERROR_BITMAP_NR:
+            error_description = "Ongeldig BitMap nummer (onbekende bitmap).";
+            break;
+        case ERROR_TE_WEINIG_PARAMS:
+            error_description = "Te weinig essentiële parameters opgegeven voor dit commando.";
+            break;
+        case ERROR_ONBEKEND_CMD:
+            error_description = "Onbekend commando. Typ HELP voor de lijst.";
+            break;
+        default:
+            error_description = "Onbekende foutcode (niet gedefinieerd).";
+            break;
+    }
+
+    // 2. Formatteer en print de gewenste foutmelding
+    // Formaat: "ERROR {waarde int}\r\n{tekst die aangeeft wat de error dus is}\r\n> "
+    snprintf(err_msg, sizeof(err_msg),
+             "ERROR %d\r\n%s\r\n> ",
+             foutcode, error_description);
+
+    UART2_WriteString(err_msg);
 }
 
 // ---------------- Main Input Function ---------------------
