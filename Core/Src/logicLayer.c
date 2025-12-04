@@ -1,11 +1,15 @@
-/******************************************************************************
- *  Bestand   : logic.c
- *  Functie   : Logic-laag. Ontvangt opdrachten als string, bepaalt welk
- *              commando afgehandeld moet worden en roept de juiste
- *              uitvoerfunctis aan.
- *  Auteur    : Joost
- *  Versie    : 1.0
- ******************************************************************************/
+/**
+ * @file logicLayer.c
+ * @brief Verwerkt errors en zet deze om naar tekenopdrachten.
+ *
+ * Dit bestand is de logicLayer. Het leest inkomende inputs van de frontLayer, splitst ze op,
+ * bepaalt het type opdracht en voert de goede functie uit.
+ * Daarnaast zet de logicLayer errorcodes uit de ioLayer om naar tekst en verstuurd deze naar de frontLayer.
+ *
+ * @author Joost Mooij
+ * @date 04/12/2025
+ */
+
 
 #include <stdio.h>
 #include <string.h>
@@ -15,39 +19,115 @@
 #include "APIio.h"
 #include "APIdraw.h"
 #include "APIerror.h"
-/**
- * @brief   Verwerkt een binnenkomende opdrachtstring.
- *
- * Controleert de ontvangen inputstring, verwijdert een eventuele newline,
- * en stuurt de string door naar de VGA-uitvoerfunctie.
- *
- * @param[in,out] input
- *      De binnenkomende opdrachtstring. Deze mag geen NULL zijn.
- *      De functie past de string aan door een newline ('\n') te vervangen
- *      door een afsluitende nulterminator ('\0').
- *
- * @return
- *      0  : Succesvol verwerkt.
- *     -1 : Ongeldige pointer (NULL).
- *
- * @note
- *  - De functie roept string_naar_vga() aan voor visuele uitvoer.
- *  - Geheugengebruik: geen extra allocaties; werkt direct op `input`.
- *  - Verwachte executietijd: O(n) afhankelijk van stringlengte.
- */
-int string_ophalen(char input[])
-{
-    if (input == NULL) return -1;         // Ongeldige pointercontrole
 
-    input[strcspn(input, "\n")] = '\0';   // Verwijder newline uit input
-    verwerk_commando(input);
-    return 0;                            // Verwerking geslaagd
+
+/**
+ * @brief Zet een foutcode om naar een tekstuele beschrijving.
+ *
+ * Geeft een vaste string terug die hoort bij de opgegeven foutcode.
+ *
+ * @param code De numerieke foutcode (0–7).
+ * @return Een constante string met de foutnaam.
+ */
+
+const char* errorCodeToString(int code)
+{
+    switch (code)
+    {
+        case ERROR_X1:
+            return "ERROR_X1";
+        case ERROR_Y1:
+            return "ERROR_Y1";
+        case ERROR_COLOR:
+            return "ERROR_COLOR";
+        case ERROR_DIJKTE_TOO_SMALL:
+            return "ERROR_DIJKTE_TOO_SMALL";
+        case ERROR_BREEDTE:
+            return "ERROR_BREEDTE";
+        case ERROR_HOOGTE:
+            return "ERROR_HOOGTE";
+        case ERROR_GEVULD:
+            return "ERROR_GEVULD";
+        default:
+            return "NO_ERROR";
+    }
 }
 
-/* -------------------------------------------------------------------------
- * Functie: haal_commando
- * Doel   : Haal het woord voor de eerste komma uit de inputstring
- * ------------------------------------------------------------------------- */
+
+/**
+ * @brief Leest alle foutwaarden uit een ErrorList en stuurt de gevonden fouten via UART.
+ *
+ * De functie controleert elke error_var in de struct. Wanneer een foutcode
+ * tussen 1 en 7 wordt gevonden, wordt de bijbehorende fouttekst omgezet
+ * en via UART verstuurd.
+ *
+ * @param errors Pointer naar de ErrorList met foutcodes.
+ */
+
+void errorterugsendfunctie(const ErrorList* errors)
+{
+    int* errorArray[11];
+    errorArray[0] = (int*)&errors->error_var1;
+    errorArray[1] = (int*)&errors->error_var2;
+    errorArray[2] = (int*)&errors->error_var3;
+    errorArray[3] = (int*)&errors->error_var4;
+    errorArray[4] = (int*)&errors->error_var5;
+    errorArray[5] = (int*)&errors->error_var6;
+    errorArray[6] = (int*)&errors->error_var7;
+    errorArray[7] = (int*)&errors->error_var8;
+    errorArray[8] = (int*)&errors->error_var9;
+    errorArray[9] = (int*)&errors->error_var10;
+    errorArray[10] = (int*)&errors->error_var11;
+
+    int i = 0;
+    while (i < 11)
+    {
+        int code = *errorArray[i];
+
+        if (code > 0 && code < 8)
+        {
+            const char* errorStr = errorCodeToString(code);
+
+            char msg[MAX_ERROR_MESSAGE];
+            sprintf(msg, "Found error: %s\n", errorStr);
+
+            UART2_WriteString(msg);
+        }
+
+        i++;
+    }
+}
+
+
+/**
+ * @brief Leest een inkomende tekstregel in en verwijdert de newline.
+ *
+ * De functie controleert eerst of de input geldig is. Daarna wordt
+ * de newline eruit gehaald en wordt het commando verwerkt.
+ *
+ * @param input De ontvangen string.
+ * @return 0 bij succes, -1 bij een ongeldige pointer.
+ */
+
+int string_ophalen(char input[])
+{
+    if (input == NULL) return -1;
+
+    input[strcspn(input, "\n")] = '\0';
+    verwerk_commando(input);
+    return 0;
+}
+
+/**
+ * @brief Haalt het eerste woord uit een commando, tot aan de eerste komma.
+ *
+ * De functie kopieert tekens uit de input naar het woord-buffer totdat
+ * een komma of het einde van de string is bereikt.
+ *
+ * @param input De volledige invoertekst.
+ * @param woord Buffer waarin het eerste woord wordt opgeslagen.
+ */
+
 void haal_commando(const char *input, char *woord)
 {
     int i = 0;
@@ -61,14 +141,16 @@ void haal_commando(const char *input, char *woord)
     woord[i] = '\0';
 }
 
-void verstuur_error(int foutcode)
-{
-	// Foutcode omzetten naar error en versturen
-}
-/* -------------------------------------------------------------------------
- * Functie: bepaal_commando
- * Doel   : Zet een commando-woord om naar enum waarde
- * ------------------------------------------------------------------------- */
+/**
+ * @brief Bepaalt het type commando aan de hand van het eerste woord.
+ *
+ * Vergelijkt het woord met bekende commando’s en geeft het juiste
+ * COMMANDO_TYPE terug. Als het woord niet herkend wordt, volgt CMD_ONBEKEND.
+ *
+ * @param woord Het eerste woord uit het invoercommando.
+ * @return Het bijbehorende COMMANDO_TYPE.
+ */
+
 COMMANDO_TYPE bepaal_commando(const char *woord)
 {
     if (strcmp(woord, "lijn") == 0)         return CMD_LIJN;
@@ -86,10 +168,16 @@ COMMANDO_TYPE bepaal_commando(const char *woord)
     return CMD_ONBEKEND;
 }
 
-/* -------------------------------------------------------------------------
- * Functie: verwerk_commando
- * Doel   : Verstuurd data naar juiste functie uit ioLayer
- * ------------------------------------------------------------------------- */
+/**
+ * @brief Verwerkt een volledig tekstcommando en voert de juiste opdracht uit.
+ *
+ * De functie splitst de input op komma’s, bepaalt het commando,
+ * roept de passende tekenfunctie aan en controleert op fouten.
+ * Als er fouten zijn, worden deze teruggestuurd via UART.
+ *
+ * @param input De volledige binnengekomen opdrachtregel.
+ */
+
 void verwerk_commando(const char *input)
 {
     char buff[MAX_INPUT];
@@ -170,8 +258,8 @@ void verwerk_commando(const char *input)
             /* onbekend commando, doe niets */
             break;
     }
-//    if(errors != 0)
-//    {
-//    	//errorterugsendfunctie(errors);
-//    }
+    if(errors.error_var1 || errors.error_var2 || errors.error_var3 ||errors.error_var4 || errors.error_var5 || errors.error_var6 || errors.error_var7 || errors.error_var8 || errors.error_var9 || errors.error_var10 || errors.error_var11)
+    {
+    	errorterugsendfunctie(&errors);
+    }
 }

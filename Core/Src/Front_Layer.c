@@ -37,7 +37,7 @@ static void Handle_setPixel(UserInput_t *in)
     }
 
     // Input was NIET compleet (de gebruiker typte enkel 'setPixel'), start interactieve modus.
-    UART2_WriteString("Voer 'X, Y, KLEUR' (bijv: 120, 40, BLUE): ");
+    UART2_WriteString("Voer 'X,Y,KLEUR' (bijv: 120,40,BLUE):");
 
     char param_buffer[MAX_INPUT];
     ReadLine(param_buffer); // Leest de parameters INCLUSIEF komma's
