@@ -11,7 +11,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include "logicLayer.h"
-#include "test_ioLayer.h"
+//#include "test_ioLayer.h"
 
 /**
  * @brief   Verwerkt een binnenkomende opdrachtstring.

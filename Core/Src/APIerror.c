@@ -72,6 +72,34 @@ ErrorList Error_handling(FunctionID func, int waarde1, int waarde2, int waarde3,
             if(gevuld_error  != NO_ERROR) errors.error_var6 = gevuld_error;
             break;
         }
+
+        case FUNC_figuur:
+        {
+            ErrorCode x1_error    = check_x(waarde1);
+            ErrorCode y1_error    = check_y(waarde2);
+            ErrorCode x2_error    = check_x(waarde3);
+            ErrorCode y2_error    = check_y(waarde4);
+            ErrorCode x3_error    = check_x(waarde5);
+            ErrorCode y3_error    = check_y(waarde6);
+            ErrorCode x4_error    = check_x(waarde7);
+            ErrorCode y4_error    = check_y(waarde8);
+            ErrorCode x5_error    = check_x(waarde9);
+            ErrorCode y5_error    = check_y(waarde10);
+            ErrorCode color_error = check_color(waarde11);
+            if(x1_error    != NO_ERROR) errors.error_var1  = x1_error;
+            if(y1_error    != NO_ERROR) errors.error_var2  = y1_error;
+            if(x2_error    != NO_ERROR) errors.error_var3  = x2_error;
+            if(y2_error    != NO_ERROR) errors.error_var4  = y2_error;
+            if(x3_error    != NO_ERROR) errors.error_var5  = x3_error;
+            if(y3_error    != NO_ERROR) errors.error_var6  = y3_error;
+            if(x4_error    != NO_ERROR) errors.error_var7  = x4_error;
+            if(y4_error    != NO_ERROR) errors.error_var8  = y4_error;
+            if(x5_error    != NO_ERROR) errors.error_var9  = x5_error;
+            if(y5_error    != NO_ERROR) errors.error_var10 = y5_error;
+            if(color_error != NO_ERROR) errors.error_var11 = color_error;
+            break;
+        }
+
         default:
             // andere functies later
             break;
