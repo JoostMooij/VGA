@@ -16,35 +16,41 @@
 /**
  * @brief Functies die gecontroleerd worden.
  */
-typedef enum {
+typedef enum
+{
     FUNC_clearscherm = 1,
     FUNC_drawPixel   = 2,
     FUNC_lijn        = 3,
     FUNC_rechthoek   = 4,
-    FUNC_figuur		 = 5,
-	FUNC_cirkel		 = 6,
+    FUNC_figuur      = 5,
+    FUNC_cirkel      = 6,
+    FUNC_toren       = 7,
     // later uitbreiden met andere functies
 } FunctionID;
 
 /**
  * @brief Enum voor individuele foutcodes.
  */
-typedef enum {
-    NO_ERROR               = 0,
-    ERROR_X1               = 1,
-    ERROR_Y1               = 2,
-    ERROR_COLOR            = 3,
-    ERROR_DIJKTE_TOO_SMALL = 4,
-    ERROR_BREEDTE          = 5,
-    ERROR_HOOGTE           = 6,
-    ERROR_GEVULD           = 7,
-	ERROR_RADIUS_TOO_SMALL = 8,
+typedef enum
+{
+    NO_ERROR                 = 0,
+    ERROR_X1                 = 1,
+    ERROR_Y1                 = 2,
+    ERROR_COLOR              = 3,
+    ERROR_DIJKTE_TOO_SMALL   = 4,
+    ERROR_BREEDTE            = 5,
+    ERROR_HOOGTE             = 6,
+    ERROR_GEVULD             = 7,
+    ERROR_RADIUS_TOO_SMALL   = 8,
+    ERROR_GROOTTE_TOO_SMALL  = 9,
+    ERROR_TOREN_BUITEN_SCHERM = 10,
 } ErrorCode;
 
 /**
  * @brief Struct om meerdere fouten tegelijk terug te geven.
  */
-typedef struct {
+typedef struct
+{
     int error_var1;
     int error_var2;
     int error_var3;
@@ -96,9 +102,25 @@ ErrorCode check_gevuld(int gevuld);
 /**
  * @brief Controleer waarden van een functie en geef fouten terug.
  */
-ErrorList Error_handling(FunctionID func, int waarde1, int waarde2, int waarde3, int waarde4, int waarde5, int waarde6, int waarde7, int waarde8, int waarde9, int waarde10, int waarde11);
+ErrorList Error_handling(FunctionID func,
+                         int waarde1, int waarde2, int waarde3,
+                         int waarde4, int waarde5, int waarde6,
+                         int waarde7, int waarde8, int waarde9,
+                         int waarde10, int waarde11);
 
+/**
+ * @brief Controleer radius voor cirkel op scherm.
+ */
 ErrorCode check_radius_op_scherm(int x, int y, int radius);
 
+/**
+ * @brief Controleer grootte van een generieke figuur op scherm.
+ */
+ErrorCode check_grootte_op_scherm(int x, int y, int grootte);
+
+/**
+ * @brief Controleer toren grootte en positie op scherm.
+ */
+ErrorCode check_toren_op_scherm(int x, int y, int grootte);
 
 #endif
