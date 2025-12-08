@@ -31,7 +31,6 @@ volatile uint32_t uart_pclk1_debug = 0;
  *
  * @return PCLK1-frequentie in Hz.
  */
-
 static uint32_t UART_GetPCLK1(void)
 {
     uint32_t hclk = SystemCoreClock;
@@ -56,7 +55,6 @@ static uint32_t UART_GetPCLK1(void)
  *
  * De baudrate wordt niet hier ingesteld, maar in uart2_set_baud().
  */
-
 void UART2_Init(uint32_t baudrate)
 {
     uint32_t pclk1 = UART_GetPCLK1();
@@ -94,7 +92,6 @@ void UART2_Init(uint32_t baudrate)
  *
  * @note   Wacht totdat de TX-buffer leeg is voordat het karakter wordt geschreven.
  */
-
 void UART2_SendChar(char c)
 {
     while (!(USART2->SR & USART_SR_TXE));
@@ -106,7 +103,6 @@ void UART2_SendChar(char c)
  *
  * @param str Pointer naar string in RAM/Flash.
  */
-
 void UART2_WriteString(const char *str)
 {
     while (*str)
@@ -119,7 +115,6 @@ void UART2_WriteString(const char *str)
  * @brief Leest één karakter van UART2.
  * @return Het gelezen karakter.
  */
-
 char UART2_ReadChar(void)
 {
     while (!(USART2->SR & USART_SR_RXNE));
@@ -131,7 +126,6 @@ char UART2_ReadChar(void)
  * @param[out] buf Buffer voor de gelezen string.
  * @param[in] maxlen Maximale lengte van de buffer inclusief '\0'.
  */
-
 void UART2_ReadString(char *buf, uint32_t maxlen)
 {
     uint32_t idx = 0;

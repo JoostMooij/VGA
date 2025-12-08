@@ -1,20 +1,59 @@
-/*
- * front_layer.c
- * Schaalbaar commando-systeem - String Only versie
- * Stuurt commando's altijd door, ook als parameters ontbreken.
+/**
+ * @file    Front_layer.c
+ * @brief   Implementatie van de Front Layer voor commandoparsing en inputafhandeling.
+ *
+ * Deze module leest ruwe UART-invoer, verwerkt parameters, voert commandoherkenning uit
+ * en bouwt een volledige commandostring op die wordt doorgegeven aan de Logic Layer.
+ * Ondersteunt o.a. setPixel, lijn, rechthoek, bitmap, tekst, cirkel, toren, herhaal
+ * en aanvullende diagnostische commando’s zoals HELP.
+ *
+ * Functionaliteit:
+ * - UART-regel lezen en normaliseren (komma → spatie).
+ * - Extractie van commandonaam en parameters.
+ * - Dispatcher-tabel voor het selecteren van de juiste handler.
+ * - Opbouw van een uniforme commandostring in `UserInput_t`.
+ * - Afhandeling van foutcodes en genereren van bijbehorende meldingen.
+ *
+ * @author  Luc van den Engel
+ * @date    2025-12-08
+ * @version 1.0
  */
 
 #include "Front_layer.h"
 
+typedef void (*CommandHandler)(UserInput_t *);
+
+typedef struct {
+    const char *name;
+    CommandHandler handler;
+} CommandEntry;
+
 static char buffer[MAX_INPUT];
 
 // ---------------- Buffer Based Utilities ----------------
+/**
+ * @brief Leest een volledige regel tekst via UART2 in een buffer.
+ *
+ * Initialiseert de buffer met nullen en leest vervolgens maximaal MAX_INPUT
+ * tekens via UART2_ReadString().
+ *
+ * @param[out] dst Doelbuffer waarin de ingelezen tekst wordt geplaatst.
+ */
 static void ReadLine(char *dst)
 {
     memset(dst, 0, MAX_INPUT);
     UART2_ReadString(dst, MAX_INPUT);
 }
 
+
+/**
+ * @brief Vervangt alle komma's in de opgegeven buffer door spaties.
+ *
+ * Dit maakt het mogelijk om commando's met komma-gescheiden parameters
+ * eenvoudig te parsen met sscanf().
+ *
+ * @param[in,out] buf Buffer waarvan de komma's gewijzigd worden.
+ */
 static void FixCommas(char *buf)
 {
     for(int i = 0; i < strlen(buf); i++)
@@ -22,8 +61,14 @@ static void FixCommas(char *buf)
 }
 
 // ---------------- Handlers ------------------------------
-
-// --- SETPIXEL ---
+/**
+ * @brief Verwerkt het setPixel-commando en zet de volledige commandostring in de UserInput-struct.
+ *
+ * Probeert parameters X, Y en optioneel kleur uit de globale buffer te lezen.
+ * Als de parsing mislukt wordt alleen "setPixel" ingevuld.
+ *
+ * @param[out] in Struct waarin de uiteindelijke commandostring wordt opgeslagen.
+ */
 static void Handle_setPixel(UserInput_t *in)
 {
     char k[20] = "";
@@ -47,7 +92,14 @@ static void Handle_setPixel(UserInput_t *in)
     snprintf(in->full_command, MAX_CMD_LENGTH, "setPixel");
 }
 
-// --- LIJN ---
+/**
+ * @brief Verwerkt het lijn-commando en reconstrueert de volledige commandostring.
+ *
+ * Ondersteunt meerdere parameterformaten: met/zonder dikte en kleur.
+ * Bij mislukte parsing wordt alleen het commando "lijn" opgeslagen.
+ *
+ * @param[out] in UserInput-struct voor de uitvoer.
+ */
 static void Handle_lijn(UserInput_t *in)
 {
     char k[20] = "";
@@ -78,7 +130,14 @@ static void Handle_lijn(UserInput_t *in)
     snprintf(in->full_command, MAX_CMD_LENGTH, "lijn");
 }
 
-// --- RECHTHOEK ---
+/**
+ * @brief Verwerkt het rechthoek-commando en vult de volledige commandostring.
+ *
+ * Ondersteunt varianten met breedte, hoogte, gevuld-flag en kleur.
+ * Fallback is alleen het woord "rechthoek".
+ *
+ * @param[out] in Struct waarin de commandostring wordt geplaatst.
+ */
 static void Handle_rechthoek(UserInput_t *in)
 {
     char k[20] = "";
@@ -109,7 +168,14 @@ static void Handle_rechthoek(UserInput_t *in)
     snprintf(in->full_command, MAX_CMD_LENGTH, "rechthoek");
 }
 
-// --- TEKST ---
+/**
+ * @brief Verwerkt het tekst-commando en bouwt de volledige commandostring op.
+ *
+ * Ondersteunt: X, Y, kleur en tekst. Niet opgegeven velden blijven leeg.
+ * Bij parse-fout wordt alleen "tekst" gebruikt.
+ *
+ * @param[out] in Doelstruct voor de geformatteerde uitvoerstring.
+ */
 static void Handle_tekst(UserInput_t *in)
 {
     char k[20] = "", t[64] = "";
@@ -140,7 +206,13 @@ static void Handle_tekst(UserInput_t *in)
     snprintf(in->full_command, MAX_CMD_LENGTH, "tekst");
 }
 
-// --- BITMAP ---
+/**
+ * @brief Verwerkt het bitmap-commando (nummer, X, Y).
+ *
+ * Maakt een complete commandostring of gebruikt alleen "bitmap" als parsing mislukt.
+ *
+ * @param[out] in Struct waarin de uitvoerstring wordt opgeslagen.
+ */
 static void Handle_bitmap(UserInput_t *in)
 {
     int nr, x, y;
@@ -153,7 +225,13 @@ static void Handle_bitmap(UserInput_t *in)
     snprintf(in->full_command, MAX_CMD_LENGTH, "bitmap");
 }
 
-// --- CLEARSCHERM ---
+/**
+ * @brief Verwerkt het clearscherm-commando en zet optioneel de kleur.
+ *
+ * Als er geen kleur wordt opgegeven wordt een lege kleurstring meegenomen.
+ *
+ * @param[out] in Struct waarin het geformatteerde commando wordt geplaatst.
+ */
 static void Handle_clearscherm(UserInput_t *in)
 {
     char k[20] = "";
@@ -169,7 +247,11 @@ static void Handle_clearscherm(UserInput_t *in)
     snprintf(in->full_command, MAX_CMD_LENGTH, "clearscherm %s", k);
 }
 
-// --- WACHT ---
+/**
+ * @brief Verwerkt het wacht-commando dat een aantal milliseconden bevat.
+ *
+ * @param[out] in Struct waarin het uiteindelijke commando wordt geschreven.
+ */
 static void Handle_wacht(UserInput_t *in)
 {
     int ms;
@@ -182,7 +264,11 @@ static void Handle_wacht(UserInput_t *in)
     snprintf(in->full_command, MAX_CMD_LENGTH, "wacht");
 }
 
-// --- HERHAAL ---
+/**
+ * @brief Verwerkt het herhaal-commando (aantal en hoe vaak).
+ *
+ * @param[out] in Struct waarin de geformatteerde commandostring terechtkomt.
+ */
 static void Handle_herhaal(UserInput_t *in)
 {
     int a, h;
@@ -195,7 +281,11 @@ static void Handle_herhaal(UserInput_t *in)
     snprintf(in->full_command, MAX_CMD_LENGTH, "herhaal");
 }
 
-// --- CIRKEL ---
+/**
+ * @brief Verwerkt het cirkel-commando met X, Y, radius en optionele kleur.
+ *
+ * @param[out] in Struct waar de volledige commandostring wordt opgesteld.
+ */
 static void Handle_cirkel(UserInput_t *in)
 {
     char k[20] = "";
@@ -218,7 +308,13 @@ static void Handle_cirkel(UserInput_t *in)
     snprintf(in->full_command, MAX_CMD_LENGTH, "cirkel");
 }
 
-// --- FIGUUR ---
+/**
+ * @brief Verwerkt het figuur-commando met vijf punten en een kleur.
+ *
+ * Vereist 11 items (10 coördinaten + kleur). Bij een fout blijft alleen "figuur" staan.
+ *
+ * @param[out] in Struct waarin de uitvoerstring wordt geschreven.
+ */
 static void Handle_figuur(UserInput_t *in)
 {
     char k[20];
@@ -236,7 +332,13 @@ static void Handle_figuur(UserInput_t *in)
     snprintf(in->full_command, MAX_CMD_LENGTH, "figuur");
 }
 
-// --- TOREN ---
+/**
+ * @brief Verwerkt het toren-commando en ondersteunt meerdere parameterformaten.
+ *
+ * Mogelijke parameters: X, Y, grootte, kleur1, kleur2.
+ *
+ * @param[out] in Struct met de geformatteerde uitvoerstring.
+ */
 static void Handle_toren(UserInput_t *in)
 {
     char k1[20] = "", k2[20] = "";
@@ -266,8 +368,11 @@ static void Handle_toren(UserInput_t *in)
     snprintf(in->full_command, MAX_CMD_LENGTH, "toren");
 }
 
-
-// ---------------- HELP Handler --------------------------
+/**
+ * @brief Toont alle beschikbare commando’s via UART en print een nieuwe prompt.
+ *
+ * @param[in] in Niet gebruikt.
+ */
 void Handle_HELP(UserInput_t *in)
 {
     (void)in;
@@ -287,16 +392,6 @@ void Handle_HELP(UserInput_t *in)
     UART2_WriteString("------------------------------\r\n");
     UART2_WriteString("> ");
 }
-
-// --------------------------------------------------------
-// TABLE: Dispatcher Table
-// --------------------------------------------------------
-typedef void (*CommandHandler)(UserInput_t *);
-
-typedef struct {
-    const char *name;
-    CommandHandler handler;
-} CommandEntry;
 
 static const CommandEntry command_table[] =
 {
@@ -318,8 +413,14 @@ static const CommandEntry command_table[] =
 
 static const int command_count = sizeof(command_table) / sizeof(CommandEntry);
 
-
-// ---------------- Dispatcher -----------------------------
+/**
+ * @brief Zoekt het gevraagde commando in de dispatch-tabel en voert de juiste handler uit.
+ *
+ * @param[in] cmd Het eerste woord uit de gebruikersinput (commando).
+ * @param[out] in Struct die gevuld wordt met de uiteindelijke commandostring.
+ *
+ * @return 1 als het commando gevonden is, 0 als het onbekend is.
+ */
 static int DispatchCommand(const char *cmd, UserInput_t *in)
 {
     for(int i = 0; i < command_count; i++)
@@ -333,12 +434,10 @@ static int DispatchCommand(const char *cmd, UserInput_t *in)
     return 0; // not found
 }
 
-// ---------------- Foutcode Afhandeling Functie ---------------------
-
 /**
- * @brief Verwerkt en toont de geretourneerde foutcode van de Logic Layer.
+ * @brief Converteert een foutcode naar een leesbare foutmelding en stuurt deze via UART.
  *
- * @param[in] foutcode De integer foutcode (0 = OK, >0 = Fout).
+ * @param[in] foutcode Integer foutcode afkomstig uit de Logic Layer.
  */
 void Return_error_code(int foutcode)
 {
@@ -404,7 +503,14 @@ void Return_error_code(int foutcode)
     UART2_WriteString(err_msg);
 }
 
-// ---------------- Main Input Function ---------------------
+/**
+ * @brief Centrale invoerfunctie voor UART-gebruikersinput.
+ *
+ * Leest een regel tekst, normaliseert komma’s, haalt het commando eruit,
+ * en roept de juiste handler aan. Onbekende commando’s worden gemeld.
+ *
+ * @param[out] in Struct waarin het uiteindelijke geformatteerde commando wordt opgeslagen.
+ */
 void Handel_UART_Input(UserInput_t *in)
 {
     // Maak de struct leeg
