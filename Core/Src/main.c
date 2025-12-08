@@ -23,7 +23,12 @@ int main(void)
 	SystemInit(); // System speed to 168MHz
 	API_init_io();          // init VGA
 	(void)clearscherm("wit");
-	(void)bitMap(1, 100, 200);
+	(void)bitMap(1, 50, 50);
+//	(void)bitMap(2, 100, 100);
+//	(void)bitMap(3, 150, 150);
+//	(void)bitMap(4, 200, 200);
+
+	(void)bitMap(5, 150, 150);
   while(1)
   {
 
