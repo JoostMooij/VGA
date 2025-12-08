@@ -167,3 +167,80 @@ ErrorList cirkel(int x0, int y0, int radius, const char* kleur)
     }
     return errors;
 }
+
+/**
+ * @brief Tekent een bitmap symbool, gecentreerd op (x, y).
+ *
+ * @param nr Het nummer van het symbool (1 = pijl in Paint-stijl).
+ * @param x X-coordinaat van het midden van het symbool.
+ * @param y Y-coordinaat van het midden van het symbool.
+ * @return ErrorList Struct met eventuele fouten (0 = geen fouten)
+ */
+ErrorList bitMap(int nr, int x, int y)
+{
+    const char *kleur = "zwart";
+    const int ARROW_SIZE = 30; // Totale hoogte/breedte van de pijl
+    const int THICKNESS = 2;   // Dikte van de lijnen (voor een gevuld effect)
+    const int HEAD_HEIGHT = 12; // Hoogte van de pijl kop
+    const int BODY_WIDTH = 4;  // Halve breedte van het pijl-lichaam
+    const int TAIL_WIDTH = 12; // Halve breedte van de pijl-staart (uiteinden)
+
+    ErrorList errors = {0}; // Tijdelijke ErrorList
+
+    switch (nr)
+    {
+        case 1: // Verticale Pijl (Paint-stijl)
+        {
+            //
+
+            // Coördinaten van de pijl, gecentreerd op (x, y).
+            // De pijl gaat van (y - ARROW_SIZE/2) naar (y + ARROW_SIZE/2).
+
+            // 1. PUNT VAN DE PIJL (bovenste punt)
+            int P_X = x;
+            int P_Y = y - ARROW_SIZE; // Bovenste punt
+
+            // 2. BASIS VAN DE PIJLKOP
+            int BH_Y = P_Y + HEAD_HEIGHT;
+            int BH_L_X = x - TAIL_WIDTH; // Linker basis
+            int BH_R_X = x + TAIL_WIDTH; // Rechter basis
+
+            // 3. MIDDEN VAN HET LICHAAM
+            int C_Y = y + (ARROW_SIZE / 2); // Onderste punt
+
+            // 4. INKEPING (STAART)
+            int IL_X = x - BODY_WIDTH;
+            int IR_X = x + BODY_WIDTH;
+
+            // --- Teken de omtrek van de pijl (met dikke lijnen voor een gevuld effect) ---
+
+            // A. Linker kant van de pijl
+            // Pijl-punt naar linker basis
+            lijn(P_X, P_Y, BH_L_X, BH_Y, kleur, THICKNESS);
+            // Linker basis naar linker inkeping
+            lijn(BH_L_X, BH_Y, IL_X, BH_Y, kleur, THICKNESS);
+            // Linker staart/lichaam (van inkeping naar de onderkant)
+            lijn(IL_X, BH_Y, IL_X, C_Y, kleur, THICKNESS);
+
+            // B. Rechter kant van de pijl
+            // Pijl-punt naar rechter basis
+            lijn(P_X, P_Y, BH_R_X, BH_Y, kleur, THICKNESS);
+            // Rechter basis naar rechter inkeping
+            lijn(BH_R_X, BH_Y, IR_X, BH_Y, kleur, THICKNESS);
+            // Rechter staart/lichaam (van inkeping naar de onderkant)
+            lijn(IR_X, BH_Y, IR_X, C_Y, kleur, THICKNESS);
+
+            // C. Onderkant van de pijl (sluit de vorm)
+            lijn(IL_X, C_Y, IR_X, C_Y, kleur, THICKNESS);
+
+            break;
+        }
+        default:
+        {
+            // Symbool niet herkend
+            break;
+        }
+    }
+
+    return errors;
+}

@@ -48,4 +48,6 @@ ErrorList figuur(int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4,
 
 ErrorList cirkel(int x0, int y0, int radius, const char* kleur);
 
+ErrorList bitMap(int nr, int x, int y);
+
 #endif
