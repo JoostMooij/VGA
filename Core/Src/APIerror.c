@@ -12,7 +12,8 @@
  */
 
 #include "APIerror.h"
-#include "stm32_ub_vga_screen.h"   /**< Noodzakelijk voor VGA defines en pixelfuncties */
+#include "stm32_ub_vga_screen.h"   // nodig voor UB_VGA_SetPixel en defines
+#include "bitMap.h"
 
 /**
  * @brief Controleer alle mogelijke fouten van een API-functie.
@@ -146,6 +147,17 @@ ErrorList Error_handling(FunctionID func,
             break;
         }
 
+        case FUNC_bitmap:
+        {
+        	ErrorCode nr_error		= check_nr(waarde1, waarde2, waarde3);
+        	ErrorCode x_error      = check_x(waarde2);
+			ErrorCode y_error      = check_y(waarde3);
+
+			if(nr_error		!= NO_ERROR) errors.error_var1 = nr_error;
+			if(x_error      != NO_ERROR) errors.error_var2 = x_error;
+			if(y_error      != NO_ERROR) errors.error_var3 = y_error;
+        }
+
         default:
             /**< Andere functies later */
             break;
@@ -219,6 +231,49 @@ ErrorCode check_radius_op_scherm(int x, int y, int radius)
 }
 
 /**
+ * @brief Controleer de bitmap waardes
+ */
+ErrorCode check_nr(int nr, int x, int y)
+{
+    int grootte;
+
+    if (nr < 0 || nr > 9) return ERROR_bitmap_nr;
+
+    switch (nr)
+    {
+        case 1:
+        case 2:
+        case 3:
+        case 4:
+            grootte = grote_pijlen;
+            break;
+
+        case 5:
+        case 6:
+            grootte = grote_smiley;
+            break;
+
+        case 7:
+            grootte = kat_afbeelding;
+            break;
+
+        case 8:
+        case 9:
+            grootte = skalet_afbeelding;
+            break;
+
+        default:
+            return ERROR_bitmap_nr;
+    }
+
+    int r = grootte / 2;
+
+    if (x + r - 1 >= VGA_DISPLAY_X || x - r < 0) return ERROR_bitmap_buiten_scherm;
+    if (y + r - 1 >= VGA_DISPLAY_Y || y - r < 0) return ERROR_bitmap_buiten_scherm;
+
+    return NO_ERROR;
+}
+  /**
  * @brief Controleer sec-waarde (0 of 1)
  */
 ErrorCode wacht_error(int ms)

@@ -26,26 +26,28 @@ typedef enum
     FUNC_cirkel      = 6,
     FUNC_toren       = 7,
   	FUNC_wacht		   = 8,
+	  FUNC_bitmap		   = 9,
     // later uitbreiden met andere functies
 } FunctionID;
 
 /**
  * @brief Enum voor individuele foutcodes.
  */
-typedef enum
-{
-    NO_ERROR                 = 0,
-    ERROR_X1                 = 1,
-    ERROR_Y1                 = 2,
-    ERROR_COLOR              = 3,
-    ERROR_DIJKTE_TOO_SMALL   = 4,
-    ERROR_BREEDTE            = 5,
-    ERROR_HOOGTE             = 6,
-    ERROR_GEVULD             = 7,
-    ERROR_RADIUS_TOO_SMALL   = 8,
-    ERROR_GROOTTE_TOO_SMALL  = 9,
-    ERROR_TOREN_BUITEN_SCHERM = 10,
-    ERROR_TIME_TOO_SMALL   = 11,
+typedef enum {
+    NO_ERROR                    = 0,
+    ERROR_X1                    = 1,
+    ERROR_Y1                    = 2,
+    ERROR_COLOR                 = 3,
+    ERROR_DIJKTE_TOO_SMALL      = 4,
+    ERROR_BREEDTE               = 5,
+    ERROR_HOOGTE                = 6,
+    ERROR_GEVULD                = 7,
+	  ERROR_RADIUS_TOO_SMALL      = 8,
+    ERROR_GROOTTE_TOO_SMALL     = 9,
+    ERROR_TOREN_BUITEN_SCHERM   = 10,
+    ERROR_TIME_TOO_SMALL        = 11,
+	  ERROR_bitmap_nr	            = 12,
+	  ERROR_bitmap_buiten_scherm  = 13,
 } ErrorCode;
 
 /**
@@ -113,6 +115,11 @@ ErrorCode check_gevuld(int gevuld);
 ErrorCode check_radius_op_scherm(int x, int y, int radius);
 
 /**
+ * @brief Controleer de bitmap waardes
+ */
+ErrorCode check_nr(int nr, int x, int y);
+
+/**
  * @brief Controleer grootte van een generieke figuur op scherm.
  */
 ErrorCode check_grootte_op_scherm(int x, int y, int grootte);
@@ -125,5 +132,6 @@ ErrorCode check_toren_op_scherm(int x, int y, int grootte);
  * @brief Controleer de 'sec'-waarde (0 of 1).
  */
 ErrorCode wacht_error(int ms_error);
+
 
 #endif

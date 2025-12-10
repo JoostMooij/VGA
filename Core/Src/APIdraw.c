@@ -16,6 +16,7 @@
 #include "APIio.h"
 #include "APIerror.h"
 #include <stdlib.h>
+#include "bitMap.h"
 
 /**
  * @brief Teken een lijn van (x1,y1) naar (x2,y2) met opgegeven kleur en dikte.
@@ -253,8 +254,54 @@ ErrorList toren(int x, int y, int grootte, const char* kleur1, const char* kleur
 
     return errors;
 }
+
 /////////////////////////////////
 //
 //  end copied code
 //
 /////////////////////////////////
+
+/**
+ * @brief Tekent een bitmap symbool, gecentreerd op (x, y).
+ *
+ * @param nr Het nummer van het symbool (1 = pijl omhoog, 2 = pijl omlaag, etc.).
+ * @param x X-coordinaat van het midden van het symbool.
+ * @param y Y-coordinaat van het midden van het symbool.
+ * @return ErrorList Struct met eventuele fouten (0 = geen fouten)
+ */
+ErrorList bitMap(int nr, int x, int y)
+{
+
+	ErrorList errors = Error_handling(FUNC_bitmap, nr, x, y, 0, 0, 0, 0, 0, 0, 0, 0);
+	    if(errors.error_var1 || errors.error_var2 || errors.error_var3)
+	    {
+	        return errors;
+	    }
+    const Bitmap *bmp_ptr = NULL;
+    uint8_t use_transparency = 0;
+
+    switch (nr)
+    {
+        case 1: bmp_ptr = &arrow_up;    use_transparency = 1; break;
+        case 2: bmp_ptr = &arrow_down;  use_transparency = 1; break;
+        case 3: bmp_ptr = &arrow_left;  use_transparency = 1; break;
+        case 4: bmp_ptr = &arrow_right; use_transparency = 1; break;
+        case 5: bmp_ptr = &smily_blij;  use_transparency = 1; break;
+        case 6: bmp_ptr = &smily_boos;  use_transparency = 1; break;
+        case 7: bmp_ptr = &yes_cat_thumbs_up; use_transparency = 0; break;
+        case 8: bmp_ptr = &skeleton_banging_on_shield_meme_frame_00; use_transparency = 0; break;
+        case 9: bmp_ptr = &skeleton_banging_on_shield_meme_frame_06; use_transparency = 0; break;
+        default: return errors;
+    }
+
+    if (bmp_ptr == NULL || bmp_ptr->data == NULL)
+        return errors;
+
+    int x0 = x - (bmp_ptr->width / 2);
+    int y0 = y - (bmp_ptr->height / 2);
+
+    // Geef de vlag door
+    drawBitmap(x0, y0, bmp_ptr, use_transparency);
+
+    return errors;
+}

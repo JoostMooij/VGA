@@ -24,6 +24,16 @@ int main(void)
 	API_init_io();          // init VGA
 	SysTick_Init();
 	(void)clearscherm("wit");
+	(void)bitMap(1, 50, 50);
+	(void)bitMap(2, 70, 50);
+	(void)bitMap(3, 90, 50);
+	(void)bitMap(4, 110, 50);
+	(void)bitMap(5, 160, 50);
+	(void)bitMap(6, 220, 50);
+
+	(void)bitMap(7, 175, 150);
+	(void)bitMap(8, 60, 100);
+	(void)bitMap(9, 60, 190);
 	(void)drawPixel(100, 100, "rood");
 	(void)lijn(10, 10, 10, 150, "rood", 10);
 	(void)rechthoek(80, 80, 60, 40, "geel", 0);
@@ -36,67 +46,3 @@ int main(void)
 
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//#define BUFFER_SIZE 128
-//char buffer[BUFFER_SIZE]; // De buffer moet buiten main gedefinieerd zijn als je deze overal wilt gebruiken
-//
-//int main(void)
-//{
-//    SystemInit();
-//    SystemCoreClockUpdate();
-//
-//    UART2_Init(115200);
-//
-//    // Initialisatie/Welkomstbericht:
-//    // Geef de gebruiker direct de prompt om te beginnen.
-//    // De 'Handel_UART_Input' zal bij lege invoer automatisch de HELP tonen.
-//    UART2_WriteString("> ");
-//
-//    UserInput_t input;   // Struct voor de gebruikersgegevens
-//
-//    while (1)
-//    {
-//
-//        Handel_UART_Input(&input);
-//
-//        if (strcmp(input.command, "setPixel") == 0)
-//        {
-//            // Formatteer de output (let op de [0] voor array-elementen!)
-//        	int len = snprintf(buffer, sizeof(buffer),
-//        	    "Verwerkt: Cmd: %s, X: %d, Y: %d, Color: %s\r\n",
-//        	    input.command, input.x[0], input.y[0], input.color_name); // <-- CORRECTIE HIER
-//
-//            // Verwerkingsoutput printen
-//            UART2_WriteString(buffer);
-//
-//            // Nu kun je 'input' doorgeven aan je middle layer
-//            // Bijvoorbeeld: MiddleLayer_ProcessCommand(&input);
-//
-//            // Geef een nieuwe prompt na de verwerking
-//            UART2_WriteString("> ");
-//
-//        }
-//      }
-//  }
