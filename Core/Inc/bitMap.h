@@ -13,6 +13,12 @@
 #define VGA_DISPLAY_X   320
 #define VGA_DISPLAY_Y   240
 
+#define grote_pijlen 16
+#define grote_smiley 32
+#define kat_afbeelding 120
+#define skalet_afbeelding 90
+
+
 // --- Struct Definitie ---
 // Aangepast om kleurdiepte te ondersteunen (1-bit voor pijlen, 4-bit voor kleuren)
 typedef struct {

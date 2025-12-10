@@ -23,6 +23,7 @@ typedef enum {
     FUNC_rechthoek   = 4,
     FUNC_figuur		 = 5,
 	FUNC_cirkel		 = 6,
+	FUNC_bitMap		 = 12,
     // later uitbreiden met andere functies
 } FunctionID;
 
@@ -39,6 +40,7 @@ typedef enum {
     ERROR_HOOGTE           = 6,
     ERROR_GEVULD           = 7,
 	ERROR_RADIUS_TOO_SMALL = 8,
+	ERROR_bitmap_nr	       = 12,
 } ErrorCode;
 
 /**
@@ -99,6 +101,8 @@ ErrorCode check_gevuld(int gevuld);
 ErrorList Error_handling(FunctionID func, int waarde1, int waarde2, int waarde3, int waarde4, int waarde5, int waarde6, int waarde7, int waarde8, int waarde9, int waarde10, int waarde11);
 
 ErrorCode check_radius_op_scherm(int x, int y, int radius);
+
+ErrorCode check_nr(int nr, int x, int y);
 
 
 #endif

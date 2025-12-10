@@ -189,7 +189,12 @@ ErrorList cirkel(int x0, int y0, int radius, const char* kleur)
  */
 ErrorList bitMap(int nr, int x, int y)
 {
-    ErrorList errors = {0};
+
+	ErrorList errors = Error_handling(FUNC_bitMap, nr, x, y, 0, 0, 0, 0, 0, 0, 0, 0);
+	    if(errors.error_var1 || errors.error_var2 || errors.error_var3)
+	    {
+	        return errors;
+	    }
     const Bitmap *bmp_ptr = NULL;
     uint8_t use_transparency = 0;
 

@@ -12,6 +12,7 @@
 
 #include "APIerror.h"
 #include "stm32_ub_vga_screen.h"   // nodig voor UB_VGA_SetPixel en defines
+#include "bitMap.h"
 
 /**
  * @brief Controleer alle mogelijke fouten van een functie via switch-case.
@@ -112,6 +113,17 @@ ErrorList Error_handling(FunctionID func, int waarde1, int waarde2, int waarde3,
             if(radius_error != NO_ERROR) errors.error_var3 = radius_error;
             if(color_error  != NO_ERROR) errors.error_var4 = color_error;
             break;
+        }
+
+        case FUNC_bitMap:
+        {
+        	ErrorCode nr_error		= check_nr(waarde1, waarde2, waarde3);
+        	ErrorCode x_error      = check_x(waarde2);
+			ErrorCode y_error      = check_y(waarde3);
+
+			if(nr_error		!= NO_ERROR) errors.error_var1 = nr_error;
+			if(x_error      != NO_ERROR) errors.error_var2 = x_error;
+			if(y_error      != NO_ERROR) errors.error_var3 = y_error;
         }
 
         default:
@@ -228,4 +240,49 @@ ErrorCode check_radius_op_scherm(int x, int y, int radius)
     if(x - radius < 0 || x + radius >= VGA_DISPLAY_X) return ERROR_X1;
     if(y - radius < 0 || y + radius >= VGA_DISPLAY_Y) return ERROR_Y1;
     return NO_ERROR;
+}
+
+ErrorCode check_nr(int nr, int x, int y)
+{
+	int grootte;
+
+	if (nr < 0 || nr > 9) return ERROR_bitmap_nr;
+	switch (nr)
+	{
+		case 1:
+			grootte = grote_pijlen;
+		break;
+		case 2:
+			grootte = grote_pijlen;
+			break;
+		case 3:
+			grootte = grote_pijlen;
+			break;
+		case 4:
+			grootte = grote_pijlen;
+			break;
+		case 5:
+			grootte = grote_smiley;
+			break;
+		case 6:
+			grootte = grote_smiley;
+			break;
+		case 7:
+			grootte = kat_afbeelding;
+			break;
+		case 8:
+			grootte = skalet_afbeelding;
+			break;
+		case 9:
+			grootte = skalet_afbeelding;
+			break;
+		default:
+			return ERROR_bitmap_nr;
+		break;
+
+	}
+
+	if(x + (grootte/2) - 1 >= VGA_DISPLAY_X || x - (grootte/2) - 1 >= VGA_DISPLAY_X) return ERROR_X1;
+	if(y + (grootte/2) - 1 >= VGA_DISPLAY_Y || y - (grootte/2) - 1 >= VGA_DISPLAY_Y) return ERROR_Y1;
+	return NO_ERROR;
 }

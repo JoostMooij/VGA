@@ -2158,18 +2158,18 @@ static const uint8_t skeleton_banging_on_shield_meme_frame_06_data[8102] = {
 
 // --- Bitmap struct definities (Implementatie) ---
 // Let op de color_depth: 1 voor pijlen, 4 voor kleurafbeelding (zou 8 moeten zijn).
-const Bitmap arrow_up    = {16, 16, arrow_up_data, 1};
-const Bitmap arrow_down  = {16, 16, arrow_down_data, 1};
-const Bitmap arrow_left  = {16, 16, arrow_left_data, 1};
-const Bitmap arrow_right = {16, 16, arrow_right_data, 1};
+const Bitmap arrow_up    = {grote_pijlen, grote_pijlen, arrow_up_data, 1};
+const Bitmap arrow_down  = {grote_pijlen, grote_pijlen, arrow_down_data, 1};
+const Bitmap arrow_left  = {grote_pijlen, grote_pijlen, arrow_left_data, 1};
+const Bitmap arrow_right = {grote_pijlen, grote_pijlen, arrow_right_data, 1};
 
-const Bitmap smily_blij = {32, 32, smily_blij_data, 1};
-const Bitmap smily_boos = {32, 32, smily_boos_data, 1};
+const Bitmap smily_blij = {grote_smiley, grote_smiley, smily_blij_data, 1};
+const Bitmap smily_boos = {grote_smiley, grote_smiley, smily_boos_data, 1};
 
 // 🛑 AANPASSING HIER: color_depth moet 8 zijn, want elke byte is een 8-bit VGA kleur
-const Bitmap yes_cat_thumbs_up = {120, 120, Gato, 8};
-const Bitmap skeleton_banging_on_shield_meme_frame_00 = {90, 90, skeleton_banging_on_shield_meme_frame_00_data, 1};
-const Bitmap skeleton_banging_on_shield_meme_frame_06 = {90, 90, skeleton_banging_on_shield_meme_frame_06_data, 1};
+const Bitmap yes_cat_thumbs_up = {kat_afbeelding, kat_afbeelding, Gato, 8};
+const Bitmap skeleton_banging_on_shield_meme_frame_00 = {skalet_afbeelding, skalet_afbeelding, skeleton_banging_on_shield_meme_frame_00_data, 1};
+const Bitmap skeleton_banging_on_shield_meme_frame_06 = {skalet_afbeelding, skalet_afbeelding, skeleton_banging_on_shield_meme_frame_06_data, 1};
 
 void drawBitmap(int x0, int y0, const Bitmap *bmp, uint8_t use_transparency)
 {
