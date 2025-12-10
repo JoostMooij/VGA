@@ -138,6 +138,14 @@ ErrorList Error_handling(FunctionID func,
             break;
         }
 
+        case FUNC_wacht:
+        {
+            ErrorCode ms_error = wacht_error(waarde1);
+
+            if(ms_error != NO_ERROR) errors.error_var1 = ms_error;
+            break;
+        }
+
         default:
             /**< Andere functies later */
             break;
@@ -210,6 +218,14 @@ ErrorCode check_radius_op_scherm(int x, int y, int radius)
     return NO_ERROR;
 }
 
+/**
+ * @brief Controleer sec-waarde (0 of 1)
+ */
+ErrorCode wacht_error(int ms)
+{
+	if(ms < 1) return ERROR_TIME_TOO_SMALL;
+	return NO_ERROR;
+  
 /** @brief Controleer grootte binnen scherm (algemeen) */
 ErrorCode check_grootte_op_scherm(int x, int y, int grootte)
 {
