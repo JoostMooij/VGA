@@ -30,6 +30,7 @@ int main(void)
 	(void)figuur(10,10,60,20,30,30,90,40,150,50,"zwart");
 	(void)wacht(100);
 	(void)cirkel(90, 90, 50, "blauw");
+	(void)toren(180, 150, 45, "groen", "geel");
   while(1)
   {
 
