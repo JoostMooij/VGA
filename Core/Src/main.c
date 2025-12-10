@@ -28,7 +28,7 @@ int main(void)
 	(void)lijn(10, 10, 10, 150, "rood", 10);
 	(void)rechthoek(80, 80, 60, 40, "geel", 0);
 	(void)figuur(10,10,60,20,30,30,90,40,150,50,"zwart");
-	(void)wacht(2000);
+	(void)wacht(100);
 	(void)cirkel(90, 90, 50, "blauw");
   while(1)
   {

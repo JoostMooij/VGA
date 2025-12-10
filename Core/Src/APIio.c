@@ -198,9 +198,8 @@ void SysTick_Handler(void)
  */
 ErrorList wacht(int ms)
 {
-    ErrorList errors = {NO_ERROR, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-
-    if (ms <= 0)
+    ErrorList errors = Error_handling(FUNC_wacht, ms,0,0,0,0,0,0,0,0,0,0);
+    if (errors.error_var1)
     {
         return errors;
     }

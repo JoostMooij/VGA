@@ -114,6 +114,14 @@ ErrorList Error_handling(FunctionID func, int waarde1, int waarde2, int waarde3,
             break;
         }
 
+        case FUNC_wacht:
+        {
+            ErrorCode ms_error = wacht_error(waarde1);
+
+            if(ms_error != NO_ERROR) errors.error_var1 = ms_error;
+            break;
+        }
+
         default:
             // andere functies later
             break;
@@ -228,4 +236,13 @@ ErrorCode check_radius_op_scherm(int x, int y, int radius)
     if(x - radius < 0 || x + radius >= VGA_DISPLAY_X) return ERROR_X1;
     if(y - radius < 0 || y + radius >= VGA_DISPLAY_Y) return ERROR_Y1;
     return NO_ERROR;
+}
+
+/**
+ * @brief Controleer sec-waarde (0 of 1)
+ */
+ErrorCode wacht_error(int ms)
+{
+	if(ms < 1) return ERROR_TIME_TOO_SMALL;
+	return NO_ERROR;
 }

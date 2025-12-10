@@ -23,6 +23,7 @@ typedef enum {
     FUNC_rechthoek   = 4,
     FUNC_figuur		 = 5,
 	FUNC_cirkel		 = 6,
+	FUNC_wacht		 = 8,
     // later uitbreiden met andere functies
 } FunctionID;
 
@@ -39,6 +40,7 @@ typedef enum {
     ERROR_HOOGTE           = 6,
     ERROR_GEVULD           = 7,
 	ERROR_RADIUS_TOO_SMALL = 8,
+	ERROR_TIME_TOO_SMALL   = 10,
 } ErrorCode;
 
 /**
@@ -57,6 +59,12 @@ typedef struct {
     int error_var10;
     int error_var11;
 } ErrorList;
+
+/**
+ * @brief Controleer waarden van een functie en geef fouten terug.
+ */
+ErrorList Error_handling(FunctionID func, int waarde1, int waarde2, int waarde3, int waarde4, int waarde5, int waarde6, int waarde7, int waarde8, int waarde9, int waarde10, int waarde11);
+
 
 /**
  * @brief Controleer de X-coordinaat.
@@ -93,12 +101,12 @@ ErrorCode check_hoogte(int y, int hoogte);
  */
 ErrorCode check_gevuld(int gevuld);
 
-/**
- * @brief Controleer waarden van een functie en geef fouten terug.
- */
-ErrorList Error_handling(FunctionID func, int waarde1, int waarde2, int waarde3, int waarde4, int waarde5, int waarde6, int waarde7, int waarde8, int waarde9, int waarde10, int waarde11);
 
 ErrorCode check_radius_op_scherm(int x, int y, int radius);
 
+/**
+ * @brief Controleer de 'sec'-waarde (0 of 1).
+ */
+ErrorCode wacht_error(int ms_error);
 
 #endif
