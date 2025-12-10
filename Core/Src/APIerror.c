@@ -115,7 +115,7 @@ ErrorList Error_handling(FunctionID func, int waarde1, int waarde2, int waarde3,
             break;
         }
 
-        case FUNC_bitMap:
+        case FUNC_bitmap:
         {
         	ErrorCode nr_error		= check_nr(waarde1, waarde2, waarde3);
         	ErrorCode x_error      = check_x(waarde2);
@@ -244,45 +244,44 @@ ErrorCode check_radius_op_scherm(int x, int y, int radius)
 
 ErrorCode check_nr(int nr, int x, int y)
 {
-	int grootte;
+    int grootte;
 
-	if (nr < 0 || nr > 9) return ERROR_bitmap_nr;
-	switch (nr)
-	{
-		case 1:
-			grootte = grote_pijlen;
-		break;
-		case 2:
-			grootte = grote_pijlen;
-			break;
-		case 3:
-			grootte = grote_pijlen;
-			break;
-		case 4:
-			grootte = grote_pijlen;
-			break;
-		case 5:
-			grootte = grote_smiley;
-			break;
-		case 6:
-			grootte = grote_smiley;
-			break;
-		case 7:
-			grootte = kat_afbeelding;
-			break;
-		case 8:
-			grootte = skalet_afbeelding;
-			break;
-		case 9:
-			grootte = skalet_afbeelding;
-			break;
-		default:
-			return ERROR_bitmap_nr;
-		break;
+    if (nr < 0 || nr > 9) return ERROR_bitmap_nr;
 
-	}
+    switch (nr)
+    {
+        case 1:
+        case 2:
+        case 3:
+        case 4:
+            grootte = grote_pijlen;
+            break;
 
-	if(x + (grootte/2) - 1 >= VGA_DISPLAY_X || x - (grootte/2) - 1 >= VGA_DISPLAY_X) return ERROR_X1;
-	if(y + (grootte/2) - 1 >= VGA_DISPLAY_Y || y - (grootte/2) - 1 >= VGA_DISPLAY_Y) return ERROR_Y1;
-	return NO_ERROR;
+        case 5:
+        case 6:
+            grootte = grote_smiley;
+            break;
+
+        case 7:
+            grootte = kat_afbeelding;
+            break;
+
+        case 8:
+        case 9:
+            grootte = skalet_afbeelding;
+            break;
+
+        default:
+            return ERROR_bitmap_nr;
+    }
+
+    int r = grootte / 2;
+
+    if (x + r - 1 >= VGA_DISPLAY_X || x - r < 0)
+        return ERROR_bitmap_buiten_scherm;
+
+    if (y + r - 1 >= VGA_DISPLAY_Y || y - r < 0)
+        return ERROR_bitmap_buiten_scherm;
+
+    return NO_ERROR;
 }

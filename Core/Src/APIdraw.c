@@ -172,16 +172,6 @@ ErrorList cirkel(int x0, int y0, int radius, const char* kleur)
 /**
  * @brief Tekent een bitmap symbool, gecentreerd op (x, y).
  *
- * @param nr Het nummer van het symbool (1 = pijl omhoog).
- * @param x X-coordinaat van het midden van het symbool.
- * @param y Y-coordinaat van het midden van het symbool.
- * @return ErrorList Struct met eventuele fouten (0 = geen fouten)
- */
-// ... (bestaande functies lijn, rechthoek, figuur, cirkel) ...
-
-/**
- * @brief Tekent een bitmap symbool, gecentreerd op (x, y).
- *
  * @param nr Het nummer van het symbool (1 = pijl omhoog, 2 = pijl omlaag, etc.).
  * @param x X-coordinaat van het midden van het symbool.
  * @param y Y-coordinaat van het midden van het symbool.
@@ -190,7 +180,7 @@ ErrorList cirkel(int x0, int y0, int radius, const char* kleur)
 ErrorList bitMap(int nr, int x, int y)
 {
 
-	ErrorList errors = Error_handling(FUNC_bitMap, nr, x, y, 0, 0, 0, 0, 0, 0, 0, 0);
+	ErrorList errors = Error_handling(FUNC_bitmap, nr, x, y, 0, 0, 0, 0, 0, 0, 0, 0);
 	    if(errors.error_var1 || errors.error_var2 || errors.error_var3)
 	    {
 	        return errors;

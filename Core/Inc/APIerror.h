@@ -23,7 +23,7 @@ typedef enum {
     FUNC_rechthoek   = 4,
     FUNC_figuur		 = 5,
 	FUNC_cirkel		 = 6,
-	FUNC_bitMap		 = 12,
+	FUNC_bitmap		 = 12,
     // later uitbreiden met andere functies
 } FunctionID;
 
@@ -41,6 +41,7 @@ typedef enum {
     ERROR_GEVULD           = 7,
 	ERROR_RADIUS_TOO_SMALL = 8,
 	ERROR_bitmap_nr	       = 12,
+	ERROR_bitmap_buiten_scherm = 13,
 } ErrorCode;
 
 /**
