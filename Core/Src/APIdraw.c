@@ -191,14 +191,19 @@ ErrorList bitMap(int nr, int x, int y)
 {
     ErrorList errors = {0};
     const Bitmap *bmp_ptr = NULL;
+    uint8_t use_transparency = 0;
 
     switch (nr)
     {
-        case 1: bmp_ptr = &arrow_up;    break;
-        case 2: bmp_ptr = &arrow_down;  break;
-        case 3: bmp_ptr = &arrow_left;  break;
-        case 4: bmp_ptr = &arrow_right; break;
-        case 5: bmp_ptr = &yes_cat_thumbs_up; break;
+        case 1: bmp_ptr = &arrow_up;    use_transparency = 1; break;
+        case 2: bmp_ptr = &arrow_down;  use_transparency = 1; break;
+        case 3: bmp_ptr = &arrow_left;  use_transparency = 1; break;
+        case 4: bmp_ptr = &arrow_right; use_transparency = 1; break;
+        case 5: bmp_ptr = &smily_blij;  use_transparency = 1; break;
+        case 6: bmp_ptr = &smily_boos;  use_transparency = 1; break;
+        case 7: bmp_ptr = &yes_cat_thumbs_up; use_transparency = 0; break;
+        case 8: bmp_ptr = &skeleton_banging_on_shield_meme_frame_00; use_transparency = 0; break;
+        case 9: bmp_ptr = &skeleton_banging_on_shield_meme_frame_06; use_transparency = 0; break;
         default: return errors;
     }
 
@@ -208,7 +213,8 @@ ErrorList bitMap(int nr, int x, int y)
     int x0 = x - (bmp_ptr->width / 2);
     int y0 = y - (bmp_ptr->height / 2);
 
-    drawBitmap(x0, y0, bmp_ptr, 0); // 8-bit data bevat al de kleurcodes
+    // Geef de vlag door
+    drawBitmap(x0, y0, bmp_ptr, use_transparency);
 
     return errors;
 }

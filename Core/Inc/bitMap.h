@@ -28,9 +28,14 @@ extern const Bitmap arrow_up;
 extern const Bitmap arrow_down;
 extern const Bitmap arrow_left;
 extern const Bitmap arrow_right;
+extern const Bitmap smily_blij;
+extern const Bitmap smily_boos;
+
 
 // 4-bit bitmap (Kleurafbeelding)
 extern const Bitmap yes_cat_thumbs_up; // NIEUW
+extern const Bitmap skeleton_banging_on_shield_meme_frame_00;
+extern const Bitmap skeleton_banging_on_shield_meme_frame_06;
 
 // --- Functie Prototypes ---
 /**
