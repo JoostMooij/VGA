@@ -242,6 +242,9 @@ ErrorCode check_radius_op_scherm(int x, int y, int radius)
     return NO_ERROR;
 }
 
+/**
+ * @brief Controleer de bitmap waardes
+ */
 ErrorCode check_nr(int nr, int x, int y)
 {
     int grootte;

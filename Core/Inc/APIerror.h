@@ -103,6 +103,9 @@ ErrorList Error_handling(FunctionID func, int waarde1, int waarde2, int waarde3,
 
 ErrorCode check_radius_op_scherm(int x, int y, int radius);
 
+/**
+ * @brief Controleer de bitmap waardes
+ */
 ErrorCode check_nr(int nr, int x, int y);
 
 
