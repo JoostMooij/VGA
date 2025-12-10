@@ -18,6 +18,7 @@
 #include "APIerror.h"
 #include "stm32_ub_vga_screen.h"
 
+volatile uint32_t ms_tick_counter = 0;
 
 /**
  * @brief Initialiseert de I/O-laag (VGA-scherm).
@@ -157,4 +158,61 @@ uint8_t kleur_omzetter(const char *input)
     	return PAARS;
     }
     return 0;
+}
+
+
+/**
+ * @brief Configureert de SysTick timer om elke milliseconde (1 ms) een interrupt te genereren.
+ *
+ * @note Gebruikt de SystemCoreClock (168 MHz)
+ */
+void SysTick_Init(void)
+{
+    // Configureert de SysTick timer voor 1 ms tick, gebaseerd op 168 MHz HCLK
+    uint32_t waarde = (SystemCoreClock / 1000) - 1;
+
+    // Stappen zijn register-level (via definities in stm32f4xx.h)
+    SysTick->LOAD = waarde;
+    SysTick->VAL = 0;
+    SysTick->CTRL = SysTick_CTRL_CLKSOURCE_Msk |
+                    SysTick_CTRL_TICKINT_Msk |
+                    SysTick_CTRL_ENABLE_Msk;
+}
+
+/**
+ * @brief SysTick Interrupt Service Routine (ISR)
+ *
+ * Dit is de feitelijke interrupt handler die elke 1 ms wordt aangeroepen.
+ * Aangezien stm32f4xx_it.c ontbreekt, wordt deze hier direct gedefinieerd.
+ */
+void SysTick_Handler(void)
+{
+    ms_tick_counter++;
+}
+
+/**
+ * @brief Functie om de executie te vertragen met een niet-blokkerende interrupt-gebaseerde delay.
+ *
+ * @param ms De vertragingstijd in milliseconden.
+ * @return ErrorList Struct met foutstatus.
+ */
+ErrorList wacht(int ms)
+{
+    ErrorList errors = {NO_ERROR, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+
+    if (ms <= 0)
+    {
+        return errors;
+    }
+
+    uint32_t eindtijd = ms_tick_counter + ms;
+
+    // Wacht totdat de teller de doeltijd bereikt
+    while (ms_tick_counter < eindtijd)
+    {
+        //Wait For Interrupt.
+        __WFI();
+    }
+
+    return errors;
 }

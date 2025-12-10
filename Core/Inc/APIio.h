@@ -22,6 +22,9 @@
 #include <stdint.h>
 
 #include "APIerror.h"
+#include "stm32f4xx.h"
+
+extern volatile uint32_t ms_tick_counter;
 
 /**
  * @brief Maakt een 8-bit VGA kleurwaarde op basis van R/G/B componenten.
@@ -105,3 +108,16 @@ ErrorList drawPixel(int x, int y, const char *kleur);
 uint8_t kleur_omzetter(const char *input);
 
 #endif /* APIIO_H */
+
+
+// Prototype voor handmatige SysTick configuratie
+void SysTick_Init(void);
+
+
+/**
+* @brief Zorgt voor een vertraging (delay) op basis van SysTick.
+*
+* @param ms De gewenste vertraging in milliseconden.
+* @return ErrorList Struct met foutstatus.
+*/
+ErrorList wacht(int ms);
