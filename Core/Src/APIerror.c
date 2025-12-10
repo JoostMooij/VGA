@@ -225,6 +225,7 @@ ErrorCode wacht_error(int ms)
 {
 	if(ms < 1) return ERROR_TIME_TOO_SMALL;
 	return NO_ERROR;
+}
   
 /** @brief Controleer grootte binnen scherm (algemeen) */
 ErrorCode check_grootte_op_scherm(int x, int y, int grootte)
