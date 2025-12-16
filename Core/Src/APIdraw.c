@@ -18,6 +18,7 @@
 #include <stdlib.h>
 #include "bitMap.h"
 #include "font_pearl_8x8.h"
+#include "font_acorn_8x8.h"
 
 /**
  * @brief Teken een lijn van (x1,y1) naar (x2,y2) met opgegeven kleur en dikte.
@@ -308,17 +309,6 @@ ErrorList bitMap(int nr, int x, int y)
 }
 
 /**
- * @brief Tekent een tekststring op het scherm met gespecificeerde stijl en schaal.
- * * @param x De start X-coördinaat.
- * @param y De start Y-coördinaat.
- * @param kleur_str De kleur als string (bv. "zwart").
- * @param tekst_str De tekst die getekend moet worden.
- * @param fontnaam De naam van het font (moet "pearl" zijn voor deze implementatie).
- * @param fontgrootte De schaalfactor (1 is 8x8, 2 is 16x16, etc.).
- * @param fontstijl De stijl ("normaal" of "vet").
- * @return ErrorList Retourneert 0 bij succes.
- */
-/**
  * @brief Tekent een tekststring op het scherm met gespecificeerde stijl en schaal,
  * gebruikmakend van het Pearl 8x8 bitmap font.
  * * @param x De start X-coördinaat.
@@ -330,56 +320,69 @@ ErrorList bitMap(int nr, int x, int y)
  * @param fontstijl De stijl ("normaal" of "vet").
  * @return ErrorList Retourneert 0 bij succes.
  */
-void tekst(int x, int y, const char *kleur_str, const char* tekst_str, const char* fontnaam, int fontgrootte, const char* fontstijl)
+void tekst(int x, int y, const char *kleur_str, const char* tekst_str, const char* fontnaam, int schaal_factor, const char* fontstijl)
 {
-    // --- Initialisatie en Validatie ---
-    if (tekst_str == NULL || tekst_str[0] == '\0') {
-        return; // Verlaat de functie zonder actie
+    // ... (Validatie en Font Selectie blijft hetzelfde) ...
+
+    if (tekst_str == NULL || tekst_str[0] == '\0' || schaal_factor < 1) {
+        return;
     }
 
-    // Zorg voor een minimale grootte
-    if (fontgrootte < 1) {
-        fontgrootte = 1;
+    const unsigned char *active_font_data;
+    if (strcmp(fontnaam, "pearl") == 0) {
+        active_font_data = fontdata_pearl8x8;
+    } else if (strcmp(fontnaam, "acorn") == 0) {
+        active_font_data = fontdata_acorn8x8;
+    } else {
+        active_font_data = fontdata_pearl8x8;
     }
 
-    // Controleer de stijl
-    int is_vet = (strcmp(fontstijl, "vet") == 0);
+    // STIJL CONTROLE
+    int is_vet    = (strcmp(fontstijl, "vet") == 0);
+    int is_cursief = (strcmp(fontstijl, "cursief") == 0);
     int current_char_index = 0;
 
-    // --- Hoofdloop: Karakter voor Karakter ---
+    // --- 2. Hoofdloop: Karakter voor Karakter ---
     while (tekst_str[current_char_index] != '\0') {
 
         unsigned char karakter = (unsigned char)tekst_str[current_char_index];
-        // Bereken de start-index in de Pearl font array (8 bytes per karakter)
-        int bitmap_index = karakter * 8;
+        int bitmap_index = karakter * BASE_FONT_SIZE;
 
         // --- Rasterloop: Rij voor Rij (8 rijen hoog) ---
-        for (int rij = 0; rij < 8; rij++) {
+        for (int rij = 0; rij < BASE_FONT_SIZE; rij++) {
 
-            // Haal de byte op die de 8 pixels voor deze rij vertegenwoordigt
-            unsigned char rij_data = fontdata_pearl8x8[bitmap_index + rij];
+            unsigned char rij_data = active_font_data[bitmap_index + rij];
+
+            // CURSIEF LOGICA: Bepaal de horizontale verschuiving (shear)
+            // Hoe lager de rij (dichter bij de onderkant van het karakter), hoe groter de verschuiving naar rechts.
+            // We kiezen hier voor een verschuiving van 1 pixel per 3 rijen.
+            int offset_schuin = 0;
+            if (is_cursief) {
+                // Deel de rij door een factor (bv. 3 of 4) en vermenigvuldig met de schaal_factor
+                // Zodat de schuinte toeneemt met de grootte van het font.
+                offset_schuin = (rij / 3) * schaal_factor;
+            }
 
             // --- Bitloop: Kolom voor Kolom (8 bits breed) ---
-            // Loopt van bit 7 (links) naar bit 0 (rechts)
-            for (int bit = 0; bit < 8; bit++) {
+            for (int bit = 0; bit < BASE_FONT_SIZE; bit++) {
 
-                // Controleer of de bit een 1 is (pixel moet getekend worden)
                 if ((rij_data >> (7 - bit)) & 1) {
 
-                    // Schaling: Teken de pixel als een blokje van (fontgrootte x fontgrootte)
-                    for (int s_y = 0; s_y < fontgrootte; s_y++) {
-                        for (int s_x = 0; s_x < fontgrootte; s_x++) {
+                    // DE SCALING KERNEL
+                    for (int s_y = 0; s_y < schaal_factor; s_y++) {
+                        for (int s_x = 0; s_x < schaal_factor; s_x++) {
 
-                            // Bereken de absolute pixelcoördinaten
-                            int pixel_x = x + (bit * fontgrootte) + s_x;
-                            int pixel_y = y + (rij * fontgrootte) + s_y;
+                            // Basiscoördinaten van de pixel op het scherm
+                            // **CURSIEF TOEGEVOEGD HIER**
+                            int pixel_x = x + (bit * schaal_factor) + s_x + offset_schuin;
+                            int pixel_y = y + (rij * schaal_factor) + s_y;
 
-                            // 1. De standaard pixel tekenen (drawPixel roept intern kleur_omzetter aan)
                             (void)drawPixel(pixel_x, pixel_y, kleur_str);
 
-                            // 2. Indien vet, teken een extra pixel direct ernaast om de 'bold' look te creëren
+                            // VET LOGICA
                             if (is_vet) {
-                                (void)drawPixel(pixel_x + 1, pixel_y, kleur_str);
+                                // Verschuif de hele geschaalde kolom naar rechts met 1 * schaal_factor
+                                (void)drawPixel(pixel_x + schaal_factor, pixel_y, kleur_str);
                             }
                         }
                     }
@@ -387,13 +390,25 @@ void tekst(int x, int y, const char *kleur_str, const char* tekst_str, const cha
             }
         }
 
-        // --- Voorbereiding Volgend Karakter ---
-        // Bereken de breedte van het getekende karakter, inclusief de eventuele bold-offset
-        int char_width = (is_vet ? 9 : 8) * fontgrootte;
-        x += char_width; // Verplaats de x-coördinaat voor het volgende karakter
+        // --- 3. Voorbereiding Volgend Karakter ---
 
+        int char_width = BASE_FONT_SIZE * schaal_factor;
+
+        // Pas de breedte aan op basis van de gebruikte stijlen:
+        if (is_vet) {
+            char_width += schaal_factor; // Extra breedte voor de 'vet' kolom
+        }
+
+        // De cursieve stijl verhoogt de X-positie van het volgende karakter door de maximale shear
+        // De maximale verschuiving vindt plaats bij de laatste rij (rij=7).
+        if (is_cursief) {
+            // Gebruik de maximale offset_schuin die kan optreden (bij rij = 7)
+            char_width += (7 / 3) * schaal_factor;
+        }
+
+        char_width += schaal_factor; // Spatie tussen karakters (één geschaalde kolom)
+
+        x += char_width;
         current_char_index++;
     }
-
-    return; // Geen waarde retourneren, want de functie is 'void'
 }

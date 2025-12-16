@@ -19,6 +19,7 @@
 
 #include "APIerror.h"
 
+#define BASE_FONT_SIZE 8
 /**
  * @brief Teken een lijn van (x1,y1) naar (x2,y2) met opgegeven kleur en dikte.
  *
