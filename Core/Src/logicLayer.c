@@ -249,8 +249,8 @@ void verwerk_commando(const char *input)
             break;
 
         case CMD_SETPIXEL:
-        	//errors = drawPixel(atoi(delen[1]), atoi(delen[2]), delen[3]);
-        	errors = setPixel(atoi(delen[1]), atoi(delen[2]),  atoi(delen[3]));
+        	errors = drawPixel(atoi(delen[1]), atoi(delen[2]), delen[3]);
+        	//errors = setPixel(atoi(delen[1]), atoi(delen[2]),  atoi(delen[3]));
 			break;
 
 
