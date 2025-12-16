@@ -15,11 +15,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include "logicLayer.h"
-#include "stm32_ub_vga_screen.h"
-#include "APIio.h"
-#include "APIdraw.h"
-#include "APIerror.h"
-
+//#include "test_ioLayer.h"
 
 /**
  * @brief Zet een foutcode om naar een tekstuele beschrijving.
