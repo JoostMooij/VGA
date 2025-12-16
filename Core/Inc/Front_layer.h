@@ -5,30 +5,29 @@
  * Author: Luc
  */
 
+/*
+ * Front_layer.h
+ */
+
 #ifndef FRONT_LAYER_H
 #define FRONT_LAYER_H
 
 #include <stdint.h>
 
+#define MAX_CMD_LENGTH 64
+
 /**
- * @brief Structuur om de geparste invoer van de gebruiker op te slaan.
- * * Dit omvat het commando en de bijbehorende parameters zoals
- * coördinaten en kleurnaam.
+ * @brief Structuur om de input als volledige string op te slaan.
+ * Bijvoorbeeld: "setPixel 10 20 RED"
  */
 typedef struct {
-    char command[12];     ///< Het ingevoerde commando (max. 11 karakters + NULL)
-    int x[16];            ///< X-coördinaten array
-    int y[16];            ///< Y-coördinaten array
-    char color_name[16];  ///< Naam van de kleur (max. 15 karakters + NULL)
+    char full_command[MAX_CMD_LENGTH]; ///< De volledige string (commando + args)
 } UserInput_t;
 
 
 /**
- * @brief Hoofdfunctie voor het afhandelen van UART-invoer.
- * * Leest een regel van de UART, parseert het commando, en roept
- * de juiste commandohandler aan. De geparste gegevens worden opgeslagen in 'in'.
- * * @param in Pointer naar een UserInput_t structuur waarin de geparste
- * gebruikersinvoer wordt opgeslagen.
+ * @brief Leest UART invoer, valideert commando's en vult de struct met een complete string.
+ * @param in Pointer naar de UserInput_t struct.
  */
 void Handel_UART_Input(UserInput_t *in);
 

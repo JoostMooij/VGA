@@ -20,8 +20,10 @@
 
 #include "UART.h"
 
-// Debug variable (optioneel voor debugging)
 volatile uint32_t uart_pclk1_debug = 0;
+volatile char uart_rx_buffer[RX_BUFFER_SIZE];
+volatile uint32_t uart_rx_index = 0;
+volatile uint8_t uart_command_ready = 0;
 
 /**
  * @brief  Geeft de huidige APB1-klok (PCLK1) terug.
@@ -59,33 +61,26 @@ static uint32_t UART_GetPCLK1(void)
 
 void UART2_Init(uint32_t baudrate)
 {
-    uint32_t pclk1 = UART_GetPCLK1();
-    uart_pclk1_debug = pclk1; // optioneel voor debugger
-
     RCC->AHB1ENR |= RCC_AHB1ENR_GPIOAEN;
     RCC->APB1ENR |= RCC_APB1ENR_USART2EN;
 
-    // Configure PA3 (TX) & PA2 (RX) as Alternate Function AF7 (USART2)
     GPIOA->MODER &= ~((3U << (2*2)) | (3U << (3*2)));
     GPIOA->MODER |=  ((2U << (2*2)) | (2U << (3*2)));
     GPIOA->AFR[0] &= ~((0xF << (4*2)) | (0xF << (4*3)));
     GPIOA->AFR[0] |=  ((7 << (4*2)) | (7 << (4*3)));
 
-    GPIOA->OSPEEDR |= ((3U << (2*2)) | (3U << (3*2)));
-    GPIOA->OTYPER  &= ~((1U<<2) | (1U<<3));
-    GPIOA->PUPDR   &= ~((3U << (2*2)) | (3U << (3*2)));
+    uint32_t pclk1 = SystemCoreClock / 4;
+    USART2->BRR = (pclk1 + baudrate/2) / baudrate;
 
-    USART2->CR1 = 0;
-    USART2->CR2 = 0;
-    USART2->CR3 = 0;
+    USART2->CR1 =
+          USART_CR1_RE
+        | USART_CR1_TE
+        | USART_CR1_RXNEIE
+        | USART_CR1_UE;
 
-    uint32_t brr = (pclk1 + baudrate/2) / baudrate;
-    USART2->BRR = brr;
-
-    USART2->CR1 |= USART_CR1_RE;   // Receiver enable
-    USART2->CR1 |= USART_CR1_TE;   // Transmitter enable
-    USART2->CR1 |= USART_CR1_UE;   // USART enable
+    NVIC_EnableIRQ(USART2_IRQn);
 }
+
 
 /**
  * @brief  Verstuurt één karakter via UART2.
@@ -153,3 +148,21 @@ void UART2_ReadString(char *buf, uint32_t maxlen)
     }
 }
 
+void USART2_IRQHandler(void)
+{
+    if (USART2->SR & USART_SR_RXNE)
+    {
+        char c = USART2->DR;
+
+        if (c == '\r' || c == '\n')
+        {
+            uart_rx_buffer[uart_rx_index] = '\0';
+            uart_rx_index = 0;
+            uart_command_ready = 1;
+        }
+        else if (uart_rx_index < RX_BUFFER_SIZE - 1)
+        {
+            uart_rx_buffer[uart_rx_index++] = c;
+        }
+    }
+}

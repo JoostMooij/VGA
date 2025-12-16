@@ -17,13 +17,16 @@
 
 #include "stm32f4xx.h"
 
-// Optioneel: externe debug variable declaratie, maar géén definitie!
-// extern volatile uint32_t uart_pclk1_debug;
+#define RX_BUFFER_SIZE 128
 
+extern volatile char uart_rx_buffer[RX_BUFFER_SIZE];
+extern volatile uint32_t uart_rx_index;
+extern volatile uint8_t uart_command_ready;
+
+// UART API
 void UART2_Init(uint32_t baudrate);
 void UART2_SendChar(char c);
 void UART2_WriteString(const char *str);
-char UART2_ReadChar(void);
-void UART2_ReadString(char *buf, uint32_t maxlen);
 
 #endif /* INC_UART_H_ */
+

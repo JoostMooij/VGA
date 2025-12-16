@@ -4,94 +4,56 @@
 // MCU      : STM32F4xx
 //--------------------------------------------------------------
 
-/**
-
-@file main.c
-
-@brief Hoofdprogramma voor UART communicatie.
-
-@author JouwNaam
-*/
 #include "main.h"
-#include <math.h>
-#include "APIio.h"
-#include "APIerror.h"
-#include "APIdraw.h"
+#define BUFFER_SIZE 128
+char buffer[BUFFER_SIZE]; // De buffer moet buiten main gedefinieerd zijn als je deze overal wilt gebruiken
 
 int main(void)
 {
-	SystemInit(); // System speed to 168MHz
-	API_init_io();          // init VGA
-	SysTick_Init();
-	(void)clearscherm("wit");
-	(void)bitMap(1, 50, 50);
-	(void)bitMap(2, 70, 50);
-	(void)bitMap(3, 90, 50);
-	(void)bitMap(4, 110, 50);
-	(void)bitMap(5, 160, 50);
-	(void)bitMap(6, 220, 50);
+    SystemInit();
+    SystemCoreClockUpdate();
+    UART2_Init(115200);
+    (void)API_init_io();
+    (void)clearscherm("wit");
+    UART2_WriteString("> ");
 
-	(void)bitMap(7, 175, 150);
-	(void)bitMap(8, 60, 100);
-	(void)bitMap(9, 60, 190);
-	(void)drawPixel(100, 100, "rood");
-	(void)lijn(10, 10, 10, 150, "rood", 10);
-	(void)rechthoek(80, 80, 60, 40, "geel", 0);
-	(void)figuur(10,10,60,20,30,30,90,40,150,50,"zwart");
-	(void)wacht(100);
-	(void)cirkel(90, 90, 50, "blauw");
-	(void)toren(180, 150, 45, "groen", "geel");
-  while(1)
-  {
-		(void)bitMap(8, 60, 100);
-		(void)wacht(1000);
-		(void)bitMap(9, 60, 100);
-		(void)wacht(160);
-		(void)bitMap(8, 60, 100);
-		(void)wacht(160);
-		(void)bitMap(9, 60, 100);
-		(void)wacht(160);
-		(void)bitMap(8, 60, 100);
-		(void)wacht(160);
-		(void)bitMap(9, 60, 100);
-		(void)wacht(160);
-		(void)bitMap(8, 60, 100);
-		(void)wacht(160);
-		(void)bitMap(9, 60, 100);
-		(void)wacht(160);
+    UserInput_t input;
 
-		(void)bitMap(8, 60, 100);
-		(void)wacht(1000);
-		(void)bitMap(9, 60, 100);
-		(void)wacht(90);
-		(void)bitMap(8, 60, 100);
-		(void)wacht(90);
-		(void)bitMap(9, 60, 100);
-		(void)wacht(90);
-		(void)bitMap(8, 60, 100);
-		(void)wacht(90);
-		(void)bitMap(9, 60, 100);
-		(void)wacht(90);
-		(void)bitMap(8, 60, 100);
-		(void)wacht(90);
-		(void)bitMap(9, 60, 100);
-		(void)wacht(90);
+    while (1)
+    {
 
-		(void)bitMap(8, 60, 100);
-		(void)wacht(1000);
-		(void)bitMap(9, 60, 100);
-		(void)wacht(40);
-		(void)bitMap(8, 60, 100);
-		(void)wacht(40);
-		(void)bitMap(9, 60, 100);
-		(void)wacht(40);
-		(void)bitMap(8, 60, 100);
-		(void)wacht(40);
-		(void)bitMap(9, 60, 100);
-		(void)wacht(40);
-		(void)bitMap(8, 60, 100);
-		(void)wacht(40);
-		(void)bitMap(9, 60, 100);
-		(void)wacht(40);
-  }
+    	if (uart_command_ready)
+    	{
+    	    // Kopieer de ontvangen string naar de input struct
+    	    memset(&input, 0, sizeof(UserInput_t));
+    	    strncpy(input.full_command, uart_rx_buffer, MAX_CMD_LENGTH - 1);
+
+    	    // Debug print: hele string zichtbaar maken
+    	    UART2_WriteString("\r\n[RX]: \"");
+    	    UART2_WriteString(input.full_command);
+    	    UART2_WriteString("\"\r\n");
+
+    	    char dbg[64];
+    	    snprintf(dbg, sizeof(dbg), "[LEN]: %d\r\n", (int)strlen(input.full_command));
+    	    UART2_WriteString("Dit is de string die naar string_ophalen gaat: ");
+    	    UART2_WriteString(input.full_command);  // print de string
+    	    UART2_WriteString("\r\n");
+    	    UART2_WriteString(dbg);
+
+    	    // Verwerk het commando
+    	    Handel_UART_Input(&input);
+
+    	    // Stuur de string door naar string_ophalen
+    	    string_ophalen(input.full_command);
+
+    	    // Prompt opnieuw
+    	    UART2_WriteString("> ");
+
+    	    // Reset de flag en index voor nieuwe input
+    	    uart_command_ready = 0;
+    	    uart_rx_index = 0;
+    	}
+
+    }
 }
+
