@@ -43,6 +43,55 @@ int main(void)
 	(void)toren(180, 150, 45, "groen", "geel");
   while(1)
   {
+		(void)bitMap(8, 60, 100);
+		(void)wacht(1000);
+		(void)bitMap(9, 60, 100);
+		(void)wacht(160);
+		(void)bitMap(8, 60, 100);
+		(void)wacht(160);
+		(void)bitMap(9, 60, 100);
+		(void)wacht(160);
+		(void)bitMap(8, 60, 100);
+		(void)wacht(160);
+		(void)bitMap(9, 60, 100);
+		(void)wacht(160);
+		(void)bitMap(8, 60, 100);
+		(void)wacht(160);
+		(void)bitMap(9, 60, 100);
+		(void)wacht(160);
 
+		(void)bitMap(8, 60, 100);
+		(void)wacht(1000);
+		(void)bitMap(9, 60, 100);
+		(void)wacht(90);
+		(void)bitMap(8, 60, 100);
+		(void)wacht(90);
+		(void)bitMap(9, 60, 100);
+		(void)wacht(90);
+		(void)bitMap(8, 60, 100);
+		(void)wacht(90);
+		(void)bitMap(9, 60, 100);
+		(void)wacht(90);
+		(void)bitMap(8, 60, 100);
+		(void)wacht(90);
+		(void)bitMap(9, 60, 100);
+		(void)wacht(90);
+
+		(void)bitMap(8, 60, 100);
+		(void)wacht(1000);
+		(void)bitMap(9, 60, 100);
+		(void)wacht(40);
+		(void)bitMap(8, 60, 100);
+		(void)wacht(40);
+		(void)bitMap(9, 60, 100);
+		(void)wacht(40);
+		(void)bitMap(8, 60, 100);
+		(void)wacht(40);
+		(void)bitMap(9, 60, 100);
+		(void)wacht(40);
+		(void)bitMap(8, 60, 100);
+		(void)wacht(40);
+		(void)bitMap(9, 60, 100);
+		(void)wacht(40);
   }
 }
