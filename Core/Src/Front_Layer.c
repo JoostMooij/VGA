@@ -1,5 +1,7 @@
 /*
  * front_layer.c
+ *
+ * Aangepast voor interrupt-driven UART.
  */
 
 #include "UART.h"
@@ -9,132 +11,73 @@
 #include <stdlib.h>
 
 #define MAX_INPUT 64
-static char buffer[MAX_INPUT];
-
-
-// ---------------- Buffer Utilities ----------------
-static void ReadLine(char *dst)
-{
-    memset(dst, 0, MAX_INPUT);
-    UART2_ReadString(dst, MAX_INPUT);
-}
-
-// ---------------- Pixel Handler -------------------------
-// Binnen frontlayer.c
-
-// ---------------- Pixel Handler -------------------------
-static void Handle_setPixel(UserInput_t *in)
-{
-    // De globale 'buffer' bevat de bewerkte input (met spaties i.p.v. komma's)
-
-    // Check of de gebruiker alles in één keer heeft getypt (d.w.z. 'buffer' is langer dan alleen "setPixel")
-    if(strlen(buffer) > 8)
-    {
-        // Input was compleet. Doe niets.
-        // Handel_UART_Input zal de ruwe string (met komma's) overnemen,
-        // wat prima is als de gebruiker zelf de komma na setPixel heeft getypt.
-        return;
-    }
-
-    // Input was NIET compleet (de gebruiker typte enkel 'setPixel'), start interactieve modus.
-    UART2_WriteString("Voer 'X,Y,KLEUR' (bijv: 120,40,BLUE):");
-
-    char param_buffer[MAX_INPUT];
-    ReadLine(param_buffer); // Leest de parameters INCLUSIEF komma's
-    UART2_WriteString("\r\n");
-
-    // BELANGRIJK: Construeer de volledige string:
-    // "setPixel" + ", " + "200, 50, RED"  -> "setPixel, 200, 50, RED"
-    snprintf(in->full_command, MAX_CMD_LENGTH, "setPixel, %s", param_buffer);
-}
-
 
 // ---------------- HELP Handler --------------------------
-void Handle_HELP(UserInput_t *in)
+static void Handle_HELP(void)
 {
-    // Bij HELP zetten we gewoon het commando "HELP" in de struct
-    strcpy(in->full_command, "HELP");
-
-    UART2_WriteString("--- Instructies ---\r\n");
-    UART2_WriteString("Commando opties:\r\n");
-    UART2_WriteString("setPixel  -> 'X, Y, KLEUR'\r\n");
-    UART2_WriteString("HELP   -> laat instructies zien\r\n");
-    UART2_WriteString("> ");
+    UART2_WriteString("\r\n--- Instructies ---\r\n");
+    UART2_WriteString("Commando's:\r\n");
+    UART2_WriteString("setPixel,x,y,kleur   (bv: setPixel,20,20,rood)\r\n");
+    UART2_WriteString("HELP                 laat dit menu zien\r\n");
 }
 
-
-// ---------------- Dispatcher Tabel ----------------------
-typedef void (*CommandHandler)(UserInput_t *);
-
-typedef struct {
-    const char *name;
-    CommandHandler handler;
-} CommandEntry;
-
-static const CommandEntry command_table[] =
+// ---------------- SETPIXEL Handler ----------------------
+static void Handle_setPixel(const char *cmd)
 {
-    { "setPixel", Handle_setPixel },
-    { "HELP",     Handle_HELP  },
-};
+    int x, y;
+    char kleur[16];
 
-static const int command_count = sizeof(command_table) / sizeof(CommandEntry);
+    // Verwacht exact: setPixel,20,20,rood
+    int parsed = sscanf(cmd,
+                         "setPixel,%d,%d,%15s",
+                         &x, &y, kleur);
 
-
-// ---------------- Main Input Function ---------------------
-// ---------------- Main Input Function ---------------------
-void Handel_UART_Input(UserInput_t *in)
-{
-    // Reset de struct
-    memset(in->full_command, 0, sizeof(in->full_command));
-
-    // Lees nieuwe regel
-    char raw_input_buffer[MAX_INPUT]; // <-- NIEUW: Buffer om de ruwe input op te slaan
-    ReadLine(raw_input_buffer);       // Lees in de ruwe buffer
-    UART2_WriteString("\r\n");
-
-    if(strlen(raw_input_buffer) == 0)
+    if (parsed != 3)
     {
-        Handle_HELP(in);
+        UART2_WriteString("\r\nGebruik: setPixel,20,20,rood\r\n");
         return;
     }
 
-    // Kopieer de ruwe input naar de buffer die we gaan bewerken voor dispatching
-    strncpy(buffer, raw_input_buffer, MAX_INPUT);
-    buffer[MAX_INPUT - 1] = '\0';
+    // Debug output
+    char msg[64];
+    snprintf(msg, sizeof(msg),
+             "\r\nPixel -> x=%d y=%d kleur=%s\r\n",
+             x, y, kleur);
+    UART2_WriteString(msg);
 
-    // Oude Komma-fix (Blijft om commando-parsing te garanderen)
-    // De 'buffer' wordt nu gebruikt voor de dispatching,
-    // terwijl 'raw_input_buffer' de onbewerkte string behoudt.
-    for(int i = 0; i < strlen(buffer); i++)
-        if(buffer[i] == ',') buffer[i] = ' '; // Verander komma's in spaties in de bewerkte buffer
+    // TODO: stuur door naar je pixel API
+    // API_setPixel(x, y, kleur);
 
-    // Command uitlezen uit de BEWERKTE buffer
-    char cmd_temp[12];
-    sscanf(buffer, "%11s", cmd_temp);
+    // Als je string_ophalen() wilt gebruiken:
+    string_ophalen(cmd);  // stuurt de volledige originele string door
+}
 
-    // Dispatcher proberen
-    int found = 0;
-    for(int i = 0; i < command_count; i++)
+// ---------------- MAIN DISPATCH FUNCTION ----------------
+void Handel_UART_Input(UserInput_t *in)
+{
+    if (strlen(in->full_command) == 0)
+        return;
+
+    // strip newline/carriage return
+    char *p = in->full_command;
+    while(*p)
     {
-        if(strcmp(cmd_temp, command_table[i].name) == 0)
-        {
-            // De handler (Handle_setPixel, etc.) krijgt nu de taak om de string te vullen.
-            command_table[i].handler(in);
-
-            // Als de handler niet interactief was (d.w.z. de input was compleet)
-            // Kopiëren we de onbewerkte string direct naar de output struct.
-            if(strcmp(in->full_command, "") == 0) { // Check als de handler de string nog niet vulde
-                strncpy(in->full_command, raw_input_buffer, MAX_CMD_LENGTH - 1);
-            }
-
-            found = 1;
-            break;
-        }
+        if(*p == '\r' || *p == '\n') *p = 0;
+        p++;
     }
 
-    if(!found)
+    // HELP command
+    if (strncmp(in->full_command, "HELP", 4) == 0)
     {
-        UART2_WriteString("Onbekend commando.\r\n> ");
-        strcpy(in->full_command, "UNKNOWN");
+        Handle_HELP();
+    }
+    // setPixel command gevolgd door parameters
+    else if (strncmp(in->full_command, "setPixel", 8) == 0)
+    {
+        Handle_setPixel(in->full_command);
+    }
+    else
+    {
+        UART2_WriteString("\r\nOnbekend commando\r\n");
     }
 }
