@@ -15,6 +15,8 @@
 #include <string.h>
 #include <stdlib.h>
 #include "logicLayer.h"
+#include "APIdraw.h"
+#include "APIio.h"
 //#include "test_ioLayer.h"
 
 /**
@@ -217,7 +219,7 @@ void verwerk_commando(const char *input)
             break;
 
         case CMD_BITMAP:
-//        	errors = bitmap(atoi(delen[1]), atoi(delen[2]), atoi(delen[3]));
+        	errors = bitMap(atoi(delen[1]), atoi(delen[2]), atoi(delen[3]));
             break;
 
         case CMD_CLEAR:
@@ -225,7 +227,7 @@ void verwerk_commando(const char *input)
             break;
 
         case CMD_WACHT:
-//        	errors = wacht(atoi(delen[1]));
+        	errors = wacht(atoi(delen[1]));
             break;
 
         case CMD_HERHAAL:
@@ -233,15 +235,15 @@ void verwerk_commando(const char *input)
             break;
 
         case CMD_CIRKEL:
-//        	errors = cirkel(atoi(delen[1]), atoi(delen[2]), atoi(delen[3]), delen[4]);
+        	errors = cirkel(atoi(delen[1]), atoi(delen[2]), atoi(delen[3]), delen[4]);
             break;
 
         case CMD_FIGUUR:
-//        	errors = figuur(atoi(delen[1]), atoi(delen[2]), atoi(delen[3]), atoi(delen[4]), atoi(delen[5]), atoi(delen[6]), atoi(delen[7]), atoi(delen[8]), atoi(delen[9]), atoi(delen[10]), delen[11]);
+        	errors = figuur(atoi(delen[1]), atoi(delen[2]), atoi(delen[3]), atoi(delen[4]), atoi(delen[5]), atoi(delen[6]), atoi(delen[7]), atoi(delen[8]), atoi(delen[9]), atoi(delen[10]), delen[11]);
             break;
 
         case CMD_TOREN:
-//        	errors = toren(atoi(delen[1]), atoi(delen[2]), atoi(delen[3]), delen[4], delen[5]);
+        	errors = toren(atoi(delen[1]), atoi(delen[2]), atoi(delen[3]), delen[4], delen[5]);
             break;
 
         case CMD_SETPIXEL:
