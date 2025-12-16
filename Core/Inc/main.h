@@ -15,6 +15,8 @@
 #include "UART.h"        // Zorg ervoor dat deze is inbegrepen
 #include <string.h>
 #include <stdio.h>
+#include <stdio.h>
+#include <string.h>
 
 
 //--------------------------------------------------------------

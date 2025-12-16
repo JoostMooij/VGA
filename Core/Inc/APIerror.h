@@ -25,7 +25,8 @@ typedef enum
     FUNC_figuur      = 5,
     FUNC_cirkel      = 6,
     FUNC_toren       = 7,
-  	FUNC_wacht		   = 8,
+  	FUNC_wacht		 = 8,
+	FUNC_herhaal     = 9,
     // later uitbreiden met andere functies
 } FunctionID;
 
@@ -45,7 +46,9 @@ typedef enum
     ERROR_RADIUS_TOO_SMALL   = 8,
     ERROR_GROOTTE_TOO_SMALL  = 9,
     ERROR_TOREN_BUITEN_SCHERM = 10,
-    ERROR_TIME_TOO_SMALL   = 11,
+    ERROR_TIME_TOO_SMALL     = 11,
+	AANTAL_NOT_IN_RANGE      = 12,
+	HOEVAAK_NOT_IN_RANGE     = 13,
 } ErrorCode;
 
 /**
@@ -125,5 +128,14 @@ ErrorCode check_toren_op_scherm(int x, int y, int grootte);
  * @brief Controleer de 'sec'-waarde (0 of 1).
  */
 ErrorCode wacht_error(int ms_error);
+/**
+ * @brief Controleer de 'sec'-waarde (0 of 1).
+ */
+ErrorCode herhaal_aantal_error(int aantal);
+/**
+ * @brief Controleer de 'sec'-waarde (0 of 1).
+ */
+ErrorCode herhaal_hoevaak_error(int hoevaak);
+
 
 #endif

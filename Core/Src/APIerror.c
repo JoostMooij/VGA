@@ -146,6 +146,15 @@ ErrorList Error_handling(FunctionID func,
             break;
         }
 
+
+        case FUNC_herhaal:
+		{
+			ErrorCode aantal_error = herhaal_aantal_error(waarde1);
+			ErrorCode hoevaak_error = herhaal_hoevaak_error(waarde2);
+			if(aantal_error != NO_ERROR) errors.error_var1 = aantal_error;
+			if(hoevaak_error != NO_ERROR) errors.error_var2 = hoevaak_error;
+			break;
+		}
         default:
             /**< Andere functies later */
             break;
@@ -227,6 +236,24 @@ ErrorCode wacht_error(int ms)
 	return NO_ERROR;
 }
   
+/**
+ * @brief
+ */
+ErrorCode herhaal_aantal_error(int aantal)
+{
+	if(aantal < 1 || aantal > 40)  return AANTAL_NOT_IN_RANGE;
+	return NO_ERROR;
+}
+
+/**
+ * @brief
+ */
+ErrorCode herhaal_hoevaak_error(int hoevaak)
+{
+	if(hoevaak < 1 || hoevaak > 40) return HOEVAAK_NOT_IN_RANGE;
+	return NO_ERROR;
+}
+
 /** @brief Controleer grootte binnen scherm (algemeen) */
 ErrorCode check_grootte_op_scherm(int x, int y, int grootte)
 {
