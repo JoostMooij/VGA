@@ -79,6 +79,29 @@ ErrorList drawPixel(int x, int y, const char *kleur)
 }
 
 /**
+ * @brief Tekent een pixel op het VGA-scherm.
+ *
+ * @param x     X-coördinaat van de pixel.
+ * @param y     Y-coördinaat van de pixel.
+ * @param kleur Kleur als string (bijv. "rood", "groen").
+ *
+ * @return ErrorList Struct met validatiestatus van x, y en kleur.
+ *
+ * Wrapt UB_VGA_SetPixel() en valideert alle parameters via Error_handling().
+ * Bij ongeldige invoer worden fouten geretourneerd, anders wordt de pixel gezet.
+ */
+ErrorList setPixel(int x, int y, int kleur)
+{
+    ErrorList errors = Error_handling(FUNC_drawPixel, x, y, kleur,0,0,0,0,0,0,0,0);
+    if (errors.error_var1 || errors.error_var2 || errors.error_var3)
+    {
+        return errors;
+    }
+    UB_VGA_SetPixel(x, y, kleur);
+    return errors;
+}
+
+/**
  * @brief Zet een ingevoerde Nederlandse kleurnaam om naar een VGA-kleurcode.
  *
  * @param input String met kleurnaam ("rood", "groen", "lichtblauw", ...).
