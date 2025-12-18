@@ -19,6 +19,7 @@
 
 #include "APIerror.h"
 
+#define BASE_FONT_SIZE 8
 /**
  * @brief Teken een lijn van (x1,y1) naar (x2,y2) met opgegeven kleur en dikte.
  *
@@ -105,5 +106,8 @@ ErrorList bitMap(int nr, int x, int y);
  * @note Bouwt de toren laag voor laag op, tekent vervolgens mast en vlag.
  */
 ErrorList toren(int x, int y, int grootte, const char* kleur1, const char* kleur2);
+
+void tekst (int x, int y, const char *kleur_str, const char* tekst_str, const char* fontnaam, int fontgrootte, const char* fontstijl);
+
 
 #endif

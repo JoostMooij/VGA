@@ -26,7 +26,8 @@ typedef enum
     FUNC_cirkel      = 6,
     FUNC_toren       = 7,
   	FUNC_wacht		   = 8,
-	  FUNC_bitmap		   = 9,
+	FUNC_bitmap		   = 9,
+	FUNC_tekst			= 10,
     // later uitbreiden met andere functies
 } FunctionID;
 
@@ -48,6 +49,9 @@ typedef enum {
     ERROR_TIME_TOO_SMALL        = 11,
 	  ERROR_bitmap_nr	            = 12,
 	  ERROR_bitmap_buiten_scherm  = 13,
+	  ERROR_tekst_buiten_scherm = 14,
+	  ERROR_TEXT_EMPTY			= 15,
+	  ERROR_INVALID_STYL		= 16,
 } ErrorCode;
 
 /**
@@ -132,6 +136,10 @@ ErrorCode check_toren_op_scherm(int x, int y, int grootte);
  * @brief Controleer de 'sec'-waarde (0 of 1).
  */
 ErrorCode wacht_error(int ms_error);
+/**
+ * @brief Controleer of de groote van de tekst niet buiten het scherm vallen.
+ */
+ErrorCode check_tekst_op_scherm(int x, int y, const char* tekst_str, int schaal_factor, const char* fontstijl);
 
 
 #endif

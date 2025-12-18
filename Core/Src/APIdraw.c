@@ -17,6 +17,8 @@
 #include "APIerror.h"
 #include <stdlib.h>
 #include "bitMap.h"
+#include "font_pearl_8x8.h"
+#include "font_acorn_8x8.h"
 
 /**
  * @brief Teken een lijn van (x1,y1) naar (x2,y2) met opgegeven kleur en dikte.
@@ -304,4 +306,109 @@ ErrorList bitMap(int nr, int x, int y)
     drawBitmap(x0, y0, bmp_ptr, use_transparency);
 
     return errors;
+}
+
+/**
+ * @brief Tekent een tekststring op het scherm met gespecificeerde stijl en schaal,
+ * gebruikmakend van het Pearl 8x8 bitmap font.
+ * * @param x De start X-coördinaat.
+ * @param y De start Y-coördinaat.
+ * @param kleur_str De kleur als string (bv. "zwart"), welke direct wordt doorgegeven aan drawPixel.
+ * @param tekst_str De tekst die getekend moet worden.
+ * @param fontnaam De naam van het font (moet "pearl" zijn voor deze implementatie).
+ * @param fontgrootte De schaalfactor (1 is 8x8, 2 is 16x16, etc.).
+ * @param fontstijl De stijl ("normaal" of "vet").
+ * @return ErrorList Retourneert 0 bij succes.
+ */
+void tekst(int x, int y, const char *kleur_str, const char* tekst_str, const char* fontnaam, int schaal_factor, const char* fontstijl)
+{
+    // --- 1. Error Handling ---
+
+    // Zet de kleur-string om naar een integer voor de validatie
+    // (Zorg dat kleur_omzetter beschikbaar is via een header of extern)
+    int kleur_val = kleur_omzetter(kleur_str);
+
+    // Roep de centrale error handler aan.
+    // We casten de pointers naar int omdat de interface van Error_handling dat vereist.
+    ErrorList errors = Error_handling(FUNC_tekst,
+                                     x, y, kleur_val,
+                                     (int)tekst_str, (int)fontnaam, schaal_factor, (int)fontstijl,
+                                     0, 0, 0, 0);
+
+    // Controleer of er fouten zijn gevonden in de variabelen die we hebben meegegeven
+    if (errors.error_var1 != NO_ERROR || // X-fout
+        errors.error_var2 != NO_ERROR || // Y-fout
+        errors.error_var3 != NO_ERROR || // Kleur-fout
+        errors.error_var4 != NO_ERROR)   // Tekst/Breedte/Stijl-fout (uit check_tekst_op_scherm)
+    {
+        // Optioneel: stuur hier een UART bericht met de specifieke error
+        return;
+    }
+
+    // --- 2. Voorbereiding voor tekenen ---
+
+    const unsigned char *active_font_data;
+    if (strcmp(fontnaam, "pearl") == 0) {
+        active_font_data = fontdata_pearl8x8;
+    } else if (strcmp(fontnaam, "acorn") == 0) {
+        active_font_data = fontdata_acorn8x8;
+    } else {
+        active_font_data = fontdata_pearl8x8;
+    }
+
+    int is_vet    = (strcmp(fontstijl, "vet") == 0);
+    int is_cursief = (strcmp(fontstijl, "cursief") == 0);
+    int current_char_index = 0;
+
+    // --- 3. Hoofdloop: Karakter voor Karakter ---
+    while (tekst_str[current_char_index] != '\0') {
+
+        unsigned char karakter = (unsigned char)tekst_str[current_char_index];
+        int bitmap_index = karakter * BASE_FONT_SIZE;
+
+        for (int rij = 0; rij < BASE_FONT_SIZE; rij++) {
+            unsigned char rij_data = active_font_data[bitmap_index + rij];
+
+            int offset_schuin = 0;
+            if (is_cursief) {
+                offset_schuin = (rij / 3) * schaal_factor;
+            }
+
+            for (int bit = 0; bit < BASE_FONT_SIZE; bit++) {
+                if ((rij_data >> (7 - bit)) & 1) {
+                    for (int s_y = 0; s_y < schaal_factor; s_y++) {
+                        for (int s_x = 0; s_x < schaal_factor; s_x++) {
+
+                            int pixel_x = x + (bit * schaal_factor) + s_x + offset_schuin;
+                            int pixel_y = y + (rij * schaal_factor) + s_y;
+
+                            // Teken de basis pixel
+                            (void)drawPixel(pixel_x, pixel_y, kleur_str);
+
+                            if (is_vet) {
+                                // Teken de extra pixel voor vetgedrukt
+                                (void)drawPixel(pixel_x + schaal_factor, pixel_y, kleur_str);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // --- 4. Bereken positie voor volgend karakter ---
+        int char_width = BASE_FONT_SIZE * schaal_factor;
+
+        if (is_vet) {
+            char_width += schaal_factor;
+        }
+
+        if (is_cursief) {
+            char_width += (7 / 3) * schaal_factor;
+        }
+
+        char_width += schaal_factor; // Spatie tussen karakters
+
+        x += char_width;
+        current_char_index++;
+    }
 }
