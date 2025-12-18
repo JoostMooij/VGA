@@ -81,37 +81,35 @@ const char* errorCodeToString(int code)
 
 void errorterugsendfunctie(const ErrorList* errors)
 {
-    int* errorArray[11];
-    errorArray[0] = (int*)&errors->error_var1;
-    errorArray[1] = (int*)&errors->error_var2;
-    errorArray[2] = (int*)&errors->error_var3;
-    errorArray[3] = (int*)&errors->error_var4;
-    errorArray[4] = (int*)&errors->error_var5;
-    errorArray[5] = (int*)&errors->error_var6;
-    errorArray[6] = (int*)&errors->error_var7;
-    errorArray[7] = (int*)&errors->error_var8;
-    errorArray[8] = (int*)&errors->error_var9;
-    errorArray[9] = (int*)&errors->error_var10;
-    errorArray[10] = (int*)&errors->error_var11;
+    const int* errorArray[11] = {
+        &errors->error_var1,
+        &errors->error_var2,
+        &errors->error_var3,
+        &errors->error_var4,
+        &errors->error_var5,
+        &errors->error_var6,
+        &errors->error_var7,
+        &errors->error_var8,
+        &errors->error_var9,
+        &errors->error_var10,
+        &errors->error_var11
+    };
 
-    int i = 0;
-    while (i < 11)
+    for (int i = 0; i < 11; i++)
     {
         int code = *errorArray[i];
 
-        if (code > 0 && code < 8)
+        if (code != NO_ERROR)
         {
-            const char* errorStr = errorCodeToString(code);
-
             char msg[MAX_ERROR_MESSAGE];
-            sprintf(msg, "Found error: %s\n", errorStr);
-
+            snprintf(msg, MAX_ERROR_MESSAGE,
+                     "Found error: %s\n",
+                     errorCodeToString(code));
             UART2_WriteString(msg);
         }
-
-        i++;
     }
 }
+
 
 
 /**

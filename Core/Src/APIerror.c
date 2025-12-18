@@ -157,6 +157,7 @@ ErrorList Error_handling(FunctionID func,
 			if(nr_error		!= NO_ERROR) errors.error_var1 = nr_error;
 			if(x_error      != NO_ERROR) errors.error_var2 = x_error;
 			if(y_error      != NO_ERROR) errors.error_var3 = y_error;
+			break;
         }
 
         case FUNC_tekst:
