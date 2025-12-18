@@ -107,7 +107,7 @@ ErrorList bitMap(int nr, int x, int y);
  */
 ErrorList toren(int x, int y, int grootte, const char* kleur1, const char* kleur2);
 
-void tekst (int x, int y, const char *kleur_str, const char* tekst_str, const char* fontnaam, int fontgrootte, const char* fontstijl);
+ErrorList tekst (int x, int y, const char *kleur_str, const char* tekst_str, const char* fontnaam, int fontgrootte, const char* fontstijl);
 
 
 #endif

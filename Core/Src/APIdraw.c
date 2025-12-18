@@ -320,7 +320,7 @@ ErrorList bitMap(int nr, int x, int y)
  * @param fontstijl De stijl ("normaal" of "vet").
  * @return ErrorList Retourneert 0 bij succes.
  */
-void tekst(int x, int y, const char *kleur_str, const char* tekst_str, const char* fontnaam, int schaal_factor, const char* fontstijl)
+ErrorList tekst(int x, int y, const char *kleur_str, const char* tekst_str, const char* fontnaam, int schaal_factor, const char* fontstijl)
 {
     // --- 1. Error Handling ---
 

@@ -15,6 +15,9 @@
 #define MAX_WOORD 64
 
 #include "APIerror.h"
+#include "APIdraw.h"
+#include "APIio.h"
+#include "UART.h"
 
 /**
  * @brief Alle mogelijke commando’s die de logica kan verwerken.

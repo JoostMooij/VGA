@@ -15,9 +15,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include "logicLayer.h"
-#include "APIdraw.h"
-#include "APIio.h"
-//#include "test_ioLayer.h"
+
 
 /**
  * @brief Zet een foutcode om naar een tekstuele beschrijving.
@@ -32,25 +30,44 @@ const char* errorCodeToString(int code)
 {
     switch (code)
     {
-        case ERROR_X1:
-            return "ERROR_X1";
-        case ERROR_Y1:
-            return "ERROR_Y1";
-        case ERROR_COLOR:
-            return "ERROR_COLOR";
-        case ERROR_DIJKTE_TOO_SMALL:
-            return "ERROR_DIJKTE_TOO_SMALL";
-        case ERROR_BREEDTE:
-            return "ERROR_BREEDTE";
-        case ERROR_HOOGTE:
-            return "ERROR_HOOGTE";
-        case ERROR_GEVULD:
-            return "ERROR_GEVULD";
-        default:
-            return "NO_ERROR";
+    case NO_ERROR:
+        return "NO_ERROR";
+    case ERROR_X1:
+        return "ERROR_X1";
+    case ERROR_Y1:
+        return "ERROR_Y1";
+    case ERROR_COLOR:
+        return "ERROR_COLOR";
+    case ERROR_DIJKTE_TOO_SMALL:
+        return "ERROR_DIJKTE_TOO_SMALL";
+    case ERROR_BREEDTE:
+        return "ERROR_BREEDTE";
+    case ERROR_HOOGTE:
+        return "ERROR_HOOGTE";
+    case ERROR_GEVULD:
+        return "ERROR_GEVULD";
+    case ERROR_RADIUS_TOO_SMALL:
+        return "ERROR_RADIUS_TOO_SMALL";
+    case ERROR_GROOTTE_TOO_SMALL:
+        return "ERROR_GROOTTE_TOO_SMALL";
+    case ERROR_TOREN_BUITEN_SCHERM:
+        return "ERROR_TOREN_BUITEN_SCHERM";
+    case ERROR_TIME_TOO_SMALL:
+        return "ERROR_TIME_TOO_SMALL";
+    case ERROR_bitmap_nr:
+        return "ERROR_bitmap_nr";
+    case ERROR_bitmap_buiten_scherm:
+        return "ERROR_bitmap_buiten_scherm";
+    case ERROR_tekst_buiten_scherm:
+        return "ERROR_tekst_buiten_scherm";
+    case ERROR_TEXT_EMPTY:
+        return "ERROR_TEXT_EMPTY";
+    case ERROR_INVALID_STYL:
+        return "ERROR_INVALID_STYL";
+    default:
+        return "UNKNOWN_ERROR";
     }
 }
-
 
 /**
  * @brief Leest alle foutwaarden uit een ErrorList en stuurt de gevonden fouten via UART.
@@ -215,7 +232,7 @@ void verwerk_commando(const char *input)
             break;
 
         case CMD_TEKST:
-//        	errors = tekst(atoi(delen[1]), atoi(delen[2]), delen[3], delen[4], delen[5], atoi(delen[6]), delen[7]);
+        	errors = tekst(atoi(delen[1]), atoi(delen[2]), delen[3], delen[4], delen[5], atoi(delen[6]), delen[7]);
             break;
 
         case CMD_BITMAP:

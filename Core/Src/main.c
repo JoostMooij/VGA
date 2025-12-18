@@ -16,6 +16,7 @@ int main(void)
     (void)API_init_io();
     (void)clearscherm("wit");
     UART2_WriteString("> ");
+    //(void)tekst(5,10,"zwart","testtesttes","pearl",1,"normaal");
 
     UserInput_t input;
 

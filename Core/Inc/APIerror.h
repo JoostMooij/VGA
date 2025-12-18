@@ -43,15 +43,15 @@ typedef enum {
     ERROR_BREEDTE               = 5,
     ERROR_HOOGTE                = 6,
     ERROR_GEVULD                = 7,
-	  ERROR_RADIUS_TOO_SMALL      = 8,
+	ERROR_RADIUS_TOO_SMALL      = 8,
     ERROR_GROOTTE_TOO_SMALL     = 9,
     ERROR_TOREN_BUITEN_SCHERM   = 10,
     ERROR_TIME_TOO_SMALL        = 11,
-	  ERROR_bitmap_nr	            = 12,
-	  ERROR_bitmap_buiten_scherm  = 13,
-	  ERROR_tekst_buiten_scherm = 14,
-	  ERROR_TEXT_EMPTY			= 15,
-	  ERROR_INVALID_STYL		= 16,
+	ERROR_bitmap_nr	            = 12,
+	ERROR_bitmap_buiten_scherm  = 13,
+	ERROR_tekst_buiten_scherm   = 14,
+	ERROR_TEXT_EMPTY			= 15,
+	ERROR_INVALID_STYL		    = 16,
 } ErrorCode;
 
 /**
