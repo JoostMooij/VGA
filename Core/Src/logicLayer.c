@@ -196,7 +196,8 @@ void verwerk_commando(const char *input)
     char buff[MAX_INPUT];
     char *delen[20];
     int aantal = 0;
-    ErrorList errors;
+    ErrorList errors = {NO_ERROR, NO_ERROR, NO_ERROR, NO_ERROR, NO_ERROR, NO_ERROR,
+            NO_ERROR, NO_ERROR, NO_ERROR, NO_ERROR, NO_ERROR};
 
     strncpy(buff, input, MAX_INPUT);
     buff[MAX_INPUT - 1] = '\0';

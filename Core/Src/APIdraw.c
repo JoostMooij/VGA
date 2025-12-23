@@ -342,7 +342,7 @@ ErrorList tekst(int x, int y, const char *kleur_str, const char* tekst_str, cons
         errors.error_var4 != NO_ERROR)   // Tekst/Breedte/Stijl-fout (uit check_tekst_op_scherm)
     {
         // Optioneel: stuur hier een UART bericht met de specifieke error
-        return;
+        return errors;
     }
 
     // --- 2. Voorbereiding voor tekenen ---
@@ -411,4 +411,5 @@ ErrorList tekst(int x, int y, const char *kleur_str, const char* tekst_str, cons
         x += char_width;
         current_char_index++;
     }
+    return errors;
 }
