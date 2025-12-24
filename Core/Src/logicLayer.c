@@ -119,7 +119,6 @@ void verwerk_commando(const char *input)
     {
         case CMD_LIJN:
         	foutcode = lijn(atoi(delen[1]), atoi(delen[2]), atoi(delen[3]), atoi(delen[4]), delen[5], atoi(delen[6]));
-
             break;
 
         case CMD_RECHTHOEK:

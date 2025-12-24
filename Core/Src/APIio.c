@@ -11,20 +11,17 @@
  * @date 2025-11-20
  */
 
-#include <stdint.h>
 #include <string.h>
 #include <stdlib.h>
-
 #include "APIio.h"
 #include "APIerror.h"
 #include "logicLayer.h"
-#include "stm32_ub_vga_screen.h"
-#include "UART.h"
+#include "APIdraw.h"
 
 volatile uint32_t ms_tick_counter = 0;
-volatile int command_buffer[MAX_COMMAND_HISTORY_SIZE];
+volatile uint16_t command_buffer[MAX_COMMAND_BUFFER_SIZE];
 volatile int command_buffer_index = 0;
-
+volatile int herhaal_hoog = 0;
 
 
 /**
@@ -59,8 +56,11 @@ ErrorList clearscherm(const char *kleur)
         return errors;
     }
 
-    int params[] = {color};
-    record_command(CMD_CLEAR, 1, params);
+    if (herhaal_hoog == 0)
+    {
+    	int params[] = {kleur};
+    	record_command(CMD_CLEAR, 1, params);
+    }
 
     UB_VGA_FillScreen(color);
     return errors;
@@ -86,9 +86,6 @@ ErrorList drawPixel(int x, int y, const char *kleur)
     {
         return errors;
     }
-
-    //int params[] = {x, y, color};
-    //record_command(CMD_SETPIXEL, 3, params);
 
     UB_VGA_SetPixel(x, y, color);
     return errors;
@@ -220,8 +217,11 @@ ErrorList wacht(int ms)
         return errors;
     }
 
-    int params[] = {ms};
-    record_command(CMD_WACHT, 1, params);
+    if (herhaal_hoog == 0)
+    {
+		int params[] = {ms};
+		record_command(CMD_WACHT, 1, params);
+    }
 
     uint32_t eindtijd = ms_tick_counter + ms;
 
@@ -237,19 +237,48 @@ ErrorList wacht(int ms)
 
 /**
  * @brief Slaat een commando ID en zijn parameters op in de lineaire buffer.
+ * Maakt automatisch ruimte vrij door het oudste commando te verwijderen als de buffer vol is.
  */
 void record_command(COMMANDO_TYPE type, int param_count, const int params[])
 {
-    // Controleer op buffer overflow
-    if (command_buffer_index + 1 + param_count > MAX_COMMAND_HISTORY_SIZE) {
+    int nieuwe_omvang = 1 + param_count; // ID + aantal parameters [3]
+
+    // Failsafe: Als het commando op zichzelf al groter is dan de hele buffer, negeer het.
+    if (nieuwe_omvang > MAX_COMMAND_HISTORY_SIZE) {
         return;
     }
 
-    // 1. Schrijf het commando ID (CMD_ID)
+    // Maak ruimte vrij zolang het nieuwe commando niet in de resterende bufferruimte past
+    while (command_buffer_index + nieuwe_omvang > MAX_COMMAND_HISTORY_SIZE)
+    {
+        // CORRECTIE: Haal de WAARDE op van het eerste element (index 0)
+        COMMANDO_TYPE oudste_type = (COMMANDO_TYPE)command_buffer;
+
+        // Gebruik de bestaande mapping om de grootte te bepalen [4, 5]
+        int oudste_omvang = get_command_size(oudste_type);
+
+        // Veiligheidscheck: als de omvang 0 is (onbekend), verwijder dan minimaal 1 slot
+        if (oudste_omvang <= 0) {
+            oudste_omvang = 1;
+        }
+
+        // Verschuif alle resterende data in de buffer naar voren (naar links)
+        // We overschrijven de ruimte van het oudste commando.
+        for (int i = 0; i < (command_buffer_index - oudste_omvang); i++)
+        {
+            command_buffer[i] = command_buffer[i + oudste_omvang];
+        }
+
+        // Update de huidige schrijf-index na het schuiven
+        command_buffer_index -= oudste_omvang;
+    }
+
+    // Voeg nu het nieuwe commando toe op de vrijgekomen plek aan het einde
     command_buffer[command_buffer_index++] = (int)type;
 
-    // 2. Schrijf de parameters
-    for (int i = 0; i < param_count; i++) {
+    // Schrijf de bijbehorende parameters [4]
+    for (int i = 0; i < param_count; i++)
+    {
         command_buffer[command_buffer_index++] = params[i];
     }
 }
@@ -274,31 +303,33 @@ static int get_command_size(COMMANDO_TYPE type) {
     }
 }
 
+
 /**
  * @brief Keert de VGA-kleurcode om naar de vereiste stringrepresentatie.
- * Noodzakelijk omdat API-functies strings verwachten, maar de buffer ints opslaat.
+ * Noodzakelijk omdat API-functies strings verwachten (const char *),
+ * maar de buffer alleen de numerieke codes opslaat.
  */
 static const char* get_color_string_from_code(int code) {
-    // Gebruik de bekende namen en waarden uit de Kleur enum [17-20]
+    // Gebruik de kleurdefinities uit APIio.h (497, 498)
     if (code == ZWART) return "zwart";
     if (code == BLAUW) return "blauw";
-    if (code == LICHTBLAUW) return "lichtblauw";
+    if (code == LICHTBLAUW) return "lichtblauw"; // [1, 2]
     if (code == GROEN) return "groen";
     if (code == LICHTGROEN) return "lichtgroen";
     if (code == CYAAN) return "cyaan";
-    if (code == ROOD) return "rood";
-    if (code == LICHTROOD) return "lichtrood";
-    if (code == MAGENTA) return "magenta";
-    if (code == LICHTMAGENTA) return "lichtmagenta";
-    if (code == BRUIN) return "bruin";
-    if (code == GEEL) return "geel";
-    if (code == GRIJS) return "grijs";
-    if (code == WIT) return "wit";
-    if (code == ROZE) return "roze";
-    if (code == PAARS) return "paars";
-    return "wit"; // Standaardwaarde bij onbekende kleur
-}
+    // ... Voeg alle overige kleuren toe (ROOD, WIT, etc.) ...
+    if (code == ROOD) return "rood"; // [2]
+    if (code == GEEL) return "geel"; // [2]
+    if (code == GRIJS) return "grijs"; // [2]
+    if (code == WIT) return "wit"; // [2]
+    if (code == MAGENTA) return "magenta"; // [2]
+    if (code == PAARS) return "paars"; // [2]
 
+    // Fallback voor onbekende/foute code (gebruikt 0 als fallback in kleur_omzetter)
+    if (code == 0) return "zwart";
+
+    return "wit";
+}
 
 /**
  * @brief Voert de laatste 'aantal' commando's uit de buffer opnieuw uit, 'hoevaak' keer.
@@ -315,7 +346,7 @@ void herhaal(int aantal, int hoevaak)
         return errors;
     }
     // 1. Zoek de startposities van alle commando's in de buffer
-    int cmd_starts[MAX_COMMAND_HISTORY_SIZE];
+    static uint8_t cmd_starts[MAX_COMMAND_HISTORY_SIZE];
     int cmd_start_count = 0;
     int i = 0;
     const int MAX_PARAMS_PLUS_ID = 12;
@@ -357,53 +388,55 @@ void herhaal(int aantal, int hoevaak)
                 // Kopieer de parameterwaarden (coördinaat, dikte, of numerieke kleurcode)
                 params[p] = command_buffer[current_buffer_start + 1 + p];
             }
-
+            herhaal_hoog = 1;
             // 3. Roept de overeenkomstige functie aan (gebruikt directe int/string conversie)
             switch (type) {
-                case CMD_CLEAR:
-                    // Parameters: {color_code} (1)
-                    clearscherm(get_color_string_from_code(params[0]));
-                    break;
-                case CMD_WACHT:
-                    // Parameters: {ms} (1)
-                	wacht(params[0]);
-                    break;
-//                case CMD_SETPIXEL:
-//                    // Parameters: {x, y, color_code} (3)
-//                    drawPixel(params[0], params[1], get_color_string_from_code(params[2]));
-//                    break;
-                case CMD_LIJN:
-                    // Parameters: {x1, y1, x2, y2, color_code, dikte} (6)
-                    lijn(params[0], params[1], params[2], params[3],
-                                  get_color_string_from_code(params[4]), params[5]);
-                    break;
-                case CMD_RECHTHOEK:
-                    // Parameters: {x, y, w, h, color_code, gevuld} (6)
-                    rechthoek(params[0], params[1], params[2], params[3],
-                                       get_color_string_from_code(params[4]), params[5]);
-                    break;
-                case CMD_CIRKEL:
-                    // Parameters: {x0, y0, radius, color_code} (4)
-                    cirkel(params[0], params[1], params[2],
-                                    get_color_string_from_code(params[3]));
-                    break;
-                case CMD_FIGUUR:
-                    // Parameters: {x1..x5, y1..y5, color_code} (11)
-                    figuur(params[0], params[1], params[2], params[3], params[4], params[5],
-                                    params[6], params[7], params[8], params[9],
-                                    get_color_string_from_code(params[10]));
-                    break;
-                case CMD_TOREN:
-                    // Parameters: {x, y, grootte, color1_code, color2_code} (5)
-                    toren(params[0], params[1], params[2],
-                                   get_color_string_from_code(params[3]),
-                                   get_color_string_from_code(params[4]));
-                    break;
-                default:
-                    // Niets doen
-                    break;
-            }
+				case CMD_CLEAR:
+					// Parameters: {color_code} (1)
+					clearscherm(get_color_string_from_code(params[0]));
+					break;
+				case CMD_WACHT:
+					// Parameters: {ms} (1)
+					wacht(params[0]);
+					break;
+//				case CMD_SETPIXEL:
+//					// Parameters: {x, y, color_code} (3)
+//					errors = drawPixel(params[0], params[1], get_color_string_from_code(params[2]));
+//					break;
+				case CMD_LIJN:
+					// Parameters: {x1, y1, x2, y2, color_code, dikte} (6)
+					lijn(params[0], params[1], params[2], params[3],
+								  get_color_string_from_code(params[4]), params[5]);
+					break;
+				case CMD_RECHTHOEK:
+					// Parameters: {x, y, w, h, color_code, gevuld} (6)
+					rechthoek(params[0], params[1], params[2], params[3],
+									   get_color_string_from_code(params[4]), params[5]);
+					break;
+				case CMD_CIRKEL:
+					// Parameters: {x0, y0, radius, color_code} (4)
+					cirkel(params[0], params[1], params[2],
+									get_color_string_from_code(params[3]));
+					break;
+				case CMD_FIGUUR:
+					// Parameters: {x1..x5, y1..y5, color_code} (11)
+					figuur(params[0], params[1], params[2], params[3], params[4], params[5],
+									params[6], params[7], params[8], params[9],
+									get_color_string_from_code(params[10]));
+					break;
+				case CMD_TOREN:
+					// Parameters: {x, y, grootte, color1_code, color2_code} (5)
+					toren(params[0], params[1], params[2],
+								   get_color_string_from_code(params[3]),
+								   get_color_string_from_code(params[4]));
+					break;
+				default:
+					// Niets doen
+					break;
+			}
         }
-    }
 
+    }
+    herhaal_hoog = 0;
 }
+

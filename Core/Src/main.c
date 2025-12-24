@@ -24,11 +24,22 @@ int main(void)
 	API_init_io();          // init VGA
 	SysTick_Init();
 	UART2_Init(115200);
+
 	(void)clearscherm("wit");
 	(void)wacht(2000);
-	(void)clearscherm("blauw");
+	(void)lijn(10, 10, 10, 150, "rood", 10);
 	(void)wacht(2000);
-	(void)herhaal(4, 2);
+	(void)rechthoek(20,20,40,80,"geel", 1);
+	(void)wacht(2000);
+	(void)figuur(10,10,20,20,60,50,80,100,110,114,"groen");
+	(void)wacht(2000);
+	(void)cirkel(70,50,25,"blauw");
+	(void)wacht(2000);
+	(void)toren(100,100,20,"groen","geel");
+	(void)wacht(2000);
+	(void)clearscherm("wit");
+	(void)wacht(2000);
+	(void)herhaal(14, 2);
 	(void)clearscherm("rood");
 
   while(1)

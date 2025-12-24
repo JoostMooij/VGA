@@ -38,12 +38,15 @@
 #define VGA_RGB(R,G,B)  ( ((R & 0x07) << 5) | ((G & 0x07) << 2) | (B & 0x03) )
 
 // --- Herhaling Buffer Definities ---
-#define MAX_COMMAND_HISTORY_SIZE 1028  ///< Maximale grootte van de lineaire buffer (aantal integers)
+#define MAX_COMMAND_HISTORY_SIZE 25  ///< Maximale grootte van de lineaire buffer (aantal integers)
+#define MAX_COMMAND_BUFFER_SIZE 245
+
 
 // --- Externe Declaraties
-extern volatile int command_buffer[MAX_COMMAND_HISTORY_SIZE];
+extern volatile uint16_t command_buffer[MAX_COMMAND_BUFFER_SIZE];
 extern volatile int command_buffer_index; ///< Huidige schrijfpositie in de buffer
 extern volatile uint32_t ms_tick_counter;
+extern volatile int herhaal_hoog;
 
 /* -------------------------------------------------------------------------- */
 /*  Typedefs                                                                  */
@@ -136,3 +139,8 @@ void herhaal(int aantal, int hoevaak);
 // --- Interne Helper Declaraties ---
 // Functie om de commando ID en parameters op te slaan
 void record_command(COMMANDO_TYPE type, int param_count, const int params[]);
+
+static int get_command_size(COMMANDO_TYPE type);
+
+static const char* get_color_string_from_code(int code);
+

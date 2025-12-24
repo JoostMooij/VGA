@@ -241,7 +241,7 @@ ErrorCode wacht_error(int ms)
  */
 ErrorCode herhaal_aantal_error(int aantal)
 {
-	if(aantal < 1 || aantal > 40)  return AANTAL_NOT_IN_RANGE;
+	if(aantal < 1 || aantal > 20)  return AANTAL_NOT_IN_RANGE;
 	return NO_ERROR;
 }
 

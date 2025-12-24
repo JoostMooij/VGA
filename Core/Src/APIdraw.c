@@ -38,8 +38,11 @@ ErrorList lijn(int x1, int y1, int x2, int y2, const char *kleur, int dikte)
     if(errors.error_var1 || errors.error_var2 || errors.error_var3 || errors.error_var4 || errors.error_var5 || errors.error_var6)
         return errors;
 
-    int params[] = {x1, y1, x2, y2, color, dikte};
-	record_command(CMD_LIJN, 6, params);
+    if (herhaal_hoog == 0)
+    {
+		int params[] = {x1, y1, x2, y2, color, dikte};
+		record_command(CMD_LIJN, 6, params);
+    }
 
     int dx = abs(x2 - x1), sx = x1 < x2 ? 1 : -1;
     int dy = -abs(y2 - y1), sy = y1 < y2 ? 1 : -1;
@@ -81,8 +84,11 @@ ErrorList rechthoek(int x, int y, int w, int h, const char *kleur, int gevuld)
     if(errors.error_var1 || errors.error_var2 || errors.error_var3 || errors.error_var4 || errors.error_var5 || errors.error_var6)
         return errors;
 
-    int params[] = {x, y, w, h, color, gevuld};
-	record_command(CMD_RECHTHOEK, 6, params);
+    if (herhaal_hoog == 0)
+    {
+		int params[] = {x, y, w, h, color, gevuld};
+		record_command(CMD_RECHTHOEK, 6, params);
+    }
 
     int x2 = x + w - 1;
     int y2 = y + h - 1;
@@ -131,8 +137,11 @@ ErrorList figuur(int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4,
        errors.error_var11)
         return errors;
 
-    int params[] = {x1, y1, x2, y2, x3, y3, x4, y4, x5, y5, color};
-    record_command(CMD_FIGUUR, 11, params);
+    if (herhaal_hoog == 0)
+    {
+		int params[] = {x1, y1, x2, y2, x3, y3, x4, y4, x5, y5, color};
+		record_command(CMD_FIGUUR, 11, params);
+    }
 
     lijn(x1, y1, x2, y2, kleur, 1);
     lijn(x2, y2, x3, y3, kleur, 1);
@@ -162,8 +171,11 @@ ErrorList cirkel(int x0, int y0, int radius, const char* kleur)
     if(errors.error_var1 || errors.error_var2 || errors.error_var3 || errors.error_var4)
         return errors;
 
-    int params[] = {x0, y0, radius, color};
-    record_command(CMD_CIRKEL, 4, params);
+    if (herhaal_hoog == 0)
+    {
+		int params[] = {x0, y0, radius, color};
+		record_command(CMD_CIRKEL, 4, params);
+    }
 
     int x = radius;
     int y = 0;
@@ -215,8 +227,11 @@ ErrorList toren(int x, int y, int grootte, const char* kleur1, const char* kleur
     if(errors.error_var1 || errors.error_var2 || errors.error_var3 || errors.error_var4 || errors.error_var5)
         return errors;
 
-    int params[] = {x, y, grootte, c1, c2};
-    record_command(CMD_TOREN, 5, params);
+    if (herhaal_hoog == 0)
+    {
+		int params[] = {x, y, grootte, c1, c2};
+		record_command(CMD_TOREN, 5, params);
+    }
 
     int lagen = 6;                    // aantal torenlagen
     int basis_radius = grootte;       // basisradius van de toren
