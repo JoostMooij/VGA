@@ -291,14 +291,16 @@ void record_command(COMMANDO_TYPE type, int param_count, const int params[])
  */
 static int get_command_size(COMMANDO_TYPE type) {
     switch (type) {
-        case CMD_CLEAR:     return 2;    // 1 param + ID [9]
-        case CMD_WACHT:     return 2;    // 1 param + ID [10]
-        case CMD_SETPIXEL:  return 4;    // 3 params + ID (x, y, color) [11]
-        case CMD_LIJN:      return 7;    // 6 params + ID (x1, y1, x2, y2, color, dikte) [12]
-        case CMD_RECHTHOEK: return 7;    // 6 params + ID (x, y, w, h, color, gevuld) [13]
-        case CMD_CIRKEL:    return 5;    // 4 params + ID (x0, y0, radius, color) [14]
-        case CMD_TOREN:     return 6;    // 5 params + ID (x, y, grootte, color1, color2) [15]
-        case CMD_FIGUUR:    return 12;   // 11 params + ID (x1..x5, y1..y5, color) [16]
+        case CMD_CLEAR:     return 2;
+        case CMD_WACHT:     return 2;
+        case CMD_SETPIXEL:  return 4;
+        case CMD_LIJN:      return 7;
+        case CMD_RECHTHOEK: return 7;
+        case CMD_CIRKEL:    return 5;
+        case CMD_TOREN:     return 6;
+        case CMD_FIGUUR:    return 12;
+        case CMD_TEKST:    return 8;
+        case CMD_BITMAP:    return 4;
         default:            return 0;    // Onbekend of CMD_ONBEKEND/CMD_HERHAAL
     }
 }
@@ -427,8 +429,16 @@ void herhaal(int aantal, int hoevaak)
 				case CMD_TOREN:
 					// Parameters: {x, y, grootte, color1_code, color2_code} (5)
 					toren(params[0], params[1], params[2],
-								   get_color_string_from_code(params[3]),
-								   get_color_string_from_code(params[4]));
+													   get_color_string_from_code(params[3]),
+													   get_color_string_from_code(params[4]));
+					break;
+				case CMD_TEKST:
+					// Parameters: {x, y, grootte, color1_code, color2_code} (5)
+					//tekst(params[0], params[1], params[2], get_color_string_from_code(params[3]), get_color_string_from_code(params[4]), params[5], get_color_string_from_code(params[6]));
+					break;
+				case CMD_BITMAP:
+					// Parameters: {x, y, grootte, color1_code, color2_code} (5)
+					//bitmap(params[0], params[1], params[2]);
 					break;
 				default:
 					// Niets doen
