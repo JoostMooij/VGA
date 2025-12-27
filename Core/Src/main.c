@@ -16,13 +16,12 @@ int main(void)
     (void)API_init_io();
     (void)clearscherm("wit");
     UART2_WriteString("> ");
-    //(void)tekst(5,10,"zwart","testtesttes","pearl",1,"normaal");
+    (void)tekst(0,0,"zwart","testtesttes","pearl",1,"normaal");
 
     UserInput_t input;
 
     while (1)
     {
-
     	if (uart_command_ready)
     	{
     	    // Kopieer de ontvangen string naar de input struct
@@ -54,7 +53,6 @@ int main(void)
     	    uart_command_ready = 0;
     	    uart_rx_index = 0;
     	}
-
     }
 }
 

@@ -19,7 +19,7 @@ static void Handle_HELP(void)
     UART2_WriteString("rechthoek,x,y,w,h,kleur,gevuld\r\n");
     UART2_WriteString("tekst,x,y,kleur,tekst,font,grootte,stijl\r\n");
     UART2_WriteString("bitmap,x,y,nr\r\n");
-    UART2_WriteString("clearscreen,kleur\r\n");
+    UART2_WriteString("clearscherm,kleur\r\n");
     UART2_WriteString("cirkel,x,y,straal,kleur\r\n");
     UART2_WriteString("figuur,x1,y1,x2,y2,x3,y3,x4,y4,x5,y5,kleur\r\n");
     UART2_WriteString("wacht,msecs\r\n");
@@ -101,9 +101,9 @@ static void Handle_Bitmap(const char *cmd) {
 
 static void Handle_Clear(const char *cmd) {
     char kleur[16];
-    if (sscanf(cmd, "clearscreen,%15s", kleur) == 1) {
+    if (sscanf(cmd, "clearscherm,%15s", kleur) == 1) {
         UART2_WriteString("Scherm gewist\r\n");
-        // API_clearscreen(kleur_naar_int(kleur));
+        // API_clearscherm(kleur_naar_int(kleur));
     }
 }
 
@@ -186,7 +186,7 @@ void Handel_UART_Input(UserInput_t *in)
     else if (strncmp(in->full_command, "rechthoek", 9) == 0)    Handle_Rechthoek(in->full_command);
     else if (strncmp(in->full_command, "tekst", 5) == 0)        Handle_Tekst(in->full_command);
     else if (strncmp(in->full_command, "bitmap", 6) == 0)       Handle_Bitmap(in->full_command);
-    else if (strncmp(in->full_command, "clearscreen", 11) == 0) Handle_Clear(in->full_command);
+    else if (strncmp(in->full_command, "clearscherm", 11) == 0) Handle_Clear(in->full_command);
     else if (strncmp(in->full_command, "cirkel", 6) == 0)       Handle_Cirkel(in->full_command);
     else if (strncmp(in->full_command, "figuur", 6) == 0)       Handle_Figuur(in->full_command);
     else if (strncmp(in->full_command, "toren", 5) == 0)        Handle_Toren(in->full_command);

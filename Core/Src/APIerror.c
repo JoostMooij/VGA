@@ -222,13 +222,17 @@ ErrorCode check_lijn_op_scherm(int x1, int y1, int x2, int y2, int dikte)
 /** @brief Controleer breedte van rechthoek */
 ErrorCode check_breedte(int x, int breedte)
 {
-    return (x + breedte - 1 >= VGA_DISPLAY_X) ? ERROR_BREEDTE : NO_ERROR;
+    if (breedte < 1) return ERROR_BREEDTE;
+    if (x < 0 || x + breedte - 1 >= VGA_DISPLAY_X) return ERROR_BREEDTE;
+    return NO_ERROR;
 }
 
 /** @brief Controleer hoogte van rechthoek */
 ErrorCode check_hoogte(int y, int hoogte)
 {
-    return (y + hoogte - 1 >= VGA_DISPLAY_Y) ? ERROR_HOOGTE : NO_ERROR;
+    if (hoogte < 1) return ERROR_HOOGTE;
+    if (y < 0 || y + hoogte - 1 >= VGA_DISPLAY_Y) return ERROR_HOOGTE;
+    return NO_ERROR;
 }
 
 /** @brief Controleer gevuld-waarde (0 of 1) */
@@ -253,7 +257,8 @@ ErrorCode check_nr(int nr, int x, int y)
 {
     int grootte;
 
-    if (nr < 0 || nr > 9) return ERROR_bitmap_nr;
+    if (nr < 0 || nr > 9)
+        return ERROR_bitmap_nr;
 
     switch (nr)
     {
@@ -282,10 +287,11 @@ ErrorCode check_nr(int nr, int x, int y)
             return ERROR_bitmap_nr;
     }
 
-    int r = grootte / 2;
-
-    if (x + r - 1 >= VGA_DISPLAY_X || x - r < 0) return ERROR_bitmap_buiten_scherm;
-    if (y + r - 1 >= VGA_DISPLAY_Y || y - r < 0) return ERROR_bitmap_buiten_scherm;
+    /* (x,y) is linkerbovenhoek */
+    if (x < 0 || x + grootte - 1 >= VGA_DISPLAY_X)
+        return ERROR_bitmap_buiten_scherm;
+    if (y < 0 || y + grootte - 1 >= VGA_DISPLAY_Y)
+        return ERROR_bitmap_buiten_scherm;
 
     return NO_ERROR;
 }

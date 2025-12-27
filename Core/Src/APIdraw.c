@@ -267,18 +267,15 @@ ErrorList toren(int x, int y, int grootte, const char* kleur1, const char* kleur
  * @brief Tekent een bitmap symbool, gecentreerd op (x, y).
  *
  * @param nr Het nummer van het symbool (1 = pijl omhoog, 2 = pijl omlaag, etc.).
- * @param x X-coordinaat van het midden van het symbool.
- * @param y Y-coordinaat van het midden van het symbool.
+ * @brief Tekent een bitmap symbool met (x,y) als linkerbovenhoek.
  * @return ErrorList Struct met eventuele fouten (0 = geen fouten)
  */
 ErrorList bitMap(int nr, int x, int y)
 {
+    ErrorList errors = Error_handling(FUNC_bitmap, nr, x, y, 0, 0, 0, 0, 0, 0, 0, 0);
+    if(errors.error_var1 || errors.error_var2 || errors.error_var3)
+        return errors;
 
-	ErrorList errors = Error_handling(FUNC_bitmap, nr, x, y, 0, 0, 0, 0, 0, 0, 0, 0);
-	    if(errors.error_var1 || errors.error_var2 || errors.error_var3)
-	    {
-	        return errors;
-	    }
     const Bitmap *bmp_ptr = NULL;
     uint8_t use_transparency = 0;
 
@@ -299,11 +296,8 @@ ErrorList bitMap(int nr, int x, int y)
     if (bmp_ptr == NULL || bmp_ptr->data == NULL)
         return errors;
 
-    int x0 = x - (bmp_ptr->width / 2);
-    int y0 = y - (bmp_ptr->height / 2);
-
-    // Geef de vlag door
-    drawBitmap(x0, y0, bmp_ptr, use_transparency);
+    /* (x,y) is nu linkerbovenhoek */
+    drawBitmap(x, y, bmp_ptr, use_transparency);
 
     return errors;
 }

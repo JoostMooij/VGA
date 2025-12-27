@@ -31,6 +31,7 @@ volatile uint32_t ms_tick_counter = 0;
 void API_init_io(void)
 {
     UB_VGA_Screen_Init();
+    SysTick_Init();
 }
 
 /**
