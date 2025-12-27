@@ -139,13 +139,16 @@ static void Handle_Toren(const char *cmd) {
     char kl1[20], kl2[20];
     if (sscanf(cmd, "toren,%d,%d,%d,%19[^,],%19s", &x, &y, &grootte, kl1, kl2) == 5) {
         UART2_WriteString("Toren tekenen...\r\n");
-        toren(x, y, grootte, kleur_omzetter(kl1), kleur_omzetter(kl2));
-    } else UART2_WriteString("Err: toren\r\n");
+        // toren(x, y, grootte, kleur_omzetter(kl1), kleur_omzetter(kl2));
+    }
 }
 
 static void Handle_Herhaal(const char *cmd) {
-     // TODO: Implementeer logica voor herhalen indien nodig
-     UART2_WriteString("Herhaal commando nog niet actief\r\n");
+	int aantal, hoevaak;
+    if (sscanf(cmd, "herhaal,%d, %d", &aantal, &hoevaak) == 2) {
+        UART2_WriteString("Herhaal...\r\n");
+        // herhaal(aantal,hoevaak);
+    }
 }
 
 static void Handle_KLEUR_INFO(void){

@@ -25,10 +25,10 @@ typedef enum
     FUNC_figuur      = 5,
     FUNC_cirkel      = 6,
     FUNC_toren       = 7,
-    FUNC_wacht		   = 8,
+    FUNC_wacht		 = 8,
     FUNC_herhaal     = 9,
-    FUNC_bitmap		   = 10,
-    FUNC_tekst			 = 11,
+    FUNC_bitmap		 = 10,
+    FUNC_tekst		 = 11,
 } FunctionID;
 
 /**
@@ -48,13 +48,13 @@ typedef enum
     ERROR_GROOTTE_TOO_SMALL   = 9,
     ERROR_TOREN_BUITEN_SCHERM = 10,
     ERROR_TIME_TOO_SMALL      = 11,
-	  AANTAL_NOT_IN_RANGE       = 12,
-	  HOEVAAK_NOT_IN_RANGE      = 13,
-	  ERROR_bitmap_nr	          = 14,
-	  ERROR_bitmap_buiten_scherm= 15,
-	  ERROR_tekst_buiten_scherm = 16,
-	  ERROR_TEXT_EMPTY			    = 17,
-	  ERROR_INVALID_STYL		    = 18,
+	AANTAL_NOT_IN_RANGE       = 12,
+	HOEVAAK_NOT_IN_RANGE      = 13,
+	ERROR_bitmap_nr	          = 14,
+	ERROR_bitmap_buiten_scherm= 15,
+	ERROR_tekst_buiten_scherm = 16,
+	ERROR_TEXT_EMPTY		  = 17,
+	ERROR_INVALID_STYL		  = 18,
 } ErrorCode;
 
 /**
@@ -145,9 +145,15 @@ ErrorCode wacht_error(int ms_error);
  * @brief Controleer de 'sec'-waarde (0 of 1).
  */
 ErrorCode herhaal_aantal_error(int aantal);
+
 /**
  * @brief Controleer de 'sec'-waarde (0 of 1).
  */
 ErrorCode herhaal_hoevaak_error(int hoevaak);
+
+/**
+ * @brief Controleer de tekst op het scherm).
+ */
+ErrorCode check_tekst_op_scherm(int x, int y, const char* tekst_str, int schaal_factor, const char* fontstijl);
 
 #endif

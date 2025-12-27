@@ -20,25 +20,6 @@
 #include "UART.h"
 
 /**
- * @brief Alle mogelijke commando’s die de logica kan verwerken.
- */
-typedef enum
-{
-    CMD_ONBEKEND = 0,   /**< Onbekend commando */
-    CMD_LIJN,           /**< Lijn tekenen */
-    CMD_RECHTHOEK,      /**< Rechthoek tekenen */
-    CMD_TEKST,          /**< Tekst plaatsen */
-    CMD_BITMAP,         /**< Bitmap tonen */
-    CMD_CLEAR,          /**< Scherm wissen */
-    CMD_WACHT,          /**< Wachtopdracht */
-    CMD_HERHAAL,        /**< Herhaalblok */
-    CMD_CIRKEL,         /**< Cirkel tekenen */
-    CMD_FIGUUR,         /**< Complex figuur tekenen */
-    CMD_TOREN,          /**< Torenopdracht */
-    CMD_SETPIXEL        /**< Eén pixel zetten */
-} COMMANDO_TYPE;
-
-/**
  * @brief Leest een inputregel in, verwijdert newline en verwerkt het commando.
  *
  * @param input Buffer met de binnengekomen tekst.

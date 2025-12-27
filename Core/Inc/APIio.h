@@ -23,8 +23,26 @@
 
 #include "APIerror.h"
 #include "stm32f4xx.h"
-#include "logicLayer.h"
+#include "APIdraw.h"
 
+/**
+ * @brief Alle mogelijke commando’s die de logica kan verwerken.
+ */
+typedef enum
+{
+    CMD_ONBEKEND = 0,   /**< Onbekend commando */
+    CMD_LIJN,           /**< Lijn tekenen */
+    CMD_RECHTHOEK,      /**< Rechthoek tekenen */
+    CMD_TEKST,          /**< Tekst plaatsen */
+    CMD_BITMAP,         /**< Bitmap tonen */
+    CMD_CLEAR,          /**< Scherm wissen */
+    CMD_WACHT,          /**< Wachtopdracht */
+    CMD_HERHAAL,        /**< Herhaalblok */
+    CMD_CIRKEL,         /**< Cirkel tekenen */
+    CMD_FIGUUR,         /**< Complex figuur tekenen */
+    CMD_TOREN,          /**< Torenopdracht */
+    CMD_SETPIXEL        /**< Eén pixel zetten */
+} COMMANDO_TYPE;
 
 /**
  * @brief Maakt een 8-bit VGA kleurwaarde op basis van R/G/B componenten.
@@ -118,8 +136,6 @@ ErrorList setPixel(int x, int y, int kleur);
  */
 uint8_t kleur_omzetter(const char *input);
 
-#endif /* APIIO_H */
-
 
 // Prototype voor handmatige SysTick configuratie
 void SysTick_Init(void);
@@ -136,7 +152,7 @@ ErrorList wacht(int ms);
  * @brief Voert alle commando's in de buffer opnieuw uit in sequentiële volgorde.
  * @return ErrorList Altijd NO_ERROR (tenzij toekomstige validatie faalt).
  */
-void herhaal(int aantal, int hoevaak);
+ErrorList herhaal(int aantal, int hoevaak);
 
 // --- Interne Helper Declaraties ---
 // Functie om de commando ID en parameters op te slaan
@@ -146,3 +162,4 @@ static int get_command_size(COMMANDO_TYPE type);
 
 static const char* get_color_string_from_code(int code);
 
+#endif /* APIIO_H */

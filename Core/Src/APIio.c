@@ -14,9 +14,6 @@
 #include <string.h>
 #include <stdlib.h>
 #include "APIio.h"
-#include "APIerror.h"
-#include "logicLayer.h"
-#include "APIdraw.h"
 
 volatile uint32_t ms_tick_counter = 0;
 volatile uint16_t command_buffer[MAX_COMMAND_BUFFER_SIZE];
@@ -313,8 +310,10 @@ void record_command(COMMANDO_TYPE type, int param_count, const int params[])
  * voor een gegeven commando type.
  * Deze mapping is essentieel voor het navigeren door de platte buffer.
  */
-static int get_command_size(COMMANDO_TYPE type) {
-    switch (type) {
+static int get_command_size(COMMANDO_TYPE type)
+{
+    switch (type)
+    {
         case CMD_CLEAR:     return 2;
         case CMD_WACHT:     return 2;
         case CMD_SETPIXEL:  return 4;
@@ -335,7 +334,8 @@ static int get_command_size(COMMANDO_TYPE type) {
  * Noodzakelijk omdat API-functies strings verwachten (const char *),
  * maar de buffer alleen de numerieke codes opslaat.
  */
-static const char* get_color_string_from_code(int code) {
+static const char* get_color_string_from_code(int code)
+{
     // Gebruik de kleurdefinities uit APIio.h (497, 498)
     if (code == ZWART) return "zwart";
     if (code == BLAUW) return "blauw";
@@ -364,7 +364,7 @@ static const char* get_color_string_from_code(int code) {
  * @param hoevaak Het aantal keren dat de reeks commando's herhaald moet worden.
  * @return ErrorList Altijd NO_ERROR (of de fout van de laatste herhaalde functie).
  */
-void herhaal(int aantal, int hoevaak)
+ErrorList herhaal(int aantal, int hoevaak)
 {
     ErrorList errors = Error_handling(FUNC_herhaal, aantal,hoevaak,0,0,0,0,0,0,0,0,0);
     if (errors.error_var1 || errors.error_var2)
@@ -458,11 +458,11 @@ void herhaal(int aantal, int hoevaak)
 					break;
 				case CMD_TEKST:
 					// Parameters: {x, y, grootte, color1_code, color2_code} (5)
-					//tekst(params[0], params[1], params[2], get_color_string_from_code(params[3]), get_color_string_from_code(params[4]), params[5], get_color_string_from_code(params[6]));
+					tekst(params[0], params[1], params[2], get_color_string_from_code(params[3]), get_color_string_from_code(params[4]), params[5], get_color_string_from_code(params[6]));
 					break;
 				case CMD_BITMAP:
 					// Parameters: {x, y, grootte, color1_code, color2_code} (5)
-					//bitmap(params[0], params[1], params[2]);
+					bitMap(params[0], params[1], params[2]);
 					break;
 				default:
 					// Niets doen
@@ -472,5 +472,6 @@ void herhaal(int aantal, int hoevaak)
 
     }
     herhaal_hoog = 0;
+    return errors;
 }
 
