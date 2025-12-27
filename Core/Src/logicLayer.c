@@ -223,7 +223,6 @@ void verwerk_commando(const char *input)
     {
         case CMD_LIJN:
         	errors = lijn(atoi(delen[1]), atoi(delen[2]), atoi(delen[3]), atoi(delen[4]), delen[5], atoi(delen[6]));
-
             break;
 
         case CMD_RECHTHOEK:
@@ -247,7 +246,7 @@ void verwerk_commando(const char *input)
             break;
 
         case CMD_HERHAAL:
-//        	errors = herhaal(atoi(delen[1]), atoi(delen[2]));
+        	errors = herhaal(atoi(delen[1]), atoi(delen[2]));
             break;
 
         case CMD_CIRKEL:

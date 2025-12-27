@@ -25,33 +25,36 @@ typedef enum
     FUNC_figuur      = 5,
     FUNC_cirkel      = 6,
     FUNC_toren       = 7,
-  	FUNC_wacht		   = 8,
-	FUNC_bitmap		   = 9,
-	FUNC_tekst			= 10,
-    // later uitbreiden met andere functies
+    FUNC_wacht		   = 8,
+    FUNC_herhaal     = 9,
+    FUNC_bitmap		   = 10,
+    FUNC_tekst			 = 11,
 } FunctionID;
 
 /**
  * @brief Enum voor individuele foutcodes.
  */
-typedef enum {
-    NO_ERROR                    = 0,
-    ERROR_X1                    = 1,
-    ERROR_Y1                    = 2,
-    ERROR_COLOR                 = 3,
-    ERROR_DIJKTE_TOO_SMALL      = 4,
-    ERROR_BREEDTE               = 5,
-    ERROR_HOOGTE                = 6,
-    ERROR_GEVULD                = 7,
-	ERROR_RADIUS_TOO_SMALL      = 8,
-    ERROR_GROOTTE_TOO_SMALL     = 9,
-    ERROR_TOREN_BUITEN_SCHERM   = 10,
-    ERROR_TIME_TOO_SMALL        = 11,
-	ERROR_bitmap_nr	            = 12,
-	ERROR_bitmap_buiten_scherm  = 13,
-	ERROR_tekst_buiten_scherm   = 14,
-	ERROR_TEXT_EMPTY			= 15,
-	ERROR_INVALID_STYL		    = 16,
+typedef enum
+{
+    NO_ERROR                  = 0,
+    ERROR_X1                  = 1,
+    ERROR_Y1                  = 2,
+    ERROR_COLOR               = 3,
+    ERROR_DIJKTE_TOO_SMALL    = 4,
+    ERROR_BREEDTE             = 5,
+    ERROR_HOOGTE              = 6,
+    ERROR_GEVULD              = 7,
+    ERROR_RADIUS_TOO_SMALL    = 8,
+    ERROR_GROOTTE_TOO_SMALL   = 9,
+    ERROR_TOREN_BUITEN_SCHERM = 10,
+    ERROR_TIME_TOO_SMALL      = 11,
+	  AANTAL_NOT_IN_RANGE       = 12,
+	  HOEVAAK_NOT_IN_RANGE      = 13,
+	  ERROR_bitmap_nr	          = 14,
+	  ERROR_bitmap_buiten_scherm= 15,
+	  ERROR_tekst_buiten_scherm = 16,
+	  ERROR_TEXT_EMPTY			    = 17,
+	  ERROR_INVALID_STYL		    = 18,
 } ErrorCode;
 
 /**
@@ -132,14 +135,19 @@ ErrorCode check_grootte_op_scherm(int x, int y, int grootte);
  * @brief Controleer toren grootte en positie op scherm.
  */
 ErrorCode check_toren_op_scherm(int x, int y, int grootte);
+
 /**
  * @brief Controleer de 'sec'-waarde (0 of 1).
  */
 ErrorCode wacht_error(int ms_error);
-/**
- * @brief Controleer of de groote van de tekst niet buiten het scherm vallen.
- */
-ErrorCode check_tekst_op_scherm(int x, int y, const char* tekst_str, int schaal_factor, const char* fontstijl);
 
+/**
+ * @brief Controleer de 'sec'-waarde (0 of 1).
+ */
+ErrorCode herhaal_aantal_error(int aantal);
+/**
+ * @brief Controleer de 'sec'-waarde (0 of 1).
+ */
+ErrorCode herhaal_hoevaak_error(int hoevaak);
 
 #endif

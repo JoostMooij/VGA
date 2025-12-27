@@ -23,8 +23,8 @@
 
 #include "APIerror.h"
 #include "stm32f4xx.h"
+#include "logicLayer.h"
 
-extern volatile uint32_t ms_tick_counter;
 
 /**
  * @brief Maakt een 8-bit VGA kleurwaarde op basis van R/G/B componenten.
@@ -36,6 +36,17 @@ extern volatile uint32_t ms_tick_counter;
  * @param B Waarde 0–3
  */
 #define VGA_RGB(R,G,B)  ( ((R & 0x07) << 5) | ((G & 0x07) << 2) | (B & 0x03) )
+
+// --- Herhaling Buffer Definities ---
+#define MAX_COMMAND_HISTORY_SIZE 25  ///< Maximale grootte van de lineaire buffer (aantal integers)
+#define MAX_COMMAND_BUFFER_SIZE 245
+
+
+// --- Externe Declaraties
+extern volatile uint16_t command_buffer[MAX_COMMAND_BUFFER_SIZE];
+extern volatile int command_buffer_index; ///< Huidige schrijfpositie in de buffer
+extern volatile uint32_t ms_tick_counter;
+extern volatile int herhaal_hoog;
 
 /* -------------------------------------------------------------------------- */
 /*  Typedefs                                                                  */
@@ -68,7 +79,6 @@ typedef enum
     ROZE         = VGA_RGB(7,3,3),
     PAARS        = VGA_RGB(5,0,3)
 } Kleur;
-
 /* -------------------------------------------------------------------------- */
 /*  Functieprototypes                                                         */
 /* -------------------------------------------------------------------------- */
@@ -114,7 +124,6 @@ uint8_t kleur_omzetter(const char *input);
 // Prototype voor handmatige SysTick configuratie
 void SysTick_Init(void);
 
-
 /**
 * @brief Zorgt voor een vertraging (delay) op basis van SysTick.
 *
@@ -122,3 +131,18 @@ void SysTick_Init(void);
 * @return ErrorList Struct met foutstatus.
 */
 ErrorList wacht(int ms);
+
+/**
+ * @brief Voert alle commando's in de buffer opnieuw uit in sequentiële volgorde.
+ * @return ErrorList Altijd NO_ERROR (tenzij toekomstige validatie faalt).
+ */
+void herhaal(int aantal, int hoevaak);
+
+// --- Interne Helper Declaraties ---
+// Functie om de commando ID en parameters op te slaan
+void record_command(COMMANDO_TYPE type, int param_count, const int params[]);
+
+static int get_command_size(COMMANDO_TYPE type);
+
+static const char* get_color_string_from_code(int code);
+

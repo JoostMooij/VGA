@@ -148,31 +148,41 @@ ErrorList Error_handling(FunctionID func,
             break;
         }
 
+
+        case FUNC_herhaal:
+        {
+          ErrorCode aantal_error = herhaal_aantal_error(waarde1);
+          ErrorCode hoevaak_error = herhaal_hoevaak_error(waarde2);
+          if(aantal_error != NO_ERROR) errors.error_var1 = aantal_error;
+          if(hoevaak_error != NO_ERROR) errors.error_var2 = hoevaak_error;
+          break;
+        }
+        
         case FUNC_bitmap:
         {
         	ErrorCode nr_error		= check_nr(waarde1, waarde2, waarde3);
         	ErrorCode x_error      = check_x(waarde2);
-			ErrorCode y_error      = check_y(waarde3);
+          ErrorCode y_error      = check_y(waarde3);
 
-			if(nr_error		!= NO_ERROR) errors.error_var1 = nr_error;
-			if(x_error      != NO_ERROR) errors.error_var2 = x_error;
-			if(y_error      != NO_ERROR) errors.error_var3 = y_error;
-			break;
+          if(nr_error		!= NO_ERROR) errors.error_var1 = nr_error;
+          if(x_error      != NO_ERROR) errors.error_var2 = x_error;
+          if(y_error      != NO_ERROR) errors.error_var3 = y_error;
+          break;
         }
 
         case FUNC_tekst:
-		{
-			// waarde1=x, waarde2=y, waarde3=kleur, waarde4=pointer naar tekst_str,
-			// waarde5=pointer naar fontnaam, waarde6=schaal, waarde7=pointer naar stijl
-			ErrorCode kleur_error = check_color(waarde3);
-			ErrorCode tekst_error = check_tekst_op_scherm(waarde1, waarde2, (char*)waarde4, waarde6, (char*)waarde7);
+        {
+          // waarde1=x, waarde2=y, waarde3=kleur, waarde4=pointer naar tekst_str,
+          // waarde5=pointer naar fontnaam, waarde6=schaal, waarde7=pointer naar stijl
+          ErrorCode kleur_error = check_color(waarde3);
+          ErrorCode tekst_error = check_tekst_op_scherm(waarde1, waarde2, (char*)waarde4, waarde6, (char*)waarde7);
 
-			if(check_x(waarde1) != NO_ERROR) errors.error_var1 = ERROR_X1;
-			if(check_y(waarde2) != NO_ERROR) errors.error_var2 = ERROR_Y1;
-			if(kleur_error      != NO_ERROR) errors.error_var3 = kleur_error;
-			if(tekst_error      != NO_ERROR) errors.error_var4 = tekst_error;
-			break;
-		}
+          if(check_x(waarde1) != NO_ERROR) errors.error_var1 = ERROR_X1;
+          if(check_y(waarde2) != NO_ERROR) errors.error_var2 = ERROR_Y1;
+          if(kleur_error      != NO_ERROR) errors.error_var3 = kleur_error;
+          if(tekst_error      != NO_ERROR) errors.error_var4 = tekst_error;
+          break;
+        }
 
         default:
             /**< Andere functies later */
@@ -304,6 +314,24 @@ ErrorCode wacht_error(int ms)
 	return NO_ERROR;
 }
   
+/**
+ * @brief
+ */
+ErrorCode herhaal_aantal_error(int aantal)
+{
+	if(aantal < 1 || aantal > 20)  return AANTAL_NOT_IN_RANGE;
+	return NO_ERROR;
+}
+
+/**
+ * @brief
+ */
+ErrorCode herhaal_hoevaak_error(int hoevaak)
+{
+	if(hoevaak < 1 || hoevaak > 40) return HOEVAAK_NOT_IN_RANGE;
+	return NO_ERROR;
+}
+
 /** @brief Controleer grootte binnen scherm (algemeen) */
 ErrorCode check_grootte_op_scherm(int x, int y, int grootte)
 {
