@@ -108,6 +108,8 @@ ErrorList clearscherm(const char *kleur);
  */
 ErrorList drawPixel(int x, int y, const char *kleur);
 
+ErrorList setPixel(int x, int y, int kleur);
+
 /**
  * @brief Zet een Nederlandse kleurnaam om naar een VGA-kleurcode.
  *

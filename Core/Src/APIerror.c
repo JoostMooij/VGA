@@ -12,7 +12,9 @@
  */
 
 #include "APIerror.h"
-#include "stm32_ub_vga_screen.h"   /**< Noodzakelijk voor VGA defines en pixelfuncties */
+#include "stm32_ub_vga_screen.h"   // nodig voor UB_VGA_SetPixel en defines
+#include "bitMap.h"
+#include <stddef.h>
 
 /**
  * @brief Controleer alle mogelijke fouten van een API-functie.
@@ -148,13 +150,40 @@ ErrorList Error_handling(FunctionID func,
 
 
         case FUNC_herhaal:
-		{
-			ErrorCode aantal_error = herhaal_aantal_error(waarde1);
-			ErrorCode hoevaak_error = herhaal_hoevaak_error(waarde2);
-			if(aantal_error != NO_ERROR) errors.error_var1 = aantal_error;
-			if(hoevaak_error != NO_ERROR) errors.error_var2 = hoevaak_error;
-			break;
-		}
+        {
+          ErrorCode aantal_error = herhaal_aantal_error(waarde1);
+          ErrorCode hoevaak_error = herhaal_hoevaak_error(waarde2);
+          if(aantal_error != NO_ERROR) errors.error_var1 = aantal_error;
+          if(hoevaak_error != NO_ERROR) errors.error_var2 = hoevaak_error;
+          break;
+        }
+        
+        case FUNC_bitmap:
+        {
+        	ErrorCode nr_error		= check_nr(waarde1, waarde2, waarde3);
+        	ErrorCode x_error      = check_x(waarde2);
+          ErrorCode y_error      = check_y(waarde3);
+
+          if(nr_error		!= NO_ERROR) errors.error_var1 = nr_error;
+          if(x_error      != NO_ERROR) errors.error_var2 = x_error;
+          if(y_error      != NO_ERROR) errors.error_var3 = y_error;
+          break;
+        }
+
+        case FUNC_tekst:
+        {
+          // waarde1=x, waarde2=y, waarde3=kleur, waarde4=pointer naar tekst_str,
+          // waarde5=pointer naar fontnaam, waarde6=schaal, waarde7=pointer naar stijl
+          ErrorCode kleur_error = check_color(waarde3);
+          ErrorCode tekst_error = check_tekst_op_scherm(waarde1, waarde2, (char*)waarde4, waarde6, (char*)waarde7);
+
+          if(check_x(waarde1) != NO_ERROR) errors.error_var1 = ERROR_X1;
+          if(check_y(waarde2) != NO_ERROR) errors.error_var2 = ERROR_Y1;
+          if(kleur_error      != NO_ERROR) errors.error_var3 = kleur_error;
+          if(tekst_error      != NO_ERROR) errors.error_var4 = tekst_error;
+          break;
+        }
+
         default:
             /**< Andere functies later */
             break;
@@ -203,13 +232,17 @@ ErrorCode check_lijn_op_scherm(int x1, int y1, int x2, int y2, int dikte)
 /** @brief Controleer breedte van rechthoek */
 ErrorCode check_breedte(int x, int breedte)
 {
-    return (x + breedte - 1 >= VGA_DISPLAY_X) ? ERROR_BREEDTE : NO_ERROR;
+    if (breedte < 1) return ERROR_BREEDTE;
+    if (x < 0 || x + breedte - 1 >= VGA_DISPLAY_X) return ERROR_BREEDTE;
+    return NO_ERROR;
 }
 
 /** @brief Controleer hoogte van rechthoek */
 ErrorCode check_hoogte(int y, int hoogte)
 {
-    return (y + hoogte - 1 >= VGA_DISPLAY_Y) ? ERROR_HOOGTE : NO_ERROR;
+    if (hoogte < 1) return ERROR_HOOGTE;
+    if (y < 0 || y + hoogte - 1 >= VGA_DISPLAY_Y) return ERROR_HOOGTE;
+    return NO_ERROR;
 }
 
 /** @brief Controleer gevuld-waarde (0 of 1) */
@@ -228,6 +261,51 @@ ErrorCode check_radius_op_scherm(int x, int y, int radius)
 }
 
 /**
+ * @brief Controleer de bitmap waardes
+ */
+ErrorCode check_nr(int nr, int x, int y)
+{
+    int grootte;
+
+    if (nr < 0 || nr > 9)
+        return ERROR_bitmap_nr;
+
+    switch (nr)
+    {
+        case 1:
+        case 2:
+        case 3:
+        case 4:
+            grootte = grote_pijlen;
+            break;
+
+        case 5:
+        case 6:
+            grootte = grote_smiley;
+            break;
+
+        case 7:
+            grootte = kat_afbeelding;
+            break;
+
+        case 8:
+        case 9:
+            grootte = skalet_afbeelding;
+            break;
+
+        default:
+            return ERROR_bitmap_nr;
+    }
+
+    /* (x,y) is linkerbovenhoek */
+    if (x < 0 || x + grootte - 1 >= VGA_DISPLAY_X)
+        return ERROR_bitmap_buiten_scherm;
+    if (y < 0 || y + grootte - 1 >= VGA_DISPLAY_Y)
+        return ERROR_bitmap_buiten_scherm;
+
+    return NO_ERROR;
+}
+  /**
  * @brief Controleer sec-waarde (0 of 1)
  */
 ErrorCode wacht_error(int ms)
@@ -284,3 +362,40 @@ ErrorCode check_toren_op_scherm(int x, int y, int grootte)
 
     return NO_ERROR;
 }
+
+ErrorCode check_tekst_op_scherm(int x, int y, const char* tekst_str, int schaal_factor, const char* fontstijl)
+{
+    if (tekst_str == NULL) return ERROR_TEXT_EMPTY;
+    if (schaal_factor < 1) return ERROR_GROOTTE_TOO_SMALL;
+
+    // --- NIEUW: Stijl validatie ---
+    int is_vet = (strcmp(fontstijl, "vet") == 0);
+    int is_cursief = (strcmp(fontstijl, "cursief") == 0);
+    int is_normaal = (strcmp(fontstijl, "normaal") == 0);
+
+    // Als het geen van de drie is, stuur dan een specifieke error terug
+    if (!is_vet && !is_cursief && !is_normaal) {
+        return ERROR_INVALID_STYL; // Voeg deze toe aan je APIerror.h
+    }
+    // ------------------------------
+
+    // De rest van de breedte-berekening blijft hetzelfde...
+    int current_x = x;
+    int lengte = strlen(tekst_str);
+
+    // Hoogte check
+    if (y + (8 * schaal_factor) > VGA_DISPLAY_Y) return ERROR_HOOGTE;
+
+    for (int i = 0; i < lengte; i++) {
+        int char_width = 8 * schaal_factor;
+        if (is_vet)     char_width += schaal_factor;
+        if (is_cursief) char_width += (7 / 3) * schaal_factor;
+
+        if (current_x + char_width > VGA_DISPLAY_X) return ERROR_BREEDTE;
+        current_x += char_width + schaal_factor;
+    }
+
+    return NO_ERROR;
+}
+
+
