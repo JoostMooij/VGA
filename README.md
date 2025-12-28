@@ -1,4 +1,4 @@
-# Software Ontwikkeling
+# Software Ontwikkeling user manual
 
 Cursus: TEET-VESOFTON-16, Software Ontwikkeling.
 Jaar:       3
@@ -16,30 +16,14 @@ Gemaakt door:
 
 ## Inhoudsopgave
 
-- [High & low level design](#High-&-low-level-design)
+- [Low level design](#Low-level-design)
 - [Drie lagen model](#Drie-lagen-model)
 - [Commando's](#Commando's)
 
 
-## High & low level design
+## Low level design
 Voor dit project is gebruikgemaakt van een duidelijk gescheiden high-level en low-level design. 
 Deze aanpak zorgt voor overzicht, modulariteit en maakt de software makkelijker te onderhouden, testen en uitbreiden.
-
-### High-level design
-Het high-level design beschrijft de globale architectuur van de applicatie en de onderlinge communicatie tussen de verschillende onderdelen. De software is opgezet volgens het 3-lagenmodel:
-
-- Front layer
-  Deze laag verzorgt de communicatie met de gebruiker. Input wordt aangeleverd via een terminal (zoals Termite) of via een Python testscript.
-  De input bestaat uit ASCII-tekens die via UART worden ontvangen. Deze data wordt omgezet naar een gestructureerd commando (command_struct) en doorgestuurd naar de logic layer.
-  Eventuele fouten worden als string teruggekoppeld naar de gebruiker.
-
-- Logic layer
-  De logic layer bevat de kernlogica van de applicatie. Binnen deze laag worden de ontvangen commando’s geïnterpreteerd en via een switch_dispatch doorgestuurd naar de bijbehorende functie.
-  Deze laag bepaalt wat er moet gebeuren, maar is onafhankelijk van de hardware. Fouten worden teruggegeven als foutcodes (int).
-
-- I/O layer
-  De I/O layer handelt de hardware-afhankelijke functionaliteit af. Hier bevinden zich onder andere de EE_API_LIB en de VGA-functionaliteit.
-  Deze laag schrijft direct naar het VGA-geheugen en zorgt ervoor dat wijzigingen uiteindelijk zichtbaar worden op het VGA-scherm.
 
 ### Low-level design
 Het low-level design beschrijft de concrete implementatie van functies, datastructuren en de onderlinge aanroepen tussen de lagen.
