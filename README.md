@@ -21,17 +21,14 @@ Gemaakt door:
 - [Commando's](#Commando's)
 
 ---
-
-## High-&-low-level-design
-
-Beschrijf hier in detail wat je project doet. Wat is het doel? Waar kan het voor gebruikt worden? Waarom is het nuttig?
-
-*Bijvoorbeeld*:  
-Dit project is een Python-gebaseerde webscraper die gegevens verzamelt van een specifieke website en deze opslaat in een CSV-bestand.
+## High & low level design
 
 ---
 
-## Drie-lagen-model
+---
+## Drie lagen model
 
+---
 ## Commando's
 
+---
