@@ -11,8 +11,8 @@ Thema's:    Application-design: 3-Tier Model.
             Development: Git, Scrum.
 Gemaakt door:
 - Luc van den Engel 1857017
-- Joost Mooij 
-- Thijs Buisman 
+- Joost Mooij 1855994
+- Thijs Buisman 1855662
 
 ## Inhoudsopgave
 
