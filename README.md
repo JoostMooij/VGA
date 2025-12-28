@@ -52,6 +52,7 @@ Het low-level design beschrijft de concrete implementatie van functies, datastru
 
 ## Drie lagen model
 
+<img width="318" height="419" alt="Image" src="https://github.com/user-attachments/assets/200018e6-ca82-4de9-a8a1-859ec3b89304" />
 
 ## Commando's
 
