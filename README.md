@@ -25,7 +25,7 @@ Gemaakt door:
 Dit hoofdstuk beschrijft het low level design van het systeem zoals weergegeven in Figuur X. 
 Het ontwerp is opgebouwd uit meerdere lagen die elk een eigen verantwoordelijkheid hebben. 
 Door deze gelaagde opzet blijft de code overzichtelijk, beter te debuggen en makkelijker uit te breiden.
-###Architectuuroverzicht
+### Architectuuroverzicht
 - Het systeem is opgedeeld in vier hoofdlagen:
 - Front layer
 - Logic layer
