@@ -49,6 +49,8 @@ Het low-level design beschrijft de concrete implementatie van functies, datastru
   Elke functie retourneert een foutcode (int), zodat fouten eenvoudig te traceren zijn door de volledige softwareketen.
 
 - Figuur van het Lowlevel design:
+<img width="1023" height="839" alt="Image" src="https://github.com/user-attachments/assets/3b0e59a3-8a8b-44c0-a868-6fc30afc5c98" />
+  
 [Low_Level_design_software.pdf](https://github.com/user-attachments/files/24368309/Low_Level_design_software.pdf)
 ---
 
