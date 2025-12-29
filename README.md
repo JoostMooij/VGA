@@ -1,14 +1,14 @@
 # Software Ontwikkeling user manual
 
-Cursus: TEET-VESOFTON-16, Software Ontwikkeling.
-Jaar:       3
-Periode:    2
-Docenten:   Franc van der Bent, Michiel Scager.
-Thema's:    Application-design: 3-Tier Model.
-            LIB-creation.
-            Function Prototype-consistency: API-design.
-            Documentatie generator: Doxygen.
-            Development: Git, Scrum.
+- Cursus: TEET-VESOFTON-16, Software Ontwikkeling.
+- Jaar:       3
+- Periode:    2
+- Docenten:   Franc van der Bent, Michiel Scager.
+- Thema's:    Application-design: 3-Tier Model.
+              LIB-creation.
+              Function Prototype-consistency: API-design.
+              Documentatie generator: Doxygen.
+              Development: Git, Scrum.
 Gemaakt door:
 - Luc van den Engel 1857017
 - Joost Mooij 1855994
