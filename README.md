@@ -33,7 +33,9 @@ Door deze gelaagde opzet blijft de code overzichtelijk, beter te debuggen en mak
 - Hardware (VGA)
 Elke laag communiceert alleen met de laag direct onder zich. 
 Hierdoor is de afhankelijkheid tussen modules beperkt en blijft de implementatie modulair.
+
 ---
+
 ### Front Layer
 
 De front layer is verantwoordelijk voor het ontvangen van gebruikersinput via de UART-interface.
@@ -41,7 +43,9 @@ De flow start bij Start/Terminal, waarna de invoer wordt opgehaald met UART_rece
 Vervolgens wordt de ontvangen string gecontroleerd en geparsed met FL_Parse_String().
 Als deze functie een fout teruggeeft (bijvoorbeeld wanneer de string te lang is), wordt direct een foutmelding gegenereerd (String is too long) en stopt de verdere verwerking.
 Als de input geldig is, wordt deze doorgestuurd naar de logic layer voor verdere verwerking.
+
 ---
+
 ### Logic Layer
 De logic layer bevat de kernlogica van het systeem. Hier wordt bepaald welk commando is ingevoerd en welke actie daarbij hoort.
 - Met matchesCommand() wordt gecontroleerd of het ontvangen commando bekend is.
@@ -59,8 +63,11 @@ Binnen deze functies worden meerdere controles uitgevoerd, zoals:
 - checkAttribute() voor het valideren van extra parameters
 - getColorValue() om de juiste kleurwaarde op te halen
 Bij elke stap kan een fout optreden. In dat geval wordt errorHandling() aangeroepen en wordt er een fout teruggegeven aan de bovenliggende laag.
+
 ---
+
 ### API layer
+
 De API-laag vormt de brug tussen de logica en de hardware. Deze laag bevat functies zoals:
 - API_draw_line()
 - API_draw_rectangle()
@@ -70,10 +77,13 @@ De API-laag vormt de brug tussen de logica en de hardware. Deze laag bevat funct
 Voor tekst wordt daarnaast API_put_char() gebruikt.
 Alle API-functies zetten de logische tekenopdrachten om naar pixelacties.
 De API roept uiteindelijk UB_VGA_SetPixel() aan om individuele pixels op het scherm te zetten via het RAM geheugen.
+
 ---
+
 ### Figuur van het Lowlevel design:
 <img width="1023" height="839" alt="Image" src="https://github.com/user-attachments/assets/3b0e59a3-8a8b-44c0-a868-6fc30afc5c98" />
 [Low_Level_design_software.pdf](https://github.com/user-attachments/files/24368309/Low_Level_design_software.pdf)
+
 ---
 
 
