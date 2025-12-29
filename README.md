@@ -35,6 +35,7 @@ Elke laag communiceert alleen met de laag direct onder zich.
 Hierdoor is de afhankelijkheid tussen modules beperkt en blijft de implementatie modulair.
 ---
 ### Front Layer
+
 De front layer is verantwoordelijk voor het ontvangen van gebruikersinput via de UART-interface.
 De flow start bij Start/Terminal, waarna de invoer wordt opgehaald met UART_receive().
 Vervolgens wordt de ontvangen string gecontroleerd en geparsed met FL_Parse_String().
