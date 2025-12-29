@@ -31,7 +31,6 @@ Door deze gelaagde opzet blijft de code overzichtelijk, beter te debuggen en mak
 - Logic layer
 - API
 - Hardware (VGA)
-
 Elke laag communiceert alleen met de laag direct onder zich. 
 Hierdoor is de afhankelijkheid tussen modules beperkt en blijft de implementatie modulair.
 ---
