@@ -47,6 +47,9 @@ Het low-level design beschrijft de concrete implementatie van functies, datastru
 - Foutafhandeling
   Fouten worden centraal afgehandeld via een error handler.
   Elke functie retourneert een foutcode (int), zodat fouten eenvoudig te traceren zijn door de volledige softwareketen.
+
+- Figuur van het Lowlevel design:
+[Low_Level_design_software.pdf](https://github.com/user-attachments/files/24368309/Low_Level_design_software.pdf)
 ---
 
 
