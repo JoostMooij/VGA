@@ -22,35 +22,57 @@ Gemaakt door:
 
 
 ## Low level design
-Voor dit project is gebruikgemaakt van een duidelijk gescheiden high-level en low-level design. 
-Deze aanpak zorgt voor overzicht, modulariteit en maakt de software makkelijker te onderhouden, testen en uitbreiden.
+Dit hoofdstuk beschrijft het low level design van het systeem zoals weergegeven in Figuur X. 
+Het ontwerp is opgebouwd uit meerdere lagen die elk een eigen verantwoordelijkheid hebben. 
+Door deze gelaagde opzet blijft de code overzichtelijk, beter te debuggen en makkelijker uit te breiden.
+###Architectuuroverzicht
+- Het systeem is opgedeeld in vier hoofdlagen:
+- Front layer
+- Logic layer
+- API
+- Hardware (VGA)
 
-### Low-level design
-Het low-level design beschrijft de concrete implementatie van functies, datastructuren en de onderlinge aanroepen tussen de lagen.
-
-- Command verwerking
-  De ontvangen ASCII-input wordt geparsed naar een command_struct.
-  Dit struct bevat het commando en de bijbehorende parameters, zoals X- en Y-coördinaten en kleurinformatie.
-
-- Dispatch mechanisme
-  Met behulp van een switch_dispatch-constructie wordt elk commando gekoppeld aan de juiste functie.
-  Dit maakt het eenvoudig om nieuwe commando’s toe te voegen zonder bestaande code aan te passen.
-
-- API en libraries
-  De logic layer communiceert met de I/O layer via functies uit de EE_API_LIB.
-  Deze API zorgt voor consistente function prototypes en een duidelijke scheiding tussen logica en hardware.
-
-- VGA aansturing
-  Pixelinformatie wordt opgeslagen in een buffer (VGA_RAM1). Wanneer een pixel wordt aangepast, wordt deze buffer bijgewerkt en vervolgens wordt Refresh_vga() aangeroepen om het beeld te verversen.
-  De VGA-buffer wordt daarna uitgelezen en weergegeven op het VGA-scherm.
-
-- Foutafhandeling
-  Fouten worden centraal afgehandeld via een error handler.
-  Elke functie retourneert een foutcode (int), zodat fouten eenvoudig te traceren zijn door de volledige softwareketen.
-
-- Figuur van het Lowlevel design:
+Elke laag communiceert alleen met de laag direct onder zich. 
+Hierdoor is de afhankelijkheid tussen modules beperkt en blijft de implementatie modulair.
+---
+### Front Layer
+De front layer is verantwoordelijk voor het ontvangen van gebruikersinput via de UART-interface.
+De flow start bij Start/Terminal, waarna de invoer wordt opgehaald met UART_receive().
+Vervolgens wordt de ontvangen string gecontroleerd en geparsed met FL_Parse_String().
+Als deze functie een fout teruggeeft (bijvoorbeeld wanneer de string te lang is), wordt direct een foutmelding gegenereerd (String is too long) en stopt de verdere verwerking.
+Als de input geldig is, wordt deze doorgestuurd naar de logic layer voor verdere verwerking.
+---
+### Logic Layer
+De logic layer bevat de kernlogica van het systeem. Hier wordt bepaald welk commando is ingevoerd en welke actie daarbij hoort.
+- Met matchesCommand() wordt gecontroleerd of het ontvangen commando bekend is.
+- Als het commando onbekend is, wordt handleUnknownCommand() aangeroepen.
+- Bekende commando’s worden verwerkt door parseCommand(), die het commando doorstuurt naar de juiste parserfunctie.
+Voor elk type commando is een aparte parsefunctie aanwezig, zoals:
+- parseLijn()
+- parseRechthoek()
+- parseTekst()
+- parseBitmap()
+- parseClearscherm()
+Binnen deze functies worden meerdere controles uitgevoerd, zoals:
+- trimWhitespace() om onnodige spaties te verwijderen
+- hasExtraCharacters() om foutieve input te detecteren
+- checkAttribute() voor het valideren van extra parameters
+- getColorValue() om de juiste kleurwaarde op te halen
+Bij elke stap kan een fout optreden. In dat geval wordt errorHandling() aangeroepen en wordt er een fout teruggegeven aan de bovenliggende laag.
+---
+### API layer
+De API-laag vormt de brug tussen de logica en de hardware. Deze laag bevat functies zoals:
+- API_draw_line()
+- API_draw_rectangle()
+- API_draw_text()
+- API_draw_bitmap()
+- API_clearscreen()
+Voor tekst wordt daarnaast API_put_char() gebruikt.
+Alle API-functies zetten de logische tekenopdrachten om naar pixelacties.
+De API roept uiteindelijk UB_VGA_SetPixel() aan om individuele pixels op het scherm te zetten via het RAM geheugen.
+---
+### Figuur van het Lowlevel design:
 <img width="1023" height="839" alt="Image" src="https://github.com/user-attachments/assets/3b0e59a3-8a8b-44c0-a868-6fc30afc5c98" />
-  
 [Low_Level_design_software.pdf](https://github.com/user-attachments/files/24368309/Low_Level_design_software.pdf)
 ---
 
