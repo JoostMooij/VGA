@@ -36,7 +36,7 @@ Hierdoor is de afhankelijkheid tussen modules beperkt en blijft de implementatie
 
 ---
 
-### Front Layer
+**Front Layer**
 
 De front layer is verantwoordelijk voor het ontvangen van gebruikersinput via de UART-interface.
 De flow start bij Start/Terminal, waarna de invoer wordt opgehaald met UART_receive().
@@ -44,9 +44,8 @@ Vervolgens wordt de ontvangen string gecontroleerd en geparsed met FL_Parse_Stri
 Als deze functie een fout teruggeeft (bijvoorbeeld wanneer de string te lang is), wordt direct een foutmelding gegenereerd (String is too long) en stopt de verdere verwerking.
 Als de input geldig is, wordt deze doorgestuurd naar de logic layer voor verdere verwerking.
 
----
+**Logic Layer**
 
-### Logic Layer
 De logic layer bevat de kernlogica van het systeem. Hier wordt bepaald welk commando is ingevoerd en welke actie daarbij hoort.
 - Met matchesCommand() wordt gecontroleerd of het ontvangen commando bekend is.
 - Als het commando onbekend is, wordt handleUnknownCommand() aangeroepen.
@@ -64,9 +63,7 @@ Binnen deze functies worden meerdere controles uitgevoerd, zoals:
 - getColorValue() om de juiste kleurwaarde op te halen
 Bij elke stap kan een fout optreden. In dat geval wordt errorHandling() aangeroepen en wordt er een fout teruggegeven aan de bovenliggende laag.
 
----
-
-### API layer
+**API layer**
 
 De API-laag vormt de brug tussen de logica en de hardware. Deze laag bevat functies zoals:
 - API_draw_line()
@@ -78,14 +75,11 @@ Voor tekst wordt daarnaast API_put_char() gebruikt.
 Alle API-functies zetten de logische tekenopdrachten om naar pixelacties.
 De API roept uiteindelijk UB_VGA_SetPixel() aan om individuele pixels op het scherm te zetten via het RAM geheugen.
 
----
-
-### Figuur van het Lowlevel design:
+**Figuur van het Lowlevel design:**
 <img width="1023" height="839" alt="Image" src="https://github.com/user-attachments/assets/3b0e59a3-8a8b-44c0-a868-6fc30afc5c98" />
 [Low_Level_design_software.pdf](https://github.com/user-attachments/files/24368309/Low_Level_design_software.pdf)
 
 ---
-
 
 ## Drie lagen architectuur
 Dit project is opgebouwd volgens een 3-lagen model om de software overzichtelijk, modulair en goed onderhoudbaar te houden.
@@ -98,16 +92,16 @@ Elke laag heeft een duidelijke taak en communiceert alleen met de laag erboven o
 
 --- 
 
-### Overzicht van de datastroom
+**Overzicht van de datastroom**
+
 Input komt binnen via een terminal (bijvoorbeeld Termite) of een Python testscript.
 Deze input wordt als ASCII string via UART (RX) ontvangen en loopt vervolgens door alle lagen heen.
 Aan het einde resulteert dit in een aanpassing van de VGA output.
 
 Eventuele fouten worden als string of error code weer teruggestuurd naar bovenliggende lagen.
 
----
+**Front layer**
 
-### Front layer
 De front layer is verantwoordelijk voor het ontvangen en voorbereiden van gebruikersinput.
 Taken:
 - Ontvangen van ASCII input via UART
@@ -118,9 +112,8 @@ Belangrijkste component:
 Deze functie zet ruwe input om naar een gestructureerd commando dat door de logic layer verwerkt kan worden.
 Ongeldige of foutieve input wordt hier al afgevangen.
 
----
+**Logic layer**
 
-### Logic layer
 De logic layer bevat de beslislogica van het systeem.
 Taken:
 - Interpreteren van commando’s
@@ -130,9 +123,8 @@ Belangrijkste component:
 - Switch_dispatch()
 Op basis van het ontvangen commando wordt bepaald welke actie uitgevoerd moet worden, bijvoorbeeld het aanpassen van een pixel of het aanroepen van een API-functie in de I/O layer.
 
----
+**I/O layer**
 
-### I/O layer
 De I/O layer regelt alle hardware- en buffergerelateerde functionaliteit.
 Taken:
 - Beheer van buffers en arrays
@@ -149,9 +141,8 @@ Belangrijkste componenten:
 - uint8_t VGA_RAM[]
 Wanneer bijvoorbeeld Set_pixel(X, Y, kleur) wordt aangeroepen, wordt via deze laag de juiste pixel in het VGA RAM aangepast en het scherm ververst.
 
----
+**Errorhandeling**
 
-### Errorhandeling
 Fouten worden laag-voor-laag teruggekoppeld:
 - I/O layer → error code (int)
 - Logic layer → error code (int)
