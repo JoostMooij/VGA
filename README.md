@@ -20,12 +20,15 @@ Gemaakt door:
 - [Drie lagen model](#Drie-lagen-model)
 - [Commando's](#Commando's)
 
+---
 
 ## Low level design
 Dit hoofdstuk beschrijft het low level design van het systeem zoals weergegeven in Figuur X. 
 Het ontwerp is opgebouwd uit meerdere lagen die elk een eigen verantwoordelijkheid hebben. 
 Door deze gelaagde opzet blijft de code overzichtelijk, beter te debuggen en makkelijker uit te breiden.
-### Architectuuroverzicht
+
+**Architectuuroverzicht**
+
 - Het systeem is opgedeeld in vier hoofdlagen:
 - Front layer
 - Logic layer
@@ -33,8 +36,6 @@ Door deze gelaagde opzet blijft de code overzichtelijk, beter te debuggen en mak
 - Hardware (VGA)
 Elke laag communiceert alleen met de laag direct onder zich. 
 Hierdoor is de afhankelijkheid tussen modules beperkt en blijft de implementatie modulair.
-
----
 
 **Front Layer**
 
@@ -89,8 +90,6 @@ De drie lagen zijn:
 - Logic layer
 - I/O layer
 Elke laag heeft een duidelijke taak en communiceert alleen met de laag erboven of eronder.
-
---- 
 
 **Overzicht van de datastroom**
 
@@ -149,17 +148,15 @@ Fouten worden laag-voor-laag teruggekoppeld:
 - Front layer → foutmelding als string
 De Error_handler zorgt ervoor dat fouten centraal worden afgehandeld en correct worden teruggestuurd naar de gebruiker.
 
----
-
 **Figuur van het 3 lagen model:**
 
 <img width="318" height="419" alt="Image" src="https://github.com/user-attachments/assets/200018e6-ca82-4de9-a8a1-859ec3b89304" />
 
+---
+
 ## Commando's
 Hieronder staan alle beschikbare commando’s die via de terminal of een script kunnen worden aangestuurd.
 Elk commando wordt als ASCII-input verstuurd en door het systeem verwerkt volgens het 3-lagen model.
-
----
 
 **Lijn**
 
