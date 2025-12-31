@@ -159,7 +159,6 @@ Hieronder staan alle beschikbare commando’s die via de terminal of een script 
 Elk commando wordt als ASCII-input verstuurd en door het systeem verwerkt volgens het 3-lagen model.
 
 **Lijn**
-
 Commando:
 lijn, x1, y1, x2, y2, kleur, dikte
 Met dit commando wordt een lijn getekend tussen twee punten op het scherm.
@@ -167,13 +166,11 @@ Met dit commando wordt een lijn getekend tussen twee punten op het scherm.
 - x2, y2: Coördinaten van het eindpunt
 - kleur: Kleur van de lijn
 - dikte: Dikte van de lijn in pixels
-
 Voorbeeld:
 lijn, 10, 20, 100, 200, rood, 2
 Tekent een rode lijn van (10, 20) naar (100, 200) met een dikte van 2 pixels.
 
 **Rechthoek**
-
 Commando:
 rechthoek, x_lup, y_lup, breedte, hoogte, kleur, gevuld
 Met dit commando wordt een rechthoek getekend.
@@ -189,7 +186,6 @@ rechthoek, 50, 50, 100, 200, groen, 1
 Tekent een groene, gevulde rechthoek.
 
 **Cirkel**
-
 Commando:
 cirkel, x, y, radius, kleur
 Met dit commando wordt een cirkel getekend.
@@ -201,7 +197,6 @@ cirkel, 120, 80, 30, blauw
 Tekent een blauwe cirkel met radius 30.
 
 **Tekst**
-
 Commando:
 tekst, x, y, kleur, tekst, fontnaam, fontgrootte, fontstijl
 Met dit commando wordt tekst op het scherm weergegeven.
@@ -215,7 +210,6 @@ Voorbeeld:
 tekst, 20, 50, blauw, "Hallo wereld", Arial, 2, vet
 
 **Bitmap**
-
 Commando:
 bitmap, nr, x_lup, y_lup
 Met dit commando wordt een vooraf gedefinieerde bitmap getekend.
@@ -225,7 +219,6 @@ Voorbeeld:
 bitmap, 1, 100, 100
 
 **Clearscherm**
-
 Commando:
 clearscherm, kleur
 Wist het volledige scherm en vult het met één kleur.
@@ -236,7 +229,6 @@ clearscherm, zwart
 ### Bonus commandos
 
 **Wacht**
-
 Commando:
 wacht, msecs
 Laat het programma een aantal milliseconden wachten.
@@ -245,7 +237,6 @@ Voorbeeld:
 wacht, 500
 
 **Herhaal**
-
 Commando:
 herhaal, aantal, hoevaak
 Herhaalt eerder uitgevoerde commando’s.
@@ -255,7 +246,6 @@ Voorbeeld:
 herhaal, 2, 5
 
 **Figuur**
-
 Commando:
 figuur, x1, y1, x2, y2, x3, y3, x4, y4, x5, y5, kleur
 Tekent een figuur bestaande uit vijf hoekpunten.
@@ -265,7 +255,6 @@ Voorbeeld:
 figuur, 10,10, 50,10, 60,40, 30,70, 10,40, geel
 
 **Toren**
-
 Commando:
 toren, x, y, grootte, kleur1, kleur2
 Samengesteld commando dat een toren tekent.
@@ -277,7 +266,6 @@ Voorbeeld:
 toren, 100, 50, 3, grijs, rood
 
 **SetPixel (Bonus aplicatie met spyder)**
-
 Commando:
 setpixel, x, y, kleur
 Zet één pixel op het scherm. Wordt vooral gebruikt voor het pixel-voor-pixel tekenen van een afbeelding.
@@ -287,7 +275,6 @@ Voorbeeld:
 setpixel, 10, 10, wit
 
 **Kleuren**
-
 Voor alle commando’s waarbij een kleur wordt gebruikt, kan één van de onderstaande kleuren worden opgegeven.
 De kleur wordt als tekst meegegeven in het commando.
 Beschikbare kleuren:
