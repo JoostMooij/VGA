@@ -172,7 +172,7 @@ Voorbeeld:
 lijn, 10, 20, 100, 200, rood, 2
 Tekent een rode lijn van (10, 20) naar (100, 200) met een dikte van 2 pixels.
 
-###R echthoek
+### Rechthoek
 
 Commando:
 rechthoek, x_lup, y_lup, breedte, hoogte, kleur, gevuld
