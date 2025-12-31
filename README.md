@@ -151,9 +151,167 @@ De Error_handler zorgt ervoor dat fouten centraal worden afgehandeld en correct 
 
 ---
 
-### Figuur van het 3 lagen model:
+**Figuur van het 3 lagen model:**
+
 <img width="318" height="419" alt="Image" src="https://github.com/user-attachments/assets/200018e6-ca82-4de9-a8a1-859ec3b89304" />
 
 ## Commando's
+Hieronder staan alle beschikbare commando’s die via de terminal of een script kunnen worden aangestuurd.
+Elk commando wordt als ASCII-input verstuurd en door het systeem verwerkt volgens het 3-lagen model.
+
+---
+
+**Lijn**
+
+Commando:
+lijn, x1, y1, x2, y2, kleur, dikte
+Met dit commando wordt een lijn getekend tussen twee punten op het scherm.
+- x1, y1: Coördinaten van het beginpunt
+- x2, y2: Coördinaten van het eindpunt
+- kleur: Kleur van de lijn
+- dikte: Dikte van de lijn in pixels
+
+Voorbeeld:
+lijn, 10, 20, 100, 200, rood, 2
+Tekent een rode lijn van (10, 20) naar (100, 200) met een dikte van 2 pixels.
+
+**Rechthoek**
+
+Commando:
+rechthoek, x_lup, y_lup, breedte, hoogte, kleur, gevuld
+Met dit commando wordt een rechthoek getekend.
+- x_lup, y_lup: Linkerbovenhoek van de rechthoek
+- breedte: Breedte in pixels
+- hoogte: Hoogte in pixels
+- kleur: Kleur van de rechthoek
+- gevuld:
+  1 = gevuld
+  0 = niet gevuld
+Voorbeeld:
+rechthoek, 50, 50, 100, 200, groen, 1
+Tekent een groene, gevulde rechthoek.
+
+**Cirkel**
+
+Commando:
+cirkel, x, y, radius, kleur
+Met dit commando wordt een cirkel getekend.
+- x, y: Middelpunt van de cirkel
+- radius: Straal van de cirkel in pixels
+- kleur: Kleur van de cirkel
+Voorbeeld:
+cirkel, 120, 80, 30, blauw
+Tekent een blauwe cirkel met radius 30.
+
+**Tekst**
+
+Commando:
+tekst, x, y, kleur, tekst, fontnaam, fontgrootte, fontstijl
+Met dit commando wordt tekst op het scherm weergegeven.
+- x, y: Linkerbovenhoek van de tekst
+- kleur: Kleur van de tekst
+- tekst: De weer te geven string
+- fontnaam: Naam van het lettertype
+- fontgrootte: Grootte van de tekst
+- fontstijl: Stijl van de tekst (bijv. normaal, vet, cursief)
+Voorbeeld:
+tekst, 20, 50, blauw, "Hallo wereld", Arial, 2, vet
+
+**Bitmap**
+
+Commando:
+bitmap, nr, x_lup, y_lup
+Met dit commando wordt een vooraf gedefinieerde bitmap getekend.
+- nr: Bitmapnummer
+- x_lup, y_lup: Linkerbovenhoek van de bitmap
+Voorbeeld:
+bitmap, 1, 100, 100
+
+**Clearscherm**
+
+Commando:
+clearscherm, kleur
+Wist het volledige scherm en vult het met één kleur.
+- kleur: Kleur van de achtergrond
+Voorbeeld:
+clearscherm, zwart
+
+### Bonus commandos
+
+**Wacht**
+
+Commando:
+wacht, msecs
+Laat het programma een aantal milliseconden wachten.
+- msecs: Aantal milliseconden
+Voorbeeld:
+wacht, 500
+
+**Herhaal**
+
+Commando:
+herhaal, aantal, hoevaak
+Herhaalt eerder uitgevoerde commando’s.
+- aantal: Aantal commando’s dat herhaald wordt
+- hoevaak: Hoe vaak deze herhaald worden
+Voorbeeld:
+herhaal, 2, 5
+
+**Figuur**
+
+Commando:
+figuur, x1, y1, x2, y2, x3, y3, x4, y4, x5, y5, kleur
+Tekent een figuur bestaande uit vijf hoekpunten.
+- x1 t/m x5, y1 t/m y5: Coördinaten van de hoekpunten
+- kleur: Kleur van de figuur
+Voorbeeld:
+figuur, 10,10, 50,10, 60,40, 30,70, 10,40, geel
+
+**Toren**
+
+Commando:
+toren, x, y, grootte, kleur1, kleur2
+Samengesteld commando dat een toren tekent.
+- x, y: Startpositie
+- grootte: Grootte van de toren
+- kleur1: Hoofdkleur
+- kleur2: Accentkleur
+Voorbeeld:
+toren, 100, 50, 3, grijs, rood
+
+**SetPixel (Bonus aplicatie met spyder)**
+
+Commando:
+setpixel, x, y, kleur
+Zet één pixel op het scherm. Wordt vooral gebruikt voor het pixel-voor-pixel tekenen van een afbeelding.
+- x, y: Pixelpositie
+- kleur: Kleur van de pixel
+Voorbeeld:
+setpixel, 10, 10, wit
+
+**Kleuren**
+
+Voor alle commando’s waarbij een kleur wordt gebruikt, kan één van de onderstaande kleuren worden opgegeven.
+De kleur wordt als tekst meegegeven in het commando.
+Beschikbare kleuren:
+- zwart
+- blauw
+- lichtblauw
+- groen
+- lichtgroen
+- cyaan
+- lichtcyaan
+- rood
+- lichtrood
+- magenta
+- lichtmagenta
+- bruin
+- geel
+- grijs
+- wit
+- roze
+- paars
+Voorbeeld:
+lijn, 10, 10, 100, 100, lichtgroen, 2
 
 ---
