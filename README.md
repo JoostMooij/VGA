@@ -166,7 +166,8 @@ Met dit commando wordt een lijn getekend tussen twee punten op het scherm.
 - x1, y1: Coördinaten van het beginpunt
 - x2, y2: Coördinaten van het eindpunt
 - kleur: Kleur van de lijn
-- dikte: Dikte van de lijn in pixels
+- dikte: Dikte van de lijn in pixel
+
 Voorbeeld:
 lijn, 10, 20, 100, 200, rood, 2
 Tekent een rode lijn van (10, 20) naar (100, 200) met een dikte van 2 pixels.
@@ -183,6 +184,7 @@ Met dit commando wordt een rechthoek getekend.
 - gevuld:
   1 = gevuld
   0 = niet gevuld
+
 Voorbeeld:
 rechthoek, 50, 50, 100, 200, groen, 1
 Tekent een groene, gevulde rechthoek.
@@ -195,6 +197,7 @@ Met dit commando wordt een cirkel getekend.
 - x, y: Middelpunt van de cirkel
 - radius: Straal van de cirkel in pixels
 - kleur: Kleur van de cirkel
+
 Voorbeeld:
 cirkel, 120, 80, 30, blauw
 Tekent een blauwe cirkel met radius 30.
@@ -210,6 +213,7 @@ Met dit commando wordt tekst op het scherm weergegeven.
 - fontnaam: Naam van het lettertype
 - fontgrootte: Grootte van de tekst
 - fontstijl: Stijl van de tekst (bijv. normaal, vet, cursief)
+
 Voorbeeld:
 tekst, 20, 50, blauw, "Hallo wereld", Arial, 2, vet
 
@@ -220,6 +224,7 @@ bitmap, nr, x_lup, y_lup
 Met dit commando wordt een vooraf gedefinieerde bitmap getekend.
 - nr: Bitmapnummer
 - x_lup, y_lup: Linkerbovenhoek van de bitmap
+
 Voorbeeld:
 bitmap, 1, 100, 100
 
@@ -229,6 +234,7 @@ Commando:
 clearscherm, kleur
 Wist het volledige scherm en vult het met één kleur.
 - kleur: Kleur van de achtergrond
+
 Voorbeeld:
 clearscherm, zwart
 
@@ -240,6 +246,7 @@ Commando:
 wacht, msecs
 Laat het programma een aantal milliseconden wachten.
 - msecs: Aantal milliseconden
+
 Voorbeeld:
 wacht, 500
 
@@ -250,6 +257,7 @@ herhaal, aantal, hoevaak
 Herhaalt eerder uitgevoerde commando’s.
 - aantal: Aantal commando’s dat herhaald wordt
 - hoevaak: Hoe vaak deze herhaald worden
+
 Voorbeeld:
 herhaal, 2, 5
 
@@ -260,6 +268,7 @@ figuur, x1, y1, x2, y2, x3, y3, x4, y4, x5, y5, kleur
 Tekent een figuur bestaande uit vijf hoekpunten.
 - x1 t/m x5, y1 t/m y5: Coördinaten van de hoekpunten
 - kleur: Kleur van de figuur
+
 Voorbeeld:
 figuur, 10,10, 50,10, 60,40, 30,70, 10,40, geel
 
@@ -272,6 +281,7 @@ Samengesteld commando dat een toren tekent.
 - grootte: Grootte van de toren
 - kleur1: Hoofdkleur
 - kleur2: Accentkleur
+
 Voorbeeld:
 toren, 100, 50, 3, grijs, rood
 
@@ -282,6 +292,7 @@ setpixel, x, y, kleur
 Zet één pixel op het scherm. Wordt vooral gebruikt voor het pixel-voor-pixel tekenen van een afbeelding.
 - x, y: Pixelpositie
 - kleur: Kleur van de pixel
+
 Voorbeeld:
 setpixel, 10, 10, wit
 
@@ -307,6 +318,7 @@ Beschikbare kleuren:
 - wit
 - roze
 - paars
+
 Voorbeeld:
 lijn, 10, 10, 100, 100, lichtgroen, 2
 
