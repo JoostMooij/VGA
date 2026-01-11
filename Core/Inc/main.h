@@ -17,11 +17,12 @@
 #include <stdio.h>
 #include <string.h>
 #include "stm32_ub_vga_screen.h"
-//#include "logicLayer.h"
-//#include <math.h>
-//#include "APIerror.h"
-//#include "APIdraw.h"
-//#include "APIio.h"
+#include "logicLayer.h"
+#include <math.h>
+#include "APIerror.h"
+#include "APIdraw.h"
+#include "APIio.h"
+#include "test.h"
 
 
 //--------------------------------------------------------------

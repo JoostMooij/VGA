@@ -24,6 +24,7 @@
 #include "APIerror.h"
 #include "stm32f4xx.h"
 #include "APIdraw.h"
+#include "stm32_ub_vga_screen.h"
 
 /**
  * @brief Alle mogelijke commando’s die de logica kan verwerken.
@@ -31,17 +32,17 @@
 typedef enum
 {
     CMD_ONBEKEND = 0,   /**< Onbekend commando */
-    CMD_LIJN,           /**< Lijn tekenen */
-    CMD_RECHTHOEK,      /**< Rechthoek tekenen */
-    CMD_TEKST,          /**< Tekst plaatsen */
-    CMD_BITMAP,         /**< Bitmap tonen */
-    CMD_CLEAR,          /**< Scherm wissen */
-    CMD_WACHT,          /**< Wachtopdracht */
-    CMD_HERHAAL,        /**< Herhaalblok */
-    CMD_CIRKEL,         /**< Cirkel tekenen */
-    CMD_FIGUUR,         /**< Complex figuur tekenen */
-    CMD_TOREN,          /**< Torenopdracht */
-    CMD_SETPIXEL        /**< Eén pixel zetten */
+    CMD_LIJN = 1,           /**< Lijn tekenen */
+    CMD_RECHTHOEK = 2,      /**< Rechthoek tekenen */
+    CMD_TEKST = 3,          /**< Tekst plaatsen */
+    CMD_BITMAP = 4,         /**< Bitmap tonen */
+    CMD_CLEAR = 5,          /**< Scherm wissen */
+    CMD_WACHT = 6,          /**< Wachtopdracht */
+    CMD_HERHAAL = 7,        /**< Herhaalblok */
+    CMD_CIRKEL = 8,         /**< Cirkel tekenen */
+    CMD_FIGUUR = 9,         /**< Complex figuur tekenen */
+    CMD_TOREN = 10,          /**< Torenopdracht */
+    CMD_SETPIXEL = 11,        /**< Eén pixel zetten */
 } COMMANDO_TYPE;
 
 /**
@@ -95,7 +96,8 @@ typedef enum
     GRIJS        = VGA_RGB(4,4,2),
     WIT          = VGA_RGB(7,7,3),
     ROZE         = VGA_RGB(7,3,3),
-    PAARS        = VGA_RGB(5,0,3)
+    PAARS        = VGA_RGB(5,0,3),
+	Ongeldige_kleur,
 } Kleur;
 /* -------------------------------------------------------------------------- */
 /*  Functieprototypes                                                         */

@@ -15,6 +15,8 @@
 #include "stm32_ub_vga_screen.h"   // nodig voor UB_VGA_SetPixel en defines
 #include "bitMap.h"
 #include <stddef.h>
+#include "APIio.h"
+
 
 /**
  * @brief Controleer alle mogelijke fouten van een API-functie.
@@ -151,37 +153,43 @@ ErrorList Error_handling(FunctionID func,
 
         case FUNC_herhaal:
         {
-          ErrorCode aantal_error = herhaal_aantal_error(waarde1);
-          ErrorCode hoevaak_error = herhaal_hoevaak_error(waarde2);
-          if(aantal_error != NO_ERROR) errors.error_var1 = aantal_error;
-          if(hoevaak_error != NO_ERROR) errors.error_var2 = hoevaak_error;
-          break;
+        	ErrorCode aantal_error = herhaal_aantal_error(waarde1);
+        	ErrorCode hoevaak_error = herhaal_hoevaak_error(waarde2);
+        	if(aantal_error != NO_ERROR) errors.error_var1 = aantal_error;
+        	if(hoevaak_error != NO_ERROR) errors.error_var2 = hoevaak_error;
+        	break;
         }
         
         case FUNC_bitmap:
         {
         	ErrorCode nr_error		= check_nr(waarde1, waarde2, waarde3);
         	ErrorCode x_error      = check_x(waarde2);
-          ErrorCode y_error      = check_y(waarde3);
+		    ErrorCode y_error      = check_y(waarde3);
 
-          if(nr_error		!= NO_ERROR) errors.error_var1 = nr_error;
-          if(x_error      != NO_ERROR) errors.error_var2 = x_error;
-          if(y_error      != NO_ERROR) errors.error_var3 = y_error;
-          break;
+		    if(nr_error		!= NO_ERROR) errors.error_var1 = nr_error;
+		    if(x_error      != NO_ERROR) errors.error_var2 = x_error;
+		    if(y_error      != NO_ERROR) errors.error_var3 = y_error;
+		    break;
         }
 
         case FUNC_tekst:
         {
-          // waarde1=x, waarde2=y, waarde3=kleur, waarde4=pointer naar tekst_str,
-          // waarde5=pointer naar fontnaam, waarde6=schaal, waarde7=pointer naar stijl
-          ErrorCode kleur_error = check_color(waarde3);
-          ErrorCode tekst_error = check_tekst_op_scherm(waarde1, waarde2, (char*)waarde4, waarde6, (char*)waarde7);
+            ErrorCode x_error       = check_x(waarde1);
+            ErrorCode y_error       = check_y(waarde2);
+        	ErrorCode kleur_error = check_color(waarde3);
+        	ErrorCode tekst_error =  check_tekst_op_scherm(waarde1, waarde2, (char*)waarde4, waarde6, (char*)waarde7);
+        	ErrorCode empty_error = check_text_empty((char*)waarde4);
+        	ErrorCode schaal_error =  check_schaal(waarde6);
+        	ErrorCode fonstijl_error =  check_fontstijl((char*)waarde7);
 
-          if(check_x(waarde1) != NO_ERROR) errors.error_var1 = ERROR_X1;
-          if(check_y(waarde2) != NO_ERROR) errors.error_var2 = ERROR_Y1;
-          if(kleur_error      != NO_ERROR) errors.error_var3 = kleur_error;
-          if(tekst_error      != NO_ERROR) errors.error_var4 = tekst_error;
-          break;
+            if(x_error != NO_ERROR) errors.error_var1 = x_error;
+            if(y_error != NO_ERROR) errors.error_var2 = y_error;
+            if(kleur_error != NO_ERROR) errors.error_var3 = kleur_error;
+            if(kleur_error != NO_ERROR) errors.error_var3 = tekst_error;
+            if(empty_error != NO_ERROR) errors.error_var5 = empty_error;
+            if(schaal_error != NO_ERROR) errors.error_var5 = schaal_error;
+            if(fonstijl_error != NO_ERROR) errors.error_var5 = fonstijl_error;
+            break;
         }
 
         default:
@@ -207,7 +215,9 @@ ErrorCode check_y(int y)
 /** @brief Controleer kleurwaarde */
 ErrorCode check_color(int color)
 {
-    return (color < 0 || color > 255) ? ERROR_COLOR : NO_ERROR;
+	if (color == Ongeldige_kleur) return ERROR_COLOR;
+    if (color < 0 || color > 255) return ERROR_COLOR;
+    return NO_ERROR;
 }
 
 /** @brief Controleer lijn inclusief dikte binnen scherm */
@@ -363,39 +373,67 @@ ErrorCode check_toren_op_scherm(int x, int y, int grootte)
     return NO_ERROR;
 }
 
+ErrorCode check_text_empty(const char* tekst_str)
+{
+	if (tekst_str == NULL || tekst_str[0] == '\0') return ERROR_TEXT_EMPTY;
+	return NO_ERROR;
+}
+
+ErrorCode check_schaal(int schaal_factor)
+{
+    if (schaal_factor < 1) return ERROR_GROOTTE_TOO_SMALL;
+	return NO_ERROR;
+}
+
+ErrorCode check_fontstijl(const char* fontstijl)
+{
+    int is_vet = (strcmp(fontstijl, "vet") == 0);
+    int is_cursief = (strcmp(fontstijl, "cursief") == 0);
+    int is_normaal = (strcmp(fontstijl, "normaal") == 0);
+    if (!is_vet && !is_cursief && !is_normaal) return ERROR_INVALID_STYL;
+    return NO_ERROR;
+}
+
 ErrorCode check_tekst_op_scherm(int x, int y, const char* tekst_str, int schaal_factor, const char* fontstijl)
 {
     if (tekst_str == NULL) return ERROR_TEXT_EMPTY;
     if (schaal_factor < 1) return ERROR_GROOTTE_TOO_SMALL;
 
-    // --- NIEUW: Stijl validatie ---
+    // --- Stijl validatie ---
     int is_vet = (strcmp(fontstijl, "vet") == 0);
     int is_cursief = (strcmp(fontstijl, "cursief") == 0);
     int is_normaal = (strcmp(fontstijl, "normaal") == 0);
-
-    // Als het geen van de drie is, stuur dan een specifieke error terug
     if (!is_vet && !is_cursief && !is_normaal) {
-        return ERROR_INVALID_STYL; // Voeg deze toe aan je APIerror.h
+        return ERROR_INVALID_STYL;
     }
-    // ------------------------------
 
-    // De rest van de breedte-berekening blijft hetzelfde...
     int current_x = x;
+    int current_y = y;
     int lengte = strlen(tekst_str);
 
-    // Hoogte check
-    if (y + (8 * schaal_factor) > VGA_DISPLAY_Y) return ERROR_HOOGTE;
-
     for (int i = 0; i < lengte; i++) {
-        int char_width = 8 * schaal_factor;
-        if (is_vet)     char_width += schaal_factor;
-        if (is_cursief) char_width += (7 / 3) * schaal_factor;
+        unsigned char karakter = (unsigned char)tekst_str[i];
+        if (karakter < 32 || karakter > 126) karakter = 32; // spatie voor niet-printables
 
-        if (current_x + char_width > VGA_DISPLAY_X) return ERROR_BREEDTE;
-        current_x += char_width + schaal_factor;
+        // Bereken breedte van dit karakter
+        int char_width = BASE_FONT_SIZE * schaal_factor;
+        if (is_vet) char_width += schaal_factor;
+        if (is_cursief) char_width += (int)((7.0 / 3.0) * schaal_factor + 0.5);
+        char_width += schaal_factor;
+
+        // Wrap naar nieuwe regel als we rechtsrand bereiken
+        if (current_x + char_width > VGA_DISPLAY_X) {
+            current_x = 0;
+            current_y += BASE_FONT_SIZE * schaal_factor + schaal_factor;
+        }
+
+        // Check of we niet onder de Y-rand komen
+        if (current_y + BASE_FONT_SIZE * schaal_factor > VGA_DISPLAY_Y) {
+            return ERROR_HOOGTE; // Tekst past niet op scherm
+        }
+
+        current_x += char_width;
     }
 
     return NO_ERROR;
 }
-
-

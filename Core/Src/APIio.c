@@ -56,7 +56,7 @@ ErrorList clearscherm(const char *kleur)
 
     if (herhaal_hoog == 0)
     {
-    	int params[] = {kleur};
+    	int params[] = {color};
     	record_command(CMD_CLEAR, 1, params);
     }
 
@@ -191,7 +191,7 @@ uint8_t kleur_omzetter(const char *input)
     {
     	return PAARS;
     }
-    return 0;
+    return Ongeldige_kleur;
 }
 
 
@@ -322,7 +322,7 @@ static int get_command_size(COMMANDO_TYPE type)
         case CMD_CIRKEL:    return 5;
         case CMD_TOREN:     return 6;
         case CMD_FIGUUR:    return 12;
-        case CMD_TEKST:    return 8;
+        case CMD_TEKST:     return 8;
         case CMD_BITMAP:    return 4;
         default:            return 0;    // Onbekend of CMD_ONBEKEND/CMD_HERHAAL
     }

@@ -116,9 +116,11 @@ static void Handle_Cirkel(const char *cmd) {
     }
 }
 
-static void Handle_Wacht(const char *cmd) {
+static void Handle_Wacht(const char *cmd)
+{
     int msecs;
-    if (sscanf(cmd, "wacht,%d", &msecs) == 1) {
+    if (sscanf(cmd, "wacht,%d", &msecs) == 1)
+    {
         UART2_WriteString("Wachten...\r\n");
         // API_wait(msecs);
     }

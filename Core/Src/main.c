@@ -15,6 +15,8 @@ int main(void)
     UART2_Init(115200);
     (void)API_init_io();
     (void)clearscherm("wit");
+    test_APIio();
+    test_APIdraw();
     UART2_WriteString("> ");
     UserInput_t input;
 

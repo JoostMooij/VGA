@@ -14,7 +14,7 @@
 
 #include <stdint.h>
 
-#define MAX_CMD_LENGTH 64
+#define MAX_CMD_LENGTH 128
 
 /**
  * @brief Structuur om de input als volledige string op te slaan.

@@ -25,7 +25,6 @@
  * @param code De numerieke foutcode (0–7).
  * @return Een constante string met de foutnaam.
  */
-
 const char* errorCodeToString(int code)
 {
     switch (code)
@@ -54,6 +53,10 @@ const char* errorCodeToString(int code)
         return "ERROR_TOREN_BUITEN_SCHERM";
     case ERROR_TIME_TOO_SMALL:
         return "ERROR_TIME_TOO_SMALL";
+    case AANTAL_NOT_IN_RANGE:
+        return "AANTAL_NOT_IN_RANGE";
+    case HOEVAAK_NOT_IN_RANGE:
+        return "HOEVAAK_NOT_IN_RANGE";
     case ERROR_bitmap_nr:
         return "ERROR_bitmap_nr";
     case ERROR_bitmap_buiten_scherm:
@@ -68,6 +71,7 @@ const char* errorCodeToString(int code)
         return "UNKNOWN_ERROR";
     }
 }
+
 
 /**
  * @brief Leest alle foutwaarden uit een ErrorList en stuurt de gevonden fouten via UART.

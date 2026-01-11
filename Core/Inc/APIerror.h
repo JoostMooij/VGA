@@ -151,6 +151,12 @@ ErrorCode herhaal_aantal_error(int aantal);
  */
 ErrorCode herhaal_hoevaak_error(int hoevaak);
 
+ErrorCode check_text_empty(const char* tekst_str);
+
+ErrorCode check_schaal(int schaal_factor);
+
+ErrorCode check_fontstijl(const char* fontstijl);
+
 /**
  * @brief Controleer de tekst op het scherm).
  */
