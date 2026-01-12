@@ -15,8 +15,27 @@ int main(void)
     UART2_Init(115200);
     (void)API_init_io();
     (void)clearscherm("wit");
-    test_APIio();
-    test_APIdraw();
+
+    (void)clearscherm("wit");
+	(void)wacht(1000);
+	(void)lijn(10, 10, 10, 150, "rood", 10);
+	(void)wacht(1000);
+	(void)rechthoek(20,20,40,80,"geel", 1);
+	(void)wacht(1000);
+	(void)figuur(10,10,20,20,60,50,80,100,110,114,"groen");
+	(void)wacht(1000);
+	(void)cirkel(70,50,25,"blauw");
+	(void)wacht(1000);
+	(void)toren(100,100,20,"groen","geel");
+	(void)wacht(1000);
+	(void)clearscherm("wit");
+	(void)wacht(1000);
+	(void)herhaal(12, 2);
+	(void)clearscherm("rood");
+
+
+//    test_APIio();
+//    test_APIdraw();
     UART2_WriteString("> ");
     UserInput_t input;
 

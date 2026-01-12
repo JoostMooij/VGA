@@ -17,6 +17,7 @@
 #define grote_smiley 32
 #define kat_afbeelding 120
 #define skalet_afbeelding 90
+#define KIP_afbeelding 90
 
 
 // --- Struct Definitie ---
@@ -42,6 +43,7 @@ extern const Bitmap smily_boos;
 extern const Bitmap yes_cat_thumbs_up; // NIEUW
 extern const Bitmap skeleton_banging_on_shield_meme_frame_00;
 extern const Bitmap skeleton_banging_on_shield_meme_frame_06;
+extern const Bitmap KIP;
 
 // --- Functie Prototypes ---
 /**

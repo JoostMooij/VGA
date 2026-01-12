@@ -41,9 +41,6 @@ static void Handle_setPixel(const char *cmd)
         char msg[64];
         snprintf(msg, sizeof(msg), "\r\nPixel -> x=%d y=%d kleur=%s\r\n", x, y, kleur);
         UART2_WriteString(msg);
-
-        // TODO: Aanroep naar API
-        // API_draw_pixel(x, y, kleur_naar_int(kleur));
     }
     else
     {

@@ -277,7 +277,7 @@ ErrorCode check_nr(int nr, int x, int y)
 {
     int grootte;
 
-    if (nr < 0 || nr > 9)
+    if (nr < 0 || nr > 10)
         return ERROR_bitmap_nr;
 
     switch (nr)
@@ -302,6 +302,10 @@ ErrorCode check_nr(int nr, int x, int y)
         case 9:
             grootte = skalet_afbeelding;
             break;
+
+        case 10:
+        	grootte = KIP_afbeelding;
+        	break;
 
         default:
             return ERROR_bitmap_nr;
