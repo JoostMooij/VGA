@@ -19,12 +19,11 @@
 #ifndef APIIO_H
 #define APIIO_H
 
-#include <stdint.h>
+#include "stdint.h"
 
 #include "APIerror.h"
 #include "stm32f4xx.h"
 #include "logicLayer.h"
-
 
 /**
  * @brief Maakt een 8-bit VGA kleurwaarde op basis van R/G/B componenten.
@@ -107,8 +106,6 @@ ErrorList clearscherm(const char *kleur);
  * @return ErrorList Struct met foutstatus.
  */
 ErrorList drawPixel(int x, int y, const char *kleur);
-
-ErrorList setPixel(int x, int y, int kleur);
 
 /**
  * @brief Zet een Nederlandse kleurnaam om naar een VGA-kleurcode.
