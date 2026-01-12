@@ -11,14 +11,19 @@
  * @date 2025-11-20
  */
 
-#include <string.h>
-#include <stdlib.h>
+#include "string.h"
+#include "stdlib.h"
 #include "APIio.h"
+#include "APIerror.h"
+#include "logicLayer.h"
+#include "APIdraw.h"
 
 volatile uint32_t ms_tick_counter = 0;
 volatile uint16_t command_buffer[MAX_COMMAND_BUFFER_SIZE];
 volatile int command_buffer_index = 0;
 volatile int herhaal_hoog = 0;
+static uint8_t cmd_starts[MAX_COMMAND_HISTORY_SIZE]; // De "kleine" buffer voor offsets
+static int cmd_start_count = 0;                      // Aantal opgeslagen commando's
 
 
 /**
@@ -46,23 +51,28 @@ void API_init_io(void)
  */
 ErrorList clearscherm(const char *kleur)
 {
-
     uint8_t color = kleur_omzetter(kleur);
-    ErrorList errors = Error_handling(FUNC_clearscherm,color,0,0,0,0,0,0,0,0,0,0);
-    if (errors.error_var1)
-    {
-        return errors;
-    }
+    ErrorList errors = Error_handling(FUNC_clearscherm, color, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    if (errors.error_var1) return errors;
 
+    int ik_heb_geactiveerd = 0;
     if (herhaal_hoog == 0)
     {
-    	int params[] = {color};
-    	record_command(CMD_CLEAR, 1, params);
+        int params[] = {(int)color};
+        record_command(CMD_CLEAR, 1, params);
+        herhaal_hoog = 1;      // Zet vlag op 1
+        ik_heb_geactiveerd = 1; // Eigenaar van de vlag
     }
 
     UB_VGA_FillScreen(color);
+
+    if (ik_heb_geactiveerd)
+    {
+        herhaal_hoog = 0;
+    }
     return errors;
 }
+
 
 /**
  * @brief Tekent een pixel op het VGA-scherm.
@@ -79,13 +89,24 @@ ErrorList clearscherm(const char *kleur)
 ErrorList drawPixel(int x, int y, const char *kleur)
 {
     uint8_t color = kleur_omzetter(kleur);
-    ErrorList errors = Error_handling(FUNC_drawPixel, x, y, color,0,0,0,0,0,0,0,0);
-    if (errors.error_var1 || errors.error_var2 || errors.error_var3)
+    ErrorList errors = Error_handling(FUNC_drawPixel, x, y, color, 0, 0, 0, 0, 0, 0, 0, 0);
+    if (errors.error_var1 || errors.error_var2 || errors.error_var3) return errors;
+
+    int ik_heb_geactiveerd = 0;
+    if (herhaal_hoog == 0)
     {
-        return errors;
+        int params[] = {x, y, (int)color};
+        record_command(CMD_SETPIXEL, 3, params);
+        herhaal_hoog = 1;
+        ik_heb_geactiveerd = 1;
     }
 
     UB_VGA_SetPixel(x, y, color);
+
+    if (ik_heb_geactiveerd)
+    {
+        herhaal_hoog = 0;
+    }
     return errors;
 }
 
@@ -232,78 +253,67 @@ void SysTick_Handler(void)
  */
 ErrorList wacht(int ms)
 {
-    ErrorList errors = Error_handling(FUNC_wacht, ms,0,0,0,0,0,0,0,0,0,0);
-    if (errors.error_var1)
-    {
-        return errors;
-    }
+    ErrorList errors = Error_handling(FUNC_wacht, ms, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    if (errors.error_var1) return errors;
 
+    int ik_heb_geactiveerd = 0;
     if (herhaal_hoog == 0)
     {
-		int params[] = {ms};
-		record_command(CMD_WACHT, 1, params);
+        int params[] = {ms};
+        record_command(CMD_WACHT, 1, params);
+        herhaal_hoog = 1;
+        ik_heb_geactiveerd = 1;
     }
 
     uint32_t eindtijd = ms_tick_counter + ms;
-
-    // Wacht totdat de teller de doeltijd bereikt
     while (ms_tick_counter < eindtijd)
     {
-        //Wait For Interrupt.
         __WFI();
     }
 
+    if (ik_heb_geactiveerd)
+    {
+        herhaal_hoog = 0;
+    }
     return errors;
 }
-
 /**
  * @brief Slaat een commando ID en zijn parameters op in de lineaire buffer.
  * Maakt automatisch ruimte vrij door het oudste commando te verwijderen als de buffer vol is.
  */
 void record_command(COMMANDO_TYPE type, int param_count, const int params[])
 {
-    int nieuwe_omvang = 1 + param_count; // ID + aantal parameters [3]
+    int nieuwe_omvang = 1 + param_count;
 
-    // Failsafe: Als het commando op zichzelf al groter is dan de hele buffer, negeer het.
-    if (nieuwe_omvang > MAX_COMMAND_HISTORY_SIZE) {
-        return;
-    }
-
-    // Maak ruimte vrij zolang het nieuwe commando niet in de resterende bufferruimte past
-    while (command_buffer_index + nieuwe_omvang > MAX_COMMAND_HISTORY_SIZE)
+    // Ruimte vrijmaken als buffer vol is OF als we over de 20 commando's gaan
+    while (cmd_start_count >= 20 || (command_buffer_index + nieuwe_omvang) > MAX_COMMAND_BUFFER_SIZE)
     {
-        // CORRECTIE: Haal de WAARDE op van het eerste element (index 0)
-        COMMANDO_TYPE oudste_type = (COMMANDO_TYPE)command_buffer;
-
-        // Gebruik de bestaande mapping om de grootte te bepalen [4, 5]
+        int oudste_pos = cmd_starts;
+        COMMANDO_TYPE oudste_type = (COMMANDO_TYPE)command_buffer[oudste_pos];
         int oudste_omvang = get_command_size(oudste_type);
 
-        // Veiligheidscheck: als de omvang 0 is (onbekend), verwijder dan minimaal 1 slot
-        if (oudste_omvang <= 0) {
-            oudste_omvang = 1;
-        }
+        if (oudste_omvang <= 0) oudste_omvang = 1;
 
-        // Verschuif alle resterende data in de buffer naar voren (naar links)
-        // We overschrijven de ruimte van het oudste commando.
+        // Verschuif data in de grote buffer
         for (int i = 0; i < (command_buffer_index - oudste_omvang); i++)
-        {
             command_buffer[i] = command_buffer[i + oudste_omvang];
-        }
 
-        // Update de huidige schrijf-index na het schuiven
         command_buffer_index -= oudste_omvang;
+
+        // Verschuif offsets in de kleine buffer en pas ze aan
+        for (int i = 0; i < (cmd_start_count - 1); i++)
+            cmd_starts[i] = cmd_starts[i + 1] - oudste_omvang;
+
+        cmd_start_count--;
     }
 
-    // Voeg nu het nieuwe commando toe op de vrijgekomen plek aan het einde
-    command_buffer[command_buffer_index++] = (int)type;
+    // Nieuw commando toevoegen
+    cmd_starts[cmd_start_count++] = (uint8_t)command_buffer_index;
+    command_buffer[command_buffer_index++] = (uint16_t)type;
 
-    // Schrijf de bijbehorende parameters [4]
     for (int i = 0; i < param_count; i++)
-    {
-        command_buffer[command_buffer_index++] = params[i];
-    }
+        command_buffer[command_buffer_index++] = (uint16_t)params[i];
 }
-
 
 /**
  * @brief Retourneert de totale omvang (ID + parameters) in de buffer
@@ -366,112 +376,70 @@ static const char* get_color_string_from_code(int code)
  */
 ErrorList herhaal(int aantal, int hoevaak)
 {
-    ErrorList errors = Error_handling(FUNC_herhaal, aantal,hoevaak,0,0,0,0,0,0,0,0,0);
-    if (errors.error_var1 || errors.error_var2)
+   ErrorList errors = Error_handling(FUNC_herhaal, aantal,hoevaak,0,0,0,0,0,0,0,0,0);
+	if (errors.error_var1 || errors.error_var2)
+	{
+		return errors;
+	}
+    // Bepaal hoeveel commando's er daadwerkelijk herhaald kunnen worden
+    int te_herhalen = (aantal > cmd_start_count) ? cmd_start_count : aantal;
+    int start_index_in_kleine_buffer = cmd_start_count - te_herhalen;
+
+    herhaal_hoog = 1; // Voorkom dat herhaalde commando's opnieuw worden opgenomen [6]
+
+    for (int h = 0; h < hoevaak; h++)
     {
-        return errors;
-    }
-    // 1. Zoek de startposities van alle commando's in de buffer
-    static uint8_t cmd_starts[MAX_COMMAND_HISTORY_SIZE];
-    int cmd_start_count = 0;
-    int i = 0;
-    const int MAX_PARAMS_PLUS_ID = 12;
-
-    // Lineaire scan om alle commando-starts te identificeren en de offsets te berekenen
-    while (i < command_buffer_index) {
-        COMMANDO_TYPE type = (COMMANDO_TYPE)command_buffer[i];
-        int size = get_command_size(type);
-
-        // Sla alleen geldige commando's (ID > 0) op
-        if (size > 0 && type != CMD_HERHAAL) {
-            cmd_starts[cmd_start_count++] = i;
-            i += size;
-        } else {
-            // Overslaan/stoppen bij een onbekende of CMD_HERHAAL (herhaling van herhaling wordt genegeerd)
-            if (size == 0) i++;
-            else break;
-        }
-    }
-
-    // Bepaal de effectieve index van de eerste herhaling
-    int actual_aantal = (aantal > cmd_start_count) ? cmd_start_count : aantal;
-    int start_index_offset = cmd_start_count - actual_aantal;
-
-    // 2. Herhaal de gevonden commando's (Outer loop: hoevaak)
-    for (int k = 0; k < hoevaak; k++)
-    {
-        // Inner loop: loop langs de geselecteerde commando's
-        for (int j = 0; j < actual_aantal; j++)
+        for (int i = 0; i < te_herhalen; i++)
         {
-            int current_buffer_start = cmd_starts[start_index_offset + j];
-            COMMANDO_TYPE type = (COMMANDO_TYPE)command_buffer[current_buffer_start];
+            // Haal de exacte startpositie in de grote buffer op uit de kleine buffer
+            int pos = cmd_starts[start_index_in_kleine_buffer + i];
+            COMMANDO_TYPE type = (COMMANDO_TYPE)command_buffer[pos];
 
-            // Haal de parameters op (ID staat op index 0, parameters beginnen op index 1)
-            int param_count = get_command_size(type) - 1;
-            int params[MAX_PARAMS_PLUS_ID - 1];
-
-            for (int p = 0; p < param_count; p++) {
-                // Kopieer de parameterwaarden (coördinaat, dikte, of numerieke kleurcode)
-                params[p] = command_buffer[current_buffer_start + 1 + p];
+            // Roep de juiste functie aan met variabelen direct uit de grote buffer [7, 8]
+            switch (type)
+            {
+                case CMD_CLEAR:
+                    clearscherm(get_color_string_from_code(command_buffer[pos + 1]));
+                    break;
+                case CMD_WACHT:
+                    wacht(command_buffer[pos + 1]);
+                    break;
+                case CMD_LIJN:
+                    lijn(command_buffer[pos + 1], command_buffer[pos + 2],
+                         command_buffer[pos + 3], command_buffer[pos + 4],
+                         get_color_string_from_code(command_buffer[pos + 5]),
+                         command_buffer[pos + 6]);
+                    break;
+                case CMD_RECHTHOEK:
+                    rechthoek(command_buffer[pos + 1], command_buffer[pos + 2],
+                              command_buffer[pos + 3], command_buffer[pos + 4],
+                              get_color_string_from_code(command_buffer[pos + 5]),
+                              command_buffer[pos + 6]);
+                    break;
+                case CMD_CIRKEL:
+                    cirkel(command_buffer[pos + 1], command_buffer[pos + 2],
+                           command_buffer[pos + 3],
+                           get_color_string_from_code(command_buffer[pos + 4]));
+                    break;
+                case CMD_TOREN:
+                    toren(command_buffer[pos + 1], command_buffer[pos + 2],
+                          command_buffer[pos + 3],
+                          get_color_string_from_code(command_buffer[pos + 4]),
+                          get_color_string_from_code(command_buffer[pos + 5]));
+                    break;
+                case CMD_BITMAP:
+                    bitMap(command_buffer[pos+1], command_buffer[pos+2], command_buffer[pos+3]);
+                    break;
+                case CMD_TEKST:
+					tekst(command_buffer[pos + 1], command_buffer[pos + 2],
+							get_color_string_from_code(command_buffer[pos + 3]),
+						  command_buffer[pos + 4],
+						  command_buffer[pos + 5], command_buffer[pos + 6], command_buffer[pos + 7]);
+					break;
+                default: break;
             }
-            herhaal_hoog = 1;
-            // 3. Roept de overeenkomstige functie aan (gebruikt directe int/string conversie)
-            switch (type) {
-				case CMD_CLEAR:
-					// Parameters: {color_code} (1)
-					clearscherm(get_color_string_from_code(params[0]));
-					break;
-				case CMD_WACHT:
-					// Parameters: {ms} (1)
-					wacht(params[0]);
-					break;
-//				case CMD_SETPIXEL:
-//					// Parameters: {x, y, color_code} (3)
-//					errors = drawPixel(params[0], params[1], get_color_string_from_code(params[2]));
-//					break;
-				case CMD_LIJN:
-					// Parameters: {x1, y1, x2, y2, color_code, dikte} (6)
-					lijn(params[0], params[1], params[2], params[3],
-								  get_color_string_from_code(params[4]), params[5]);
-					break;
-				case CMD_RECHTHOEK:
-					// Parameters: {x, y, w, h, color_code, gevuld} (6)
-					rechthoek(params[0], params[1], params[2], params[3],
-									   get_color_string_from_code(params[4]), params[5]);
-					break;
-				case CMD_CIRKEL:
-					// Parameters: {x0, y0, radius, color_code} (4)
-					cirkel(params[0], params[1], params[2],
-									get_color_string_from_code(params[3]));
-					break;
-				case CMD_FIGUUR:
-					// Parameters: {x1..x5, y1..y5, color_code} (11)
-					figuur(params[0], params[1], params[2], params[3], params[4], params[5],
-									params[6], params[7], params[8], params[9],
-									get_color_string_from_code(params[10]));
-					break;
-				case CMD_TOREN:
-					// Parameters: {x, y, grootte, color1_code, color2_code} (5)
-					toren(params[0], params[1], params[2],
-													   get_color_string_from_code(params[3]),
-													   get_color_string_from_code(params[4]));
-					break;
-				case CMD_TEKST:
-					// Parameters: {x, y, grootte, color1_code, color2_code} (5)
-					tekst(params[0], params[1], params[2], get_color_string_from_code(params[3]), get_color_string_from_code(params[4]), params[5], get_color_string_from_code(params[6]));
-					break;
-				case CMD_BITMAP:
-					// Parameters: {x, y, grootte, color1_code, color2_code} (5)
-					bitMap(params[0], params[1], params[2]);
-					break;
-				default:
-					// Niets doen
-					break;
-			}
         }
-
     }
     herhaal_hoog = 0;
     return errors;
 }
-

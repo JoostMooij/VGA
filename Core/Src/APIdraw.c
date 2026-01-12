@@ -35,16 +35,18 @@
  */
 ErrorList lijn(int x1, int y1, int x2, int y2, const char *kleur, int dikte)
 {
-	uint8_t color = kleur_omzetter(kleur);
-    ErrorList errors = Error_handling(FUNC_lijn, x1, y1, x2, y2, color, dikte, 0,0,0,0,0);
-
+    uint8_t color = kleur_omzetter(kleur);
+    ErrorList errors = Error_handling(FUNC_lijn, x1, y1, x2, y2, color, dikte, 0, 0, 0, 0, 0);
     if(errors.error_var1 || errors.error_var2 || errors.error_var3 || errors.error_var4 || errors.error_var5 || errors.error_var6)
         return errors;
 
+    int ik_heb_geactiveerd = 0;
     if (herhaal_hoog == 0)
     {
-		int params[] = {x1, y1, x2, y2, color, dikte};
-		record_command(CMD_LIJN, 6, params);
+        int params[] = {x1, y1, x2, y2, (int)color, dikte};
+        record_command(CMD_LIJN, 6, params);
+        herhaal_hoog = 1;
+        ik_heb_geactiveerd = 1;
     }
 
     int dx = abs(x2 - x1), sx = x1 < x2 ? 1 : -1;
@@ -62,7 +64,12 @@ ErrorList lijn(int x1, int y1, int x2, int y2, const char *kleur, int dikte)
         if(e2 >= dy) { err += dy; x1 += sx; }
         if(e2 <= dx) { err += dx; y1 += sy; }
     }
-    return errors;
+
+    if (ik_heb_geactiveerd)
+        {
+            herhaal_hoog = 0;
+        }
+	return errors;
 }
 
 /**
@@ -82,15 +89,17 @@ ErrorList lijn(int x1, int y1, int x2, int y2, const char *kleur, int dikte)
 ErrorList rechthoek(int x, int y, int w, int h, const char *kleur, int gevuld)
 {
     uint8_t color = kleur_omzetter(kleur);
-    ErrorList errors = Error_handling(FUNC_rechthoek, x, y, w, h, color, gevuld, 0,0,0,0,0);
-
+    ErrorList errors = Error_handling(FUNC_rechthoek, x, y, w, h, color, gevuld, 0, 0, 0, 0, 0);
     if(errors.error_var1 || errors.error_var2 || errors.error_var3 || errors.error_var4 || errors.error_var5 || errors.error_var6)
         return errors;
 
+    int ik_heb_geactiveerd = 0;
     if (herhaal_hoog == 0)
     {
-		int params[] = {x, y, w, h, color, gevuld};
-		record_command(CMD_RECHTHOEK, 6, params);
+        int params[] = {x, y, w, h, (int)color, gevuld};
+        record_command(CMD_RECHTHOEK, 6, params);
+        herhaal_hoog = 1;
+        ik_heb_geactiveerd = 1;
     }
 
     int x2 = x + w - 1;
@@ -109,7 +118,12 @@ ErrorList rechthoek(int x, int y, int w, int h, const char *kleur, int gevuld)
         for(unsigned int j = y; j <= y2; j++) drawPixel(x, j, kleur);
         for(unsigned int j = y; j <= y2; j++) drawPixel(x2, j, kleur);
     }
-    return errors;
+
+    if (ik_heb_geactiveerd)
+        {
+            herhaal_hoog = 0;
+        }
+	return errors;
 }
 
 /**
@@ -134,24 +148,29 @@ ErrorList figuur(int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4,
 {
     uint8_t color = kleur_omzetter(kleur);
     ErrorList errors = Error_handling(FUNC_figuur, x1, y1, x2, y2, x3, y3, x4, y4, x5, y5, color);
-
-    if(errors.error_var1 || errors.error_var2 || errors.error_var3 || errors.error_var4 || errors.error_var5 ||
-       errors.error_var6 || errors.error_var7 || errors.error_var8 || errors.error_var9 || errors.error_var10 ||
-       errors.error_var11)
+    if(errors.error_var1 || errors.error_var2 /* ... t/m var11 ... */)
         return errors;
 
+    int ik_heb_geactiveerd = 0;
     if (herhaal_hoog == 0)
     {
-		int params[] = {x1, y1, x2, y2, x3, y3, x4, y4, x5, y5, color};
-		record_command(CMD_FIGUUR, 11, params);
+        int params[] = {x1, y1, x2, y2, x3, y3, x4, y4, x5, y5, (int)color};
+        record_command(CMD_FIGUUR, 11, params);
+        herhaal_hoog = 1;
+        ik_heb_geactiveerd = 1;
     }
 
+    // Roept sub-functie lijn() aan; deze zal NIET recorden [4].
     lijn(x1, y1, x2, y2, kleur, 1);
     lijn(x2, y2, x3, y3, kleur, 1);
     lijn(x3, y3, x4, y4, kleur, 1);
     lijn(x4, y4, x5, y5, kleur, 1);
     lijn(x5, y5, x1, y1, kleur, 1);
 
+    if (ik_heb_geactiveerd)
+    {
+        herhaal_hoog = 0;
+    }
     return errors;
 }
 
@@ -169,15 +188,17 @@ ErrorList figuur(int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4,
 ErrorList cirkel(int x0, int y0, int radius, const char* kleur)
 {
     uint8_t color = kleur_omzetter(kleur);
-    ErrorList errors = Error_handling(FUNC_cirkel, x0, y0, radius, color, 0,0,0,0,0,0,0);
-
+    ErrorList errors = Error_handling(FUNC_cirkel, x0, y0, radius, color, 0, 0, 0, 0, 0, 0, 0);
     if(errors.error_var1 || errors.error_var2 || errors.error_var3 || errors.error_var4)
         return errors;
 
+    int ik_heb_geactiveerd = 0;
     if (herhaal_hoog == 0)
     {
-		int params[] = {x0, y0, radius, color};
-		record_command(CMD_CIRKEL, 4, params);
+        int params[] = {x0, y0, radius, (int)color};
+        record_command(CMD_CIRKEL, 4, params);
+        herhaal_hoog = 1;
+        ik_heb_geactiveerd = 1;
     }
 
     int x = radius;
@@ -199,7 +220,11 @@ ErrorList cirkel(int x0, int y0, int radius, const char* kleur)
         if(err > 0) { x--; err -= 2*x + 1; }
     }
 
-    return errors;
+    if (ik_heb_geactiveerd)
+        {
+            herhaal_hoog = 0;
+        }
+	return errors;
 }
 
 /**
@@ -225,64 +250,62 @@ ErrorList toren(int x, int y, int grootte, const char* kleur1, const char* kleur
     uint8_t c1 = kleur_omzetter(kleur1);
     uint8_t c2 = kleur_omzetter(kleur2);
 
-    // Controleer of de waarden geldig zijn
+    // 1. Controleer of de invoerwaarden geldig zijn [5-7]
     ErrorList errors = Error_handling(FUNC_toren, x, y, grootte, c1, c2, 0, 0, 0, 0, 0, 0);
     if(errors.error_var1 || errors.error_var2 || errors.error_var3 || errors.error_var4 || errors.error_var5)
-        return errors;
-
-    if (herhaal_hoog == 0)
     {
-		int params[] = {x, y, grootte, c1, c2};
-		record_command(CMD_TOREN, 5, params);
+        return errors;
     }
 
-    int lagen = 6;                    // aantal torenlagen
-    int basis_radius = grootte;       // basisradius van de toren
-    int hoogte_per_laag = grootte / 2;// hoogte van elke laag
-    int top_radius = basis_radius / 3;// radius van de bovenste laag
+    // --- NIEUWE LOGICA: Vlag beheer ---
+    int ik_heb_geactiveerd = 0; // Houdt bij of DEZE functie de opname heeft gestart
+    if (herhaal_hoog == 0)
+    {
+        int params[] = {x, y, grootte, (int)c1, (int)c2};
+        record_command(CMD_TOREN, 5, params); // Sla het volledige toren-commando op [8, 9]
+        herhaal_hoog = 1;      // Blokkeer opname van sub-functies
+        ik_heb_geactiveerd = 1; // Markeer dat wij de eigenaar van de blokkade zijn
+    }
 
-    // Bouw de lagen van de toren
+    // 2. Tekenlogica (ongewijzigd uit de bronnen) [1-4]
+    int lagen = 6;
+    int basis_radius = grootte;
+    int hoogte_per_laag = grootte / 2;
+    int top_radius = basis_radius / 3;
+
     for(int l = 0; l < lagen; l++)
     {
         int r = (l < lagen - 1)
                 ? basis_radius - (l * (basis_radius - top_radius) / (lagen - 1))
                 : top_radius;
-
         int y_center = y - (l * hoogte_per_laag);
 
-        (void)cirkel(x, y_center, r, kleur1);       // buitenste cirkel
-        (void)cirkel(x, y_center, r - 2, kleur1);   // binnenste cirkel voor diepte
+        // Deze calls roepen nu GEEN record_command aan omdat herhaal_hoog al 1 is
+        (void)cirkel(x, y_center, r, kleur1);
+        (void)cirkel(x, y_center, r - 2, kleur1);
 
-        // Kolommen tekenen voor lagen boven de basis
         if(l > 0)
         {
-            int kolom_hoogte = hoogte_per_laag;
-            int y_start_kolom = y_center + (kolom_hoogte / 2);
-            int y_eind_kolom = y_center - (kolom_hoogte / 2);
-
+            int y_start_kolom = y_center + (hoogte_per_laag / 2);
+            int y_eind_kolom = y_center - (hoogte_per_laag / 2);
             (void)lijn(x - r + 1, y_start_kolom, x - r + 1, y_eind_kolom, kleur1, 1);
             (void)lijn(x + r - 1, y_start_kolom, x + r - 1, y_eind_kolom, kleur1, 1);
         }
     }
 
-    // --- MAST EN VLAG ---
-    int y_top_center = y - ((lagen - 1) * hoogte_per_laag);
-    int y_toren_top_pixel = y_top_center - top_radius;
-    int mast_hoogte = grootte / 4;
-    int y_mast_top_pixel = y_toren_top_pixel - mast_hoogte;
+    // Mast en Vlag
+    int y_mast_top = y - ((lagen - 1) * hoogte_per_laag) - top_radius;
+    int mast_h = grootte / 4;
+    (void)rechthoek(x, y_mast_top - mast_h, 1, mast_h, kleur2, 1);
+    (void)figuur(x, y_mast_top - mast_h, x + 5, y_mast_top - mast_h - 2,
+                 x + 5, y_mast_top - mast_h - 7, x, y_mast_top - mast_h - 5,
+                 x, y_mast_top - mast_h, kleur2);
 
-    // Mast tekenen
-    (void)rechthoek(x, y_mast_top_pixel, 1, mast_hoogte, kleur2, 1);
-
-    // Vlag tekenen
-    (void)figuur(
-        x,              y_mast_top_pixel,
-        x + 5,          y_mast_top_pixel - 2,
-        x + 5,          y_mast_top_pixel - 7,
-        x,              y_mast_top_pixel - 5,
-        x,              y_mast_top_pixel,
-        kleur2
-    );
+    // --- NIEUWE LOGICA: Vlag herstellen ---
+    if (ik_heb_geactiveerd) // Alleen wij mogen de vlag weer op 0 zetten
+    {
+        herhaal_hoog = 0;
+    }
 
     return errors;
 }
@@ -305,6 +328,16 @@ ErrorList bitMap(int nr, int x, int y)
     ErrorList errors = Error_handling(FUNC_bitmap, nr, x, y, 0, 0, 0, 0, 0, 0, 0, 0);
     if(errors.error_var1 || errors.error_var2 || errors.error_var3)
         return errors;
+
+    // --- NIEUWE LOGICA: Vlag beheer ---
+	int ik_heb_geactiveerd = 0; // Houdt bij of DEZE functie de opname heeft gestart
+	if (herhaal_hoog == 0)
+	{
+		int params[] = {nr, x, y};
+		record_command(CMD_BITMAP, 3, params); // Sla het volledige toren-commando op [8, 9]
+		herhaal_hoog = 1;      // Blokkeer opname van sub-functies
+		ik_heb_geactiveerd = 1; // Markeer dat wij de eigenaar van de blokkade zijn
+	}
 
     const Bitmap *bmp_ptr = NULL;
     uint8_t use_transparency = 0;
@@ -330,6 +363,11 @@ ErrorList bitMap(int nr, int x, int y)
     /* (x,y) is nu linkerbovenhoek */
     drawBitmap(x, y, bmp_ptr, use_transparency);
 
+    // --- NIEUWE LOGICA: Vlag herstellen ---
+	if (ik_heb_geactiveerd) // Alleen wij mogen de vlag weer op 0 zetten
+	{
+		herhaal_hoog = 0;
+	}
     return errors;
 }
 
@@ -353,6 +391,16 @@ ErrorList tekst(int x, int y, const char *kleur_str, const char* tekst_str, cons
     {
         return errors;
     }
+
+    // --- NIEUWE LOGICA: Vlag beheer ---
+	int ik_heb_geactiveerd = 0; // Houdt bij of DEZE functie de opname heeft gestart
+	if (herhaal_hoog == 0)
+	{
+		int params[] = {x, y, color, tekst_str, fontnaam, schaal_factor, fontstijl};
+		record_command(CMD_TEKST, 7, params); // Sla het volledige toren-commando op [8, 9]
+		herhaal_hoog = 1;      // Blokkeer opname van sub-functies
+		ik_heb_geactiveerd = 1; // Markeer dat wij de eigenaar van de blokkade zijn
+	}
 
     const unsigned char *active_font_data;
 	if (strcmp(fontnaam, "pearl") == 0)
@@ -416,5 +464,10 @@ ErrorList tekst(int x, int y, const char *kleur_str, const char* tekst_str, cons
         current_char_index++;
     }
 
+    // --- NIEUWE LOGICA: Vlag herstellen ---
+	if (ik_heb_geactiveerd) // Alleen wij mogen de vlag weer op 0 zetten
+	{
+		herhaal_hoog = 0;
+	}
     return errors;
 }
