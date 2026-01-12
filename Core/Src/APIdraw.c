@@ -353,7 +353,16 @@ ErrorList tekst(int x, int y, const char *kleur_str, const char* tekst_str, cons
         return errors;
     }
 
-    const unsigned char *active_font_data = fontdata_pearl8x8; // vast font
+    const unsigned char *active_font_data;
+	if (strcmp(fontnaam, "pearl") == 0)
+	{
+		active_font_data = fontdata_pearl8x8;
+	}
+	if (strcmp(fontnaam, "acorn") == 0)
+	{
+		active_font_data = fontdata_acorn8x8;
+	}
+
     int is_vet    = (strcmp(fontstijl, "vet") == 0);
     int is_cursief = (strcmp(fontstijl, "cursief") == 0);
     int current_char_index = 0;
@@ -362,9 +371,9 @@ ErrorList tekst(int x, int y, const char *kleur_str, const char* tekst_str, cons
         unsigned char karakter = (unsigned char)tekst_str[current_char_index];
 
         // Printable ASCII
-        if (karakter < 32 || karakter > 126) karakter = 32;
+        if (karakter < 0 || karakter > 126) karakter = 0;
 
-        int bitmap_index = (karakter - 32) * BASE_FONT_SIZE;
+        int bitmap_index = (karakter - 0) * BASE_FONT_SIZE;
 
         // Bereken breedte
         int char_width = BASE_FONT_SIZE * schaal_factor;
