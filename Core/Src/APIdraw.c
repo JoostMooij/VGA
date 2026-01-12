@@ -291,6 +291,7 @@ ErrorList bitMap(int nr, int x, int y)
         case 7: bmp_ptr = &yes_cat_thumbs_up; use_transparency = 0; break;
         case 8: bmp_ptr = &skeleton_banging_on_shield_meme_frame_00; use_transparency = 0; break;
         case 9: bmp_ptr = &skeleton_banging_on_shield_meme_frame_06; use_transparency = 0; break;
+        case 10: bmp_ptr = &KIP; use_transparency = 0; break;
         default: return errors;
     }
 
