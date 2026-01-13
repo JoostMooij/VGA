@@ -197,8 +197,8 @@ COMMANDO_TYPE bepaal_commando(const char *woord)
 
 void verwerk_commando(const char *input)
 {
-    char buff[MAX_INPUT];
-    char *delen[20];
+	static char buff[MAX_INPUT];
+	static char *delen[20];
     int aantal = 0;
     ErrorList errors = {NO_ERROR, NO_ERROR, NO_ERROR, NO_ERROR, NO_ERROR, NO_ERROR,
             NO_ERROR, NO_ERROR, NO_ERROR, NO_ERROR, NO_ERROR};
@@ -234,8 +234,31 @@ void verwerk_commando(const char *input)
             break;
 
         case CMD_TEKST:
-        	errors = tekst(atoi(delen[1]), atoi(delen[2]), delen[3], delen[4], delen[5], atoi(delen[6]), delen[7]);
+        {
+            // Maak veilige buffers voor de strings
+            char kleur[MAX_WOORD];
+            char text[MAX_WOORD];
+            char font[MAX_WOORD];
+            char stijl[MAX_WOORD];
+
+            // Kopieer de waarden uit de token array
+            if (aantal >= 8) { // Zorg dat er genoeg tokens zijn
+                strncpy(kleur, delen[3], MAX_WOORD);
+                kleur[MAX_WOORD - 1] = '\0';  // altijd null-terminator zetten
+
+                strncpy(text, delen[4], MAX_WOORD);
+                text[MAX_WOORD - 1] = '\0';
+
+                strncpy(font, delen[5], MAX_WOORD);
+                font[MAX_WOORD - 1] = '\0';
+
+                strncpy(stijl, delen[7], MAX_WOORD);
+                stijl[MAX_WOORD - 1] = '\0';
+
+                errors = tekst(atoi(delen[1]), atoi(delen[2]), kleur, text, font, atoi(delen[6]), stijl);
+            }
             break;
+        }
 
         case CMD_BITMAP:
         	errors = bitMap(atoi(delen[1]), atoi(delen[2]), atoi(delen[3]));

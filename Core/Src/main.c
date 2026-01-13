@@ -5,7 +5,7 @@
 //--------------------------------------------------------------
 
 #include "main.h"
-#define BUFFER_SIZE 128
+#define BUFFER_SIZE 64
 char buffer[BUFFER_SIZE]; // De buffer moet buiten main gedefinieerd zijn als je deze overal wilt gebruiken
 
 int main(void)
@@ -35,45 +35,45 @@ int main(void)
 //	(void)herhaal(14, 2);
 //	(void)clearscherm("rood");
 
-    (void)clearscherm("zwart");
-    (void)lijn(10, 10, 100, 100, "rood", 4);
-    (void)lijn(100, 1, 100, 200, "groen", 3);
-    (void)clearscherm("wit");
-    (void)rechthoek(10, 10, 300, 200, "zwart", 1);
-    (void)rechthoek(10, 10, 150, 100, "lichtblauw", 0);
-    (void)rechthoek(160, 110, 150, 100, "geel", 1);
-    (void)clearscherm("zwart");
-    (void)wacht(100);
-    (void)tekst(1, 20, "wit", "the quick brown fox jumps over the lazy dog", "pearl", 1, "normaal");
-    (void)tekst(1, 100, "magenta", "the quick brown fox jumps over the lazy dog", "acorn", 2, "vet");
-    (void)tekst(10, 200, "lichtcyaan", "the quick brown fox jumps over the lazy dog", "pearl", 1, "cursief");
-    (void)clearscherm("wit");
-    (void)bitMap(1, 50, 50);
-    (void)clearscherm("wit");
-    (void)bitMap(2, 50, 50);
-    (void)clearscherm("wit");
-    (void)bitMap(3, 50, 50);
-    (void)clearscherm("bruin");
-    (void)bitMap(4, 50, 50);
-    (void)clearscherm("wit");
-    (void)cirkel(120, 160, 25, "groen");
-    (void)clearscherm("geel");
-    (void)figuur(10, 10, 100, 100, 200, 150, 150, 210, 80, 210, "rood");
-    (void)clearscherm("magenta");
-    (void)rechthoek(10, 20, 200, 100, "zwart", 1);
-    (void)lijn(10, 10, 100, 100, "blauw", 4);
-    (void)tekst(10, 50, "groen", "Beep boop ik ben een robot", "pearl", 2, "normaal");
-    (void)wacht(2000);
-    (void)clearscherm("zwart");
-    (void)tekst(10, 10, "geel", "Bijna klaar!!", "pearl", 2, "vet");
-    (void)tekst(10, 60, "grijs", "nu alleen nog de herhaalfunctie", "acorn", 1, "cursief");
-    (void)wacht(2000);
-    (void)herhaal(9, 4);
+//    (void)clearscherm("zwart");
+//    (void)lijn(10, 10, 100, 100, "rood", 4);
+//    (void)lijn(100, 1, 100, 200, "groen", 3);
+//    (void)clearscherm("wit");
+//    (void)rechthoek(10, 10, 300, 200, "zwart", 1);
+//    (void)rechthoek(10, 10, 150, 100, "lichtblauw", 0);
+//    (void)rechthoek(160, 110, 150, 100, "geel", 1);
+//    (void)clearscherm("zwart");
+//    (void)wacht(100);
+//    (void)tekst(1, 20, "wit", "the quick brown fox jumps over the lazy dog", "pearl", 1, "normaal");
+//    (void)tekst(1, 100, "magenta", "the quick brown fox jumps over the lazy dog", "acorn", 2, "vet");
+//    (void)tekst(10, 200, "lichtcyaan", "the quick brown fox jumps over the lazy dog", "pearl", 1, "cursief");
+//    (void)clearscherm("wit");
+//    (void)bitMap(1, 50, 50);
+//    (void)clearscherm("wit");
+//    (void)bitMap(2, 50, 50);
+//    (void)clearscherm("wit");
+//    (void)bitMap(3, 50, 50);
+//    (void)clearscherm("bruin");
+//    (void)bitMap(4, 50, 50);
+//    (void)clearscherm("wit");
+//    (void)cirkel(120, 160, 25, "groen");
+//    (void)clearscherm("geel");
+//    (void)figuur(10, 10, 100, 100, 200, 150, 150, 210, 80, 210, "rood");
+//    (void)clearscherm("magenta");
+//    (void)rechthoek(10, 20, 200, 100, "zwart", 1);
+//    (void)lijn(10, 10, 100, 100, "blauw", 4);
+//    (void)tekst(10, 50, "groen", "Beep boop ik ben een robot", "pearl", 2, "normaal");
+//    (void)wacht(2000);
+//    (void)clearscherm("zwart");
+//    (void)tekst(10, 10, "geel", "Bijna klaar!!", "pearl", 2, "vet");
+//    (void)tekst(10, 60, "grijs", "nu alleen nog de herhaalfunctie", "acorn", 1, "cursief");
+//    (void)wacht(2000);
+//    (void)herhaal(9, 4);
 
 //    test_APIio();
 //    test_APIdraw();
     UART2_WriteString("> ");
-    UserInput_t input;
+    static UserInput_t input;
 
     while (1)
     {

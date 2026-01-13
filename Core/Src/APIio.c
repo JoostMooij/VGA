@@ -18,13 +18,18 @@
 #include "logicLayer.h"
 #include "APIdraw.h"
 
+uint16_t command_buffer[MAX_COMMAND_BUFFER_SIZE];
+uint16_t command_buffer_index = 0;
 volatile uint32_t ms_tick_counter = 0;
-volatile uint16_t command_buffer[MAX_COMMAND_BUFFER_SIZE];
-volatile int command_buffer_index = 0;
-volatile int herhaal_hoog = 0;
-static uint8_t cmd_starts[MAX_COMMAND_HISTORY_SIZE]; // De "kleine" buffer voor offsets
-static int cmd_start_count = 0;                      // Aantal opgeslagen commando's
+int herhaal_hoog = 0;
 
+static uint8_t cmd_starts[MAX_COMMAND_HISTORY_SIZE];
+static uint8_t cmd_start_count = 0;
+
+#define MAX_TEKST_HISTORY 4
+
+static char tekst_historie[MAX_TEKST_HISTORY][MAX_WOORD];
+static int tekst_historie_index = 0;
 
 /**
  * @brief Initialiseert de I/O-laag (VGA-scherm).
@@ -72,7 +77,6 @@ ErrorList clearscherm(const char *kleur)
     }
     return errors;
 }
-
 
 /**
  * @brief Tekent een pixel op het VGA-scherm.
@@ -285,34 +289,68 @@ void record_command(COMMANDO_TYPE type, int param_count, const int params[])
 {
     int nieuwe_omvang = 1 + param_count;
 
-    // Ruimte vrijmaken als buffer vol is OF als we over de 20 commando's gaan
-    while (cmd_start_count >= 20 || (command_buffer_index + nieuwe_omvang) > MAX_COMMAND_BUFFER_SIZE)
+    // Ongeldige input blokkeren
+    if (param_count < 0 || nieuwe_omvang > MAX_COMMAND_BUFFER_SIZE)
+        return;
+
+    // Ruimte maken indien nodig
+    while (cmd_start_count >= MAX_COMMAND_HISTORY_SIZE ||
+          (command_buffer_index + nieuwe_omvang) > MAX_COMMAND_BUFFER_SIZE)
     {
-        int oudste_pos = cmd_starts;
-        COMMANDO_TYPE oudste_type = (COMMANDO_TYPE)command_buffer[oudste_pos];
+        if (cmd_start_count <= 0)
+            return; // niets om te verwijderen → abort
+
+        int oudste_pos = cmd_starts[0];
+
+        if (oudste_pos < 0 || oudste_pos >= command_buffer_index)
+            return; // corruptie gedetecteerd
+
+        COMMANDO_TYPE oudste_type =
+            (COMMANDO_TYPE)command_buffer[oudste_pos];
+
         int oudste_omvang = get_command_size(oudste_type);
 
-        if (oudste_omvang <= 0) oudste_omvang = 1;
+        if (oudste_omvang <= 0 ||
+            oudste_omvang > command_buffer_index)
+            oudste_omvang = 1;
 
-        // Verschuif data in de grote buffer
+        // Buffer fysiek opschuiven
         for (int i = 0; i < (command_buffer_index - oudste_omvang); i++)
-            command_buffer[i] = command_buffer[i + oudste_omvang];
+        {
+            command_buffer[i] =
+                command_buffer[i + oudste_omvang];
+        }
 
         command_buffer_index -= oudste_omvang;
+        if (command_buffer_index < 0)
+            command_buffer_index = 0;
 
-        // Verschuif offsets in de kleine buffer en pas ze aan
-        for (int i = 0; i < (cmd_start_count - 1); i++)
-            cmd_starts[i] = cmd_starts[i + 1] - oudste_omvang;
+        // Start-offsets bijwerken
+        for (int i = 0; i < cmd_start_count - 1; i++)
+        {
+            cmd_starts[i] =
+                cmd_starts[i + 1] - oudste_omvang;
+        }
 
         cmd_start_count--;
     }
 
+    // Laatste veiligheidscheck
+    if (command_buffer_index + nieuwe_omvang > MAX_COMMAND_BUFFER_SIZE)
+        return;
+
     // Nieuw commando toevoegen
-    cmd_starts[cmd_start_count++] = (uint8_t)command_buffer_index;
-    command_buffer[command_buffer_index++] = (uint16_t)type;
+    cmd_starts[cmd_start_count++] =
+        (uint8_t)command_buffer_index;
+
+    command_buffer[command_buffer_index++] =
+        (uint16_t)type;
 
     for (int i = 0; i < param_count; i++)
-        command_buffer[command_buffer_index++] = (uint16_t)params[i];
+    {
+        command_buffer[command_buffer_index++] =
+            (uint16_t)params[i];
+    }
 }
 
 /**
@@ -431,15 +469,40 @@ ErrorList herhaal(int aantal, int hoevaak)
                     bitMap(command_buffer[pos+1], command_buffer[pos+2], command_buffer[pos+3]);
                     break;
                 case CMD_TEKST:
-					tekst(command_buffer[pos + 1], command_buffer[pos + 2],
-							get_color_string_from_code(command_buffer[pos + 3]),
-						  command_buffer[pos + 4],
-						  command_buffer[pos + 5], command_buffer[pos + 6], command_buffer[pos + 7]);
-					break;
+                {
+                    int tekst_idx  = command_buffer[pos + 4];
+                    int font_id    = command_buffer[pos + 5];
+                    int schaal     = command_buffer[pos + 6];
+                    int stijl_id   = command_buffer[pos + 7];
+
+                    // Vertaal ID's terug naar strings
+                    const char* f_naam = (font_id == 1) ? "acorn" : "pearl";
+                    const char* f_stijl = "normaal";
+                    if (stijl_id == 1) f_stijl = "vet";
+                    else if (stijl_id == 2) f_stijl = "cursief";
+
+                    tekst(command_buffer[pos + 1],
+                          command_buffer[pos + 2],
+                          get_color_string_from_code(command_buffer[pos + 3]),
+                          tekst_historie[tekst_idx],
+                          f_naam,
+                          schaal,
+                          f_stijl);
+                }
+                break;
                 default: break;
             }
         }
     }
     herhaal_hoog = 0;
     return errors;
+}
+
+int reserveer_tekst_slot(const char* tekst) {
+    // Gebruik de nieuwe constante voor de circulaire buffer
+    if (tekst_historie_index >= MAX_TEKST_HISTORY) tekst_historie_index = 0;
+
+    strncpy(tekst_historie[tekst_historie_index], tekst, MAX_WOORD - 1);
+    tekst_historie[tekst_historie_index][MAX_WOORD - 1] = '\0';
+    return tekst_historie_index++;
 }

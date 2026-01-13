@@ -12,7 +12,7 @@
 
 #define MAX_INPUT 128
 #define MAX_ERROR_MESSAGE 128
-#define MAX_WOORD 128
+#define MAX_WOORD 32
 
 #include "APIerror.h"
 #include "APIdraw.h"

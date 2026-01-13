@@ -61,11 +61,10 @@ typedef enum
 #define MAX_COMMAND_BUFFER_SIZE 245
 
 
-// --- Externe Declaraties
-extern volatile uint16_t command_buffer[MAX_COMMAND_BUFFER_SIZE];
-extern volatile int command_buffer_index; ///< Huidige schrijfpositie in de buffer
+extern uint16_t command_buffer[MAX_COMMAND_BUFFER_SIZE];
+extern uint16_t command_buffer_index;
 extern volatile uint32_t ms_tick_counter;
-extern volatile int herhaal_hoog;
+extern int herhaal_hoog;
 
 /* -------------------------------------------------------------------------- */
 /*  Typedefs                                                                  */

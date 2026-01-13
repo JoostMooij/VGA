@@ -395,12 +395,22 @@ ErrorList tekst(int x, int y, const char *kleur_str, const char* tekst_str, cons
     // --- NIEUWE LOGICA: Vlag beheer ---
 	int ik_heb_geactiveerd = 0; // Houdt bij of DEZE functie de opname heeft gestart
 	if (herhaal_hoog == 0)
-	{
-		int params[] = {x, y, color, tekst_str, fontnaam, schaal_factor, fontstijl};
-		record_command(CMD_TEKST, 7, params); // Sla het volledige toren-commando op [8, 9]
-		herhaal_hoog = 1;      // Blokkeer opname van sub-functies
-		ik_heb_geactiveerd = 1; // Markeer dat wij de eigenaar van de blokkade zijn
-	}
+	    {
+	        int tekst_index = reserveer_tekst_slot(tekst_str);
+
+	        // Zet fontnaam om naar ID: pearl=0, acorn=1
+	        int font_id = (strcmp(fontnaam, "acorn") == 0) ? 1 : 0;
+	        // Zet stijl om naar ID: normaal=0, vet=1, cursief=2
+	        int stijl_id = 0;
+	        if (strcmp(fontstijl, "vet") == 0) stijl_id = 1;
+	        else if (strcmp(fontstijl, "cursief") == 0) stijl_id = 2;
+
+	        // Sla de ID's op in plaats van de pointers
+	        int params[] = {x, y, color, tekst_index, font_id, schaal_factor, stijl_id};
+	        record_command(CMD_TEKST, 7, params);
+	        herhaal_hoog = 1;
+	        ik_heb_geactiveerd = 1;
+	    }
 
     const unsigned char *active_font_data;
 	if (strcmp(fontnaam, "pearl") == 0)
