@@ -234,31 +234,34 @@ void verwerk_commando(const char *input)
             break;
 
         case CMD_TEKST:
-        {
-            // Maak veilige buffers voor de strings
-            char kleur[MAX_WOORD];
-            char text[MAX_WOORD];
-            char font[MAX_WOORD];
-            char stijl[MAX_WOORD];
+		{
+			// Controleer of genoeg tokens aanwezig zijn
+			if (aantal >= 8)
+			{
+				char kleur[MAX_WOORD];
+				char text[MAX_WOORD];
+				char font[MAX_WOORD];
+				char stijl[MAX_WOORD];
 
-            // Kopieer de waarden uit de token array
-            if (aantal >= 8) { // Zorg dat er genoeg tokens zijn
-                strncpy(kleur, delen[3], MAX_WOORD);
-                kleur[MAX_WOORD - 1] = '\0';  // altijd null-terminator zetten
+				// Veilige kopie van strings
+				strncpy(kleur, delen[3], MAX_WOORD);
+				kleur[MAX_WOORD - 1] = '\0';
 
-                strncpy(text, delen[4], MAX_WOORD);
-                text[MAX_WOORD - 1] = '\0';
+				strncpy(text, delen[4], MAX_WOORD);
+				text[MAX_WOORD - 1] = '\0';
 
-                strncpy(font, delen[5], MAX_WOORD);
-                font[MAX_WOORD - 1] = '\0';
+				strncpy(font, delen[5], MAX_WOORD);
+				font[MAX_WOORD - 1] = '\0';
 
-                strncpy(stijl, delen[7], MAX_WOORD);
-                stijl[MAX_WOORD - 1] = '\0';
+				strncpy(stijl, delen[7], MAX_WOORD);
+				stijl[MAX_WOORD - 1] = '\0';
 
-                errors = tekst(atoi(delen[1]), atoi(delen[2]), kleur, text, font, atoi(delen[6]), stijl);
-            }
-            break;
-        }
+				errors = tekst(atoi(delen[1]), atoi(delen[2]),
+							   kleur, text, font, atoi(delen[6]), stijl);
+			}
+			break;
+		}
+
 
         case CMD_BITMAP:
         	errors = bitMap(atoi(delen[1]), atoi(delen[2]), atoi(delen[3]));

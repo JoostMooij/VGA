@@ -1,13 +1,17 @@
 /*
  * bitMap.c
+ * @brief Implementatie van bitmaps
+ *
+ * Bevat definities van bitmap-data en helperfuncties voor tekenen
  *
  * Created on: Dec 8, 2025
- * Author: Luc
+ * Author: Luc, Joost, Thijs
  */
 
 #include "bitMap.h"
-#include "APIio.h"  // voor drawPixel
-#include <stddef.h> // voor NULL
+#include "APIio.h"   // voor drawPixel
+#include <stddef.h>  // voor NULL
+
 
 
 
@@ -165,6 +169,7 @@ static const uint8_t smily_blij_data[1024] = {
 	0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF
 };
 
+// boze smily
 static const uint8_t smily_boos_data[1026] = {
 	0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,
 	0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,
@@ -232,7 +237,7 @@ static const uint8_t smily_boos_data[1026] = {
 	0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF
 };
 
-// 5. Kleuren Bitmap (4-bit, 128 bytes)
+// 5. Gato meme
 static const uint8_t Gato[14402] = {
     0x6D, 0x6D, 0x6D, 0x6D, 0x6D, 0x6D, 0x6D, 0x6D, 0x6D, 0x6D, 0x6D, 0x6D, 0x6D, 0x6D, 0x6D, 0x6D,
     0x6D, 0x6D, 0x6D, 0x6D, 0x6D, 0x6D, 0x6D, 0x6D, 0x6D, 0x6E, 0x6D, 0x6D, 0x6D, 0x6D, 0x6D, 0x6D,
@@ -1136,6 +1141,7 @@ static const uint8_t Gato[14402] = {
     0x24, 0x49, 0x24, 0x24, 0x25, 0x25, 0x25, 0x49, 0x49, 0x49, 0x49, 0x49, 0x49, 0x49, 0x49, 0x49
 };
 
+// skelet met schild en zwaard 1
 static const uint8_t skeleton_banging_on_shield_meme_frame_00_data[8102] = {
 	/* W:90 */ 0x5A, /* H:90 */ 0x5A, 0x69, 0x69, 0x69, 0x69, 0x69, 0x69, 0x69, 0x69, 0x69, 0x69, 0x69, 0x69, 0x69, 0x69,
 	0x69, 0x68, 0x48, 0x48, 0x48, 0x48, 0x48, 0x48, 0x48, 0x48, 0x48, 0x48, 0x48, 0x48, 0x48, 0x48,
@@ -1646,6 +1652,7 @@ static const uint8_t skeleton_banging_on_shield_meme_frame_00_data[8102] = {
 	0x49, 0x49, 0x49, 0x49, 0x49, 0x49
 };
 
+// skelet met schild en zwaard 2
 static const uint8_t skeleton_banging_on_shield_meme_frame_06_data[8102] = {
 	/* W:90 */ 0x5A, /* H:90 */ 0x5A, 0x44, 0x49, 0x6D, 0x8D, 0x91, 0x6D, 0x6D, 0x6D, 0x69, 0x68, 0x68, 0x68, 0x68, 0x68,
 	0x68, 0x48, 0x48, 0x48, 0x48, 0x48, 0x48, 0x48, 0x48, 0x48, 0x48, 0x48, 0x48, 0x48, 0x48, 0x48,
@@ -2156,6 +2163,7 @@ static const uint8_t skeleton_banging_on_shield_meme_frame_06_data[8102] = {
 	0x49, 0x49, 0x49, 0x49, 0x49, 0x49
 };
 
+// kip op boom
 static const uint8_t kip_data[8102] = {
     /* W:90 */ 0x5A, /* H:90 */ 0x5A,
     0xB7, 0xB7, 0xB7, 0xB7, 0xB7, 0xB7, 0xB7, 0xB7, 0xB7, 0xB7, 0xB7, 0xB7, 0xB7, 0xB7, 0xB7, 0xB7,
@@ -2667,8 +2675,8 @@ static const uint8_t kip_data[8102] = {
     0x24, 0x24, 0x24, 0x24
 };
 
-// --- Bitmap struct definities (Implementatie) ---
-// Let op de color_depth: 1 voor pijlen, 4 voor kleurafbeelding (zou 8 moeten zijn).
+
+// Let op: color_depth = 1 voor pijlen/smiley, 8 voor echte VGA-kleuren.
 const Bitmap arrow_up    = {grote_pijlen, grote_pijlen, arrow_up_data, 1};
 const Bitmap arrow_down  = {grote_pijlen, grote_pijlen, arrow_down_data, 1};
 const Bitmap arrow_left  = {grote_pijlen, grote_pijlen, arrow_left_data, 1};
@@ -2677,45 +2685,51 @@ const Bitmap arrow_right = {grote_pijlen, grote_pijlen, arrow_right_data, 1};
 const Bitmap smily_blij = {grote_smiley, grote_smiley, smily_blij_data, 1};
 const Bitmap smily_boos = {grote_smiley, grote_smiley, smily_boos_data, 1};
 
-// 🛑 AANPASSING HIER: color_depth moet 8 zijn, want elke byte is een 8-bit VGA kleur
+// Correctie: color_depth = 8 voor echte 8-bit VGA kleuren
 const Bitmap yes_cat_thumbs_up = {kat_afbeelding, kat_afbeelding, Gato, 8};
 const Bitmap skeleton_banging_on_shield_meme_frame_00 = {skalet_afbeelding, skalet_afbeelding, skeleton_banging_on_shield_meme_frame_00_data, 1};
 const Bitmap skeleton_banging_on_shield_meme_frame_06 = {skalet_afbeelding, skalet_afbeelding, skeleton_banging_on_shield_meme_frame_06_data, 1};
 
 const Bitmap KIP = {KIP_afbeelding, KIP_afbeelding, kip_data, 1};
 
+/**
+ * @brief Tekent een bitmap op het scherm
+ * @param x0 Linker X-coördinaat op het scherm
+ * @param y0 Boven Y-coördinaat op het scherm
+ * @param bmp Pointer naar de bitmapstruct
+ * @param use_transparency 1 = transparantie toepassen, 0 = geen transparantie
+ */
 void drawBitmap(int x0, int y0, const Bitmap *bmp, uint8_t use_transparency)
 {
     int width  = bmp->width;
     int height = bmp->height;
-
     const uint8_t *pixel_data = bmp->data;
 
-	for (int y = 0; y < height; y++)
-	{
-		int screen_y = y0 + y;
-		if (screen_y < 0 || screen_y >= VGA_DISPLAY_Y) continue;
+    // Loop door alle rijen van de bitmap
+    for(int y = 0; y < height; y++)
+    {
+        int screen_y = y0 + y;
+        if(screen_y < 0 || screen_y >= VGA_DISPLAY_Y)
+            continue; // buiten scherm, overslaan
 
-		for (int x = 0; x < width; x++)
-		{
-			int screen_x = x0 + x;
-			if (screen_x < 0 || screen_x >= VGA_DISPLAY_X) continue;
+        // Loop door alle kolommen van de bitmap
+        for(int x = 0; x < width; x++)
+        {
+            int screen_x = x0 + x;
+            if(screen_x < 0 || screen_x >= VGA_DISPLAY_X)
+                continue; // buiten scherm, overslaan
 
-			// Zoals besproken: pas de index aan als W en H in de data array zitten.
-			// Dit is de correcte indexering als W/H in de array zitten,
-			// wat het geval was bij de geëxporteerde Python code:
-			uint8_t color = pixel_data[2 + y * width + x];
-			// Let op: De "+ 2" is hier cruciaal als uw bmp->data array begint met [W, H].
+            // Index in pixel array aanpassen als W/H als eerste 2 bytes aanwezig zijn
+            uint8_t color = pixel_data[2 + y * width + x]; // "+2" omdat W/H in array zitten
 
+            // Transparantie: sla pixel over als color=0xFF en transparantie aan staat
+            if(use_transparency && color == 0xFF)
+            {
+                continue;
+            }
 
-			// --- DE NIEUWE TRANSPARANTIE LOGICA ---
-			// Sla de pixel over als transparantie is ingeschakeld (1) EN de kleur 0xFF is.
-			if (use_transparency && color == 0xFF) {
-				continue;
-			}
-			// -------------------------------------
-
-			UB_VGA_SetPixel(screen_x, screen_y, color);
-		}
-	}
+            // Zet pixel op scherm
+            UB_VGA_SetPixel(screen_x, screen_y, color);
+        }
+    }
 }

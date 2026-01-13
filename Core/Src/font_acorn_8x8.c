@@ -1,9 +1,13 @@
-/*
- * font_acorn_8x8.c
+/**
+ * @file font_acorn_8x8.c
+ * @brief font acorn 8x8
  *
- *  Created on: Dec 16, 2025
- *      Author: beren
+ * @author Luc, Joost, Thijs
+ * @version 1.0
+ * @date 13/01/2026
+ *
  */
+
 #include "font_acorn_8x8.h"
 
 // Font data voor 256 karakters, elk 8 bytes hoog (8x8 bitmap)

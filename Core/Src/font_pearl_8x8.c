@@ -1,9 +1,12 @@
-/*
- * tekst.c
+/**
+ * @file font_pearl_8x8.c
+ * @brief font pearl 8x8
  *
- *  Created on: Dec 15, 2025
- *      Author: Luc
+ * @author Luc, Joost, Thijs
+ * @version 1.0
+ * @date 13/01/2026
  */
+
 
 #include "font_pearl_8x8.h"
 

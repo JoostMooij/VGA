@@ -1,8 +1,8 @@
 /*
  * bitMap.h
  *
- *  Created on: Dec 8, 2025
- *      Author: beren
+ *  Created on: Jan 13, 2026
+ *      Author: Luc, Joost, Thijs
  */
 
 #ifndef BITMAP_H_
@@ -26,8 +26,9 @@ typedef struct {
     uint8_t width;
     uint8_t height;
     const uint8_t *data;
-    uint8_t color_depth; // 1 (monochroom) of 4 (16 kleuren)
+    uint8_t color_depth;
 } Bitmap;
+
 
 // --- Externe Declaraties van Bitmaps ---
 // 1-bit bitmaps (Pijlen)
@@ -38,7 +39,6 @@ extern const Bitmap arrow_right;
 extern const Bitmap smily_blij;
 extern const Bitmap smily_boos;
 
-
 // 4-bit bitmap (Kleurafbeelding)
 extern const Bitmap yes_cat_thumbs_up; // NIEUW
 extern const Bitmap skeleton_banging_on_shield_meme_frame_00;
@@ -46,7 +46,7 @@ extern const Bitmap skeleton_banging_on_shield_meme_frame_06;
 extern const Bitmap KIP;
 
 // --- Functie Prototypes ---
-/**
+/*
  * @brief Tekent een bitmap op het scherm, ondersteunt 1-bit en 4-bit.
  *
  * @param x0 Linkerbovenhoek X-coordinaat
@@ -56,4 +56,4 @@ extern const Bitmap KIP;
  */
 void drawBitmap(int x0, int y0, const Bitmap *bmp, uint8_t fg_vga_code);
 
-#endif /* BITMAP_H_ */
+#endif
