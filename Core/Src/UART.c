@@ -23,31 +23,6 @@ volatile uint32_t uart_rx_index = 0;
 volatile uint8_t uart_command_ready = 0;
 
 /**
- * @brief  Berekent de huidige APB1-klok (PCLK1) frequentie
- * @details Leest SystemCoreClock en APB1-prescaler (PPRE1)
- *          en berekent effectieve PCLK1.
- * @return PCLK1-frequentie in Hz
- */
-static uint32_t UART_GetPCLK1(void)
-{
-    uint32_t hclk = SystemCoreClock;
-    uint32_t ppre1 = (RCC->CFGR & RCC_CFGR_PPRE1) >> 10;
-    uint32_t div;
-
-    switch (ppre1)
-    {
-        case 0:  div = 1; break;
-        case 4:  div = 2; break;
-        case 5:  div = 4; break;
-        case 6:  div = 8; break;
-        case 7:  div = 16; break;
-        default: div = 1; break;
-    }
-
-    return hclk / div;
-}
-
-/**
  * @brief Initialiseert UART2 op de STM32F4
  * @param baudrate Baudrate voor UART2
  * @details Zet clocks aan, configureert PA2/PA3 als AF7,

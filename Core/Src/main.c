@@ -43,7 +43,7 @@ int main(void)
     	if (uart_command_ready)
     	{
     	    memset(&input, 0, sizeof(UserInput_t));
-    	    strncpy(input.full_command, uart_rx_buffer, MAX_CMD_LENGTH - 1);
+    	    strncpy(input.full_command, (const char *)uart_rx_buffer, MAX_CMD_LENGTH - 1);
 
     	    UART2_WriteString("\r\n[RX]: \"");
     	    UART2_WriteString(input.full_command);

@@ -389,21 +389,6 @@ void DMA2_Stream5_IRQHandler(void)
   {
     // TransferInterruptComplete Interrupt from DMA2
     DMA_ClearITPendingBit(DMA2_Stream5, DMA_IT_TCIF5);
-//    if(((((DMA_IT_TCIF5) & 0x30000000) != 0x30000000) && \
-//                             (((DMA_IT_TCIF5) & 0x30000000) != 0) && ((DMA_IT_TCIF5) != 0x00) && \
-//                             (((DMA_IT_TCIF5) & 0x40820082) != 0x00))){
-//    	DMA2->HISR = (uint32_t)(((uint32_t)0x20008800) & (uint32_t)0x0F7D0F7D );
-//    }
-//    DMA2->HIFCR = (uint32_t)(((uint32_t)0x20008800) & (uint32_t)0x0F7D0F7D );
-
-//	  DMA_Hisr |= ~DMA_HISR_TCIF5;
-//	  DMA_HISR |= ~DMA_HISR_TCIF5;
-//	  DMA2->HISR |= ~DMA_HISR_TCIF5;
-//    DMA2->HISR |= (uint32_t)(DMA_IT_TCIF5 & ((uint32_t)0x0F7D0F7D ));
-//    DMA2->LISR |= (uint32_t)(DMA_IT_TCIF5 & ((uint32_t)0x0F7D0F7D ));
-//    DMA2->HISR = 0x440;
-//    DMA2->HISR = (uint32_t)(((uint32_t)0x20008800) & (uint32_t)0x0F7D0F7D );
-    // stop after all pixels => DMA Transfer stop
 
     // Timer1 stop
     TIM1->CR1&=~TIM_CR1_CEN;

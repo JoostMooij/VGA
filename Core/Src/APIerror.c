@@ -15,7 +15,7 @@
 #include "bitMap.h"
 #include <stddef.h>
 #include "APIio.h"
-
+#include "string.h"
 
 /**
  * @brief Controleer alle mogelijke fouten van een API-functie.

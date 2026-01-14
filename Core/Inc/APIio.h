@@ -37,9 +37,11 @@ typedef enum
     CMD_SETPIXEL    = 11, /**< Eén pixel zetten */
 } COMMANDO_TYPE;
 
-/*-------------------------------------------------------
- * VGA kleurmacro
- *-------------------------------------------------------*/
+/**
+ * @name VGA kleurmacro
+ * @{
+ */
+
 /**
  * @brief Maakt een 8-bit VGA kleurwaarde op basis van R/G/B componenten.
  *
@@ -51,24 +53,47 @@ typedef enum
  */
 #define VGA_RGB(R,G,B)  ( ((R & 0x07) << 5) | ((G & 0x07) << 2) | (B & 0x03) )
 
-/*-------------------------------------------------------
- * Herhalings- en bufferdefinities
- *-------------------------------------------------------*/
+/** @} */
+
+/**
+ * @name Herhalings- en bufferdefinities
+ * @{
+ */
 #define MAX_COMMAND_HISTORY_SIZE 25
 #define MAX_COMMAND_BUFFER_SIZE 245
 #define MAX_TEKST_HISTORY 4
+/** @} */
 
-/*-------------------------------------------------------
- * Globale variabelen (extern)
- *-------------------------------------------------------*/
+/**
+ * @name Globale variabelen
+ * @{
+ */
+
+/**
+ * @brief Buffer waarin commando’s lineair worden opgeslagen.
+ */
 extern uint16_t command_buffer[MAX_COMMAND_BUFFER_SIZE];
+
+/**
+ * @brief Index van het huidige commando in de buffer.
+ */
 extern uint16_t command_buffer_index;
+
+/**
+ * @brief Milliseconde-teller, opgehoogd door SysTick interrupt.
+ */
 extern volatile uint32_t ms_tick_counter;
+
+/**
+ * @brief Huidige diepte van geneste herhaalcommando’s.
+ */
 extern int herhaal_hoog;
 
-/*-------------------------------------------------------
- * VGA kleuren (Nederlandse namen)
- *-------------------------------------------------------*/
+/** @} */
+
+/**
+ * @brief VGA kleuren met Nederlandse benamingen.
+ */
 typedef enum
 {
     ZWART        = VGA_RGB(0,0,0),
@@ -91,41 +116,109 @@ typedef enum
     Ongeldige_kleur
 } Kleur;
 
-/*-------------------------------------------------------
- * Functieprototypes
- *-------------------------------------------------------*/
+/**
+ * @name Functieprototypes
+ * @{
+ */
 
-/** Initialiseert de I/O-laag (VGA-scherm) */
+/**
+ * @brief Initialiseert de I/O-laag.
+ *
+ * Initialiseert het VGA-scherm en bijbehorende hardware.
+ */
 void API_init_io(void);
 
-/** Vult het hele scherm met een bepaalde kleur */
+/**
+ * @brief Vult het volledige scherm met een kleur.
+ *
+ * @param kleur Nederlandse kleurnaam
+ * @return ErrorList Foutcodestructuur
+ */
 ErrorList clearscherm(const char *kleur);
 
-/** Zet een pixel naar een bepaalde kleur (string) */
+/**
+ * @brief Zet één pixel met een kleur opgegeven als string.
+ *
+ * @param x X-coördinaat
+ * @param y Y-coördinaat
+ * @param kleur Nederlandse kleurnaam
+ * @return ErrorList Foutcodestructuur
+ */
 ErrorList drawPixel(int x, int y, const char *kleur);
 
-/** Zet een pixel naar een bepaalde kleur (numeriek) */
+/**
+ * @brief Zet één pixel met een numerieke VGA-kleurcode.
+ *
+ * @param x X-coördinaat
+ * @param y Y-coördinaat
+ * @param kleur VGA-kleurcode
+ * @return ErrorList Foutcodestructuur
+ */
 ErrorList setPixel(int x, int y, int kleur);
 
-/** Zet een Nederlandse kleurnaam om naar een VGA-kleurcode */
+/**
+ * @brief Zet een kleurnaam om naar een VGA-kleurcode.
+ *
+ * @param input Nederlandse kleurnaam
+ * @return uint8_t VGA-kleurcode
+ */
 uint8_t kleur_omzetter(const char *input);
 
-/** Configureert de SysTick timer voor 1 ms ticks */
+/**
+ * @brief Initialiseert de SysTick timer voor 1 ms interrupts.
+ */
 void SysTick_Init(void);
 
-/** Vertraging (delay) op basis van SysTick */
+/**
+ * @brief Blokkerende vertraging in milliseconden.
+ *
+ * @param ms Aantal milliseconden
+ * @return ErrorList Foutcodestructuur
+ */
 ErrorList wacht(int ms);
 
-/** Voert de laatste 'aantal' commando's opnieuw uit, 'hoevaak' keer */
+/**
+ * @brief Herhaalt eerder uitgevoerde commando’s.
+ *
+ * @param aantal Aantal commando’s
+ * @param hoevaak Aantal herhalingen
+ * @return ErrorList Foutcodestructuur
+ */
 ErrorList herhaal(int aantal, int hoevaak);
 
-/** Slaat een commando ID en parameters op in de lineaire buffer */
+/**
+ * @brief Slaat een commando en parameters op in de buffer.
+ *
+ * @param type Commando-type
+ * @param param_count Aantal parameters
+ * @param params Parameterlijst
+ */
 void record_command(COMMANDO_TYPE type, int param_count, const int params[]);
 
-/** Geeft de totale omvang van een commando inclusief parameters */
+/**
+ * @brief Bepaalt de buffer-grootte van een commando.
+ *
+ * @param type Commando-type
+ * @return int Totale grootte
+ */
 int get_command_size(COMMANDO_TYPE type);
 
-/** Converteert een VGA-kleurcode terug naar string */
+/**
+ * @brief Zet een VGA-kleurcode om naar een kleurnaam.
+ *
+ * @param code VGA-kleurcode
+ * @return const char* Kleurnaam
+ */
 const char* get_color_string_from_code(int code);
+
+/**
+ * @brief Reserveert tijdelijke opslag voor tekst.
+ *
+ * @param tekst Tekststring
+ * @return int Index van tekstslot, of -1 bij fout
+ */
+int reserveer_tekst_slot(const char* tekst);
+
+/** @} */
 
 #endif /* APIIO_H */
